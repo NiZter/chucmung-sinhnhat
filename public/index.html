@@ -32,37 +32,6 @@
       height: 100%;
     }
 
-    /* ===== PORTRAIT WARNING ===== */
-    #portrait-msg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #000;
-      color: #b06fff;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 99;
-      font-size: 16px;
-      text-align: center;
-      gap: 20px;
-      line-height: 1.6;
-    }
-
-    #portrait-msg .icon {
-      font-size: 52px;
-      animation: tilt 1.4s ease-in-out infinite alternate;
-    }
-
-    @keyframes tilt {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(90deg); }
-    }
-
-    @media (orientation: portrait) {
-      #portrait-msg { display: flex; }
-    }
-
     /* ===== COUNTDOWN ===== */
     #cd-overlay {
       position: fixed;
@@ -313,12 +282,6 @@
 </head>
 <body>
 
-<!-- Portrait warning -->
-<div id="portrait-msg">
-  <span class="icon">📱</span>
-  <p>Xoay ngang điện thoại<br>để xem hiệu ứng đẹp hơn ♥</p>
-</div>
-
 <!-- Rain (chạy ngầm phía sau) -->
 <div id="rain-wrap">
   <canvas id="rc"></canvas>
@@ -347,10 +310,6 @@
 </div>
 
 <script>
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(() => {});
-  }
-
   // ===== Rain =====
   const canvas = document.getElementById('rc');
   const ctx    = canvas.getContext('2d');

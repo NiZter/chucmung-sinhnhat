@@ -263,6 +263,29 @@
     #letter-frame::-webkit-scrollbar { width: 4px; }
     #letter-frame::-webkit-scrollbar-track { background: transparent; }
     #letter-frame::-webkit-scrollbar-thumb { background: rgba(180,130,210,0.35); border-radius: 4px; }
+
+    /* ===== PORTRAIT ===== */
+    @media (orientation: portrait) {
+      #content-wrap {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 20px 16px;
+        gap: 16px;
+        overflow-y: auto;
+      }
+
+      #avatar-frame {
+        width: clamp(80px, 26vw, 130px);
+        height: clamp(80px, 26vw, 130px);
+        flex-shrink: 0;
+      }
+
+      #letter-frame {
+        max-width: 100%;
+        max-height: none;
+        font-size: clamp(12px, 3.8vw, 15px);
+      }
+    }
   </style>
 </head>
 <body>
