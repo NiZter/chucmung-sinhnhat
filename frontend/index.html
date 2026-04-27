@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Falling Rain ♥</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      font-family: monospace;
+    }
+
+    /* ===== RAIN ===== */
+    #rain-wrap {
+      position: fixed;
+      inset: 0;
+      background: #000;
+    }
+
+    #rc {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ===== PORTRAIT WARNING ===== */
+    #portrait-msg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      color: #b06fff;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      font-size: 16px;
+      text-align: center;
+      gap: 20px;
+      line-height: 1.6;
+    }
+
+    #portrait-msg .icon {
+      font-size: 52px;
+      animation: tilt 1.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes tilt {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(90deg); }
+    }
+
+    @media (orientation: portrait) {
+      #portrait-msg { display: flex; }
+    }
+
+    /* ===== COUNTDOWN ===== */
+    #cd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #cd-text {
+      color: #fff;
+      text-align: center;
+      line-height: 1.15;
+      text-shadow:
+        0 0 12px rgba(210,120,255,0.6),
+        0 0 30px rgba(180,60,255,0.35);
+      white-space: pre-line;
+    }
+
+    #cd-text.num {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(80px, 20vw, 220px);
+      letter-spacing: 2px;
+    }
+
+    #cd-text.word {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(30px, 8vw, 90px);
+      letter-spacing: 14px;
+    }
+
+    #cd-text.name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(52px, 14vw, 150px);
+      letter-spacing: 16px;
+    }
+
+    @keyframes cd-flash {
+      0%   { opacity: 0; transform: scale(2.2); filter: blur(8px); }
+      18%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
+      72%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
+      100% { opacity: 0; transform: scale(0.7); filter: blur(4px); }
+    }
+
+    .cd-anim { animation: cd-flash 1s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+    /* ===== LETTER OVERLAY ===== */
+    #letter-overlay {
+      position: fixed;
+      inset: 0;
+      background: #070010;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: Georgia, serif;
+      transition: opacity 1.2s ease;
+    }
+
+    #letter-overlay::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(120,40,200,0.09) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(180,60,255,0.07) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    #letter-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ===== ENVELOPE ===== */
+    .scene {
+      perspective: 1200px;
+      width: min(92vw, 820px);
+      animation: scene-enter 1.4s cubic-bezier(0.2,0.8,0.2,1) both;
+    }
+
+    @keyframes scene-enter {
+      0%   { opacity: 0; transform: translateY(40px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      height: min(62vh, 500px);
+      animation: float 5s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(140,40,255,0.35));
+      transition: filter 0.3s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px);   }
+      50%       { transform: translateY(-14px); }
+    }
+
+    /* Hào quang xung quanh phong bì */
+    .envelope::before {
+      content: '';
+      position: absolute;
+      inset: -30px;
+      background: radial-gradient(ellipse at center, rgba(160,60,255,0.18) 0%, transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+      animation: aura 4s ease-in-out infinite;
+    }
+
+    @keyframes aura {
+      0%, 100% { opacity: 0.6; transform: scale(1);    }
+      50%       { opacity: 1;   transform: scale(1.08); }
+    }
+
+    /* Thân phong bì */
+    .env-body {
+      position: absolute;
+      inset: 0;
+      background: #0e0016;
+      border: 1px solid rgba(180,60,255,0.38);
+      border-radius: 6px;
+      z-index: 2;
+      animation: border-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes border-pulse {
+      0%, 100% { border-color: rgba(160,50,255,0.35); box-shadow: inset 0 0 40px rgba(80,10,160,0.12); }
+      50%       { border-color: rgba(210,110,255,0.7); box-shadow: inset 0 0 60px rgba(130,30,220,0.2);  }
+    }
+
+    /* Nếp gấp */
+    .env-fold-left {
+      position: absolute;
+      inset: 0;
+      background: rgba(80,15,150,0.25);
+      clip-path: polygon(0 0, 0 100%, 50% 52%);
+      z-index: 3;
+      border-radius: 6px 0 0 6px;
+    }
+
+    .env-fold-right {
+      position: absolute;
+      inset: 0;
+      background: rgba(80,15,150,0.25);
+      clip-path: polygon(100% 0, 50% 52%, 100% 100%);
+      z-index: 3;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .env-fold-bottom {
+      position: absolute;
+      inset: 0;
+      background: rgba(100,25,180,0.22);
+      clip-path: polygon(0 100%, 50% 52%, 100% 100%);
+      z-index: 3;
+    }
+
+    /* Nắp phong bì */
+    .env-flap {
+      position: absolute;
+      inset: 0;
+      background: #160228;
+      clip-path: polygon(0 0, 100% 0, 50% 50%);
+      border-radius: 6px 6px 0 0;
+      z-index: 4;
+    }
+
+    /* Dấu niêm phong */
+    .seal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 36%, #7a1a9a, #3a005e);
+      border: 2px solid rgba(200,120,255,0.45);
+      box-shadow:
+        0 4px 16px rgba(0,0,0,0.6),
+        inset 0 2px 6px rgba(220,160,255,0.18),
+        inset 0 -2px 4px rgba(0,0,0,0.4);
+      z-index: 6;
+      cursor: pointer;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(230,180,255,0.85);
+      font-size: 28px;
+      font-family: Georgia, serif;
+      animation: seal-glow 2.2s ease-in-out infinite;
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.4s ease;
+    }
+
+    @keyframes seal-glow {
+      0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 2px 6px rgba(220,160,255,0.18), 0 0 14px rgba(160,60,255,0.45); }
+      50%       { box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 2px 6px rgba(220,160,255,0.18), 0 0 32px rgba(210,100,255,0.95); }
+    }
+
+    .seal.break {
+      transform: translate(-50%, -50%) scale(0) rotate(60deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Phong bì tan biến */
+    @keyframes dissolve {
+      0%   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0px)  drop-shadow(0 0 30px rgba(160,60,255,0.4)); }
+      40%  { opacity: 0.9; transform: scale(1.05) translateY(-8px);  filter: blur(2px)  drop-shadow(0 0 70px rgba(200,80,255,0.9)); }
+      100% { opacity: 0; transform: scale(1.15) translateY(-20px); filter: blur(16px) drop-shadow(0 0 10px rgba(140,40,255,0));   }
+    }
+
+    .envelope.dissolve {
+      animation: dissolve 0.95s cubic-bezier(0.4,0,0.2,1) forwards !important;
+    }
+
+    /* Hiệu ứng burst khi mở */
+    .seal-burst {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 7;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(220,140,255,0.9) 0%, rgba(180,60,255,0.4) 40%, transparent 70%);
+    }
+
+    .seal-burst.active {
+      animation: burst 0.7s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0%   { width: 0;     height: 0;     opacity: 1; }
+      100% { width: 380px; height: 380px; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Portrait warning -->
+<div id="portrait-msg">
+  <span class="icon">📱</span>
+  <p>Xoay ngang điện thoại<br>để xem hiệu ứng đẹp hơn ♥</p>
+</div>
+
+<!-- Rain (chạy ngầm phía sau) -->
+<div id="rain-wrap">
+  <canvas id="rc"></canvas>
+</div>
+
+<audio id="bg-music" src="../data/music_2.mp3" loop></audio>
+
+<!-- Countdown -->
+<div id="cd-overlay">
+  <span id="cd-text"></span>
+</div>
+
+<!-- Letter overlay -->
+<div id="letter-overlay">
+  <div class="scene">
+    <div class="envelope" id="env">
+      <div class="env-body"></div>
+      <div class="env-fold-left"></div>
+      <div class="env-fold-right"></div>
+      <div class="env-fold-bottom"></div>
+      <div class="env-flap"></div>
+      <button class="seal" id="seal">✦</button>
+      <div class="seal-burst" id="burst"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(() => {});
+  }
+
+  // ===== Rain =====
+  const canvas = document.getElementById('rc');
+  const ctx    = canvas.getContext('2d');
+
+  const FS    = 9;
+  const TRAIL = 38;
+
+  const SETS = {
+    hearts: '♥♡❤♦✦✧❧✿❀◆▲●■',
+  };
+
+  const PALS = {
+    purple: [180, 60, 255],
+  };
+
+  let cols, drops, speeds, lengths;
+  const ck = 'purple', sk = 'hearts';
+
+  let resizeTimer;
+  function resize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const vp = window.visualViewport;
+      canvas.width  = vp ? vp.width  : window.innerWidth;
+      canvas.height = vp ? vp.height : window.innerHeight;
+      init();
+    }, 100);
+  }
+
+  function init() {
+    cols    = Math.floor(canvas.width / FS);
+    drops   = Array.from({ length: cols }, () => -(Math.random() * TRAIL * 2 | 0));
+    speeds  = Array.from({ length: cols }, () => 0.10 + Math.random() * 0.18);
+    lengths = Array.from({ length: cols }, () => Math.floor(TRAIL * 0.5 + Math.random() * TRAIL * 0.7));
+  }
+
+  function randChar() {
+    const s = SETS[sk];
+    return s[Math.floor(Math.random() * s.length)];
+  }
+
+  function draw() {
+    const [r, g, b] = PALS[ck];
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = `${FS}px monospace`;
+    ctx.textBaseline = 'top';
+
+    for (let i = 0; i < cols; i++) {
+      const head = drops[i];
+      const len  = lengths[i];
+
+      for (let j = 0; j < len; j++) {
+        const row = head - j;
+        const y   = row * FS;
+        if (y < -FS || y > canvas.height) continue;
+
+        const t     = j / len;
+        const alpha = Math.pow(1 - t, 1.6) * (j === 0 ? 1 : 0.85);
+
+        if (j === 0) {
+          ctx.fillStyle = `rgba(255,220,235,${alpha})`;
+        } else if (j < 3) {
+          ctx.fillStyle = `rgba(${Math.min(255,r+30)},${Math.min(255,g+60)},${Math.min(255,b+40)},${alpha})`;
+        } else {
+          ctx.fillStyle = `rgba(${r},${g},${b},${alpha * 0.9})`;
+        }
+
+        ctx.fillText(randChar(), i * FS, y);
+      }
+
+      drops[i] += speeds[i];
+
+      if (drops[i] * FS > canvas.height + len * FS) {
+        drops[i]   = -(Math.random() * TRAIL | 0);
+        lengths[i] = Math.floor(TRAIL * 0.4 + Math.random() * TRAIL * 0.8);
+      }
+    }
+  }
+
+  function loop() {
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
+  loop();
+
+  // ===== Letter =====
+  const env     = document.getElementById('env');
+  const seal    = document.getElementById('seal');
+  const overlay = document.getElementById('letter-overlay');
+  const music   = document.getElementById('bg-music');
+
+  seal.addEventListener('click', () => {
+    // 1. Niêm phong vỡ ra + burst hiệu ứng
+    seal.classList.add('break');
+    document.getElementById('burst').classList.add('active');
+    music.play().catch(() => {});
+
+    // 2. Phong bì tan biến
+    setTimeout(() => {
+      env.classList.add('dissolve');
+    }, 380);
+
+    // 3. Overlay fade out sau khi dissolve xong → bắt đầu countdown
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        startCountdown();
+      }, 1200);
+    }, 950);
+  });
+
+  // ===== Countdown =====
+  function startCountdown() {
+    const cdOverlay = document.getElementById('cd-overlay');
+    const cdText    = document.getElementById('cd-text');
+
+    const steps = [
+      { text: '3',            cls: 'num',  dur: 950  },
+      { text: '2',            cls: 'num',  dur: 950  },
+      { text: '1',            cls: 'num',  dur: 950  },
+      { text: 'HAPPY',    cls: 'word', dur: 1100 },
+      { text: 'BIRTHDAY', cls: 'word', dur: 1100 },
+      { text: 'TO',       cls: 'word', dur: 1100 },
+      { text: 'KÁ',       cls: 'name', dur: 2200 },
+    ];
+
+    cdOverlay.style.opacity = '1';
+    let i = 0;
+
+    function next() {
+      if (i >= steps.length) {
+        cdOverlay.style.transition = 'opacity 1s';
+        cdOverlay.style.opacity = '0';
+        setTimeout(() => {
+          sessionStorage.setItem('musicTime', music.currentTime);
+          window.location.href = 'stars.html';
+        }, 1100);
+        return;
+      }
+      const { text, cls, dur } = steps[i++];
+      cdText.className = cls;
+      cdText.textContent = text;
+      // Restart animation bằng cách remove rồi add lại class
+      cdText.classList.remove('cd-anim');
+      void cdText.offsetWidth;
+      cdText.classList.add('cd-anim');
+      setTimeout(next, dur);
+    }
+
+    next();
+  }
+</script>
+
+</body>
+</html>
