@@ -6,7 +6,7 @@
   <title>Falling Rain ♥</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,16 +20,36 @@
     }
 
     /* ===== RAIN ===== */
-    #rain-wrap {
+    #rain-wrap { position: fixed; inset: 0; background: #000; }
+    #rc { display: block; width: 100%; height: 100%; }
+
+    /* ===== FLASH (KÁ reveal) ===== */
+    #flash {
       position: fixed;
       inset: 0;
-      background: #000;
+      background: rgba(230,200,255,1);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9;
+    }
+    #flash.burst { animation: flash-burst 0.55s ease-out forwards; }
+    @keyframes flash-burst {
+      0%   { opacity: 0.5; }
+      100% { opacity: 0;   }
     }
 
-    #rc {
-      display: block;
-      width: 100%;
-      height: 100%;
+    /* ===== SPARKLES ===== */
+    .sparkle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9;
+      transform: translate(-50%, -50%);
+      animation: sparkle-fly 1.1s ease-out forwards;
+    }
+    @keyframes sparkle-fly {
+      0%   { opacity: 1; transform: translate(-50%,-50%) translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(0.2); }
     }
 
     /* ===== COUNTDOWN ===== */
@@ -75,13 +95,31 @@
       letter-spacing: 16px;
     }
 
+    /* KÁ special — gradient + letter-spacing sweep */
+    #cd-text.ka {
+      background: linear-gradient(135deg, #d880ff 0%, #ffffff 45%, #b040ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 0 24px rgba(200,100,255,0.8));
+    }
+    #cd-text.ka.cd-anim {
+      animation: ka-reveal 2.2s cubic-bezier(0.4,0,0.2,1) forwards !important;
+    }
+    @keyframes ka-reveal {
+      0%   { opacity: 0; letter-spacing: 52px; transform: scale(1.7);  filter: blur(10px) drop-shadow(0 0 8px rgba(200,100,255,0.3)); }
+      22%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter: blur(0)    drop-shadow(0 0 24px rgba(200,100,255,0.8)); }
+      75%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter:            drop-shadow(0 0 24px rgba(200,100,255,0.8)); }
+      100% { opacity: 0; letter-spacing: 16px; transform: scale(0.92); filter: blur(4px)  drop-shadow(0 0 4px rgba(200,100,255,0)); }
+    }
+
     @keyframes cd-flash {
       0%   { opacity: 0; transform: scale(2.2); filter: blur(8px); }
       18%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
       72%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
       100% { opacity: 0; transform: scale(0.7); filter: blur(4px); }
     }
-
     .cd-anim { animation: cd-flash 1s cubic-bezier(0.4,0,0.2,1) forwards; }
 
     /* ===== LETTER OVERLAY ===== */
@@ -108,9 +146,22 @@
       pointer-events: none;
     }
 
-    #letter-overlay.fade-out {
+    #letter-overlay.fade-out { opacity: 0; pointer-events: none; }
+
+    /* Hint text — appears after 3s */
+    #hint-click {
+      position: absolute;
+      bottom: 7%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(13px, 2vw, 17px);
+      color: rgba(200,150,255,0.75);
       opacity: 0;
+      transition: opacity 1.4s ease;
       pointer-events: none;
+      white-space: nowrap;
+      text-shadow: 0 0 14px rgba(160,80,255,0.45);
     }
 
     /* ===== ENVELOPE ===== */
@@ -139,7 +190,6 @@
       50%       { transform: translateY(-14px); }
     }
 
-    /* Hào quang xung quanh phong bì */
     .envelope::before {
       content: '';
       position: absolute;
@@ -155,27 +205,47 @@
       50%       { opacity: 1;   transform: scale(1.08); }
     }
 
-    /* Thân phong bì */
+    /* Thân phong bì — sáng hơn, có texture chéo nhẹ */
     .env-body {
       position: absolute;
       inset: 0;
-      background: #0e0016;
-      border: 1px solid rgba(180,60,255,0.38);
+      background:
+        repeating-linear-gradient(
+          -48deg,
+          transparent,
+          transparent 4px,
+          rgba(255,255,255,0.013) 4px,
+          rgba(255,255,255,0.013) 8px
+        ),
+        linear-gradient(160deg, #2c1450 0%, #1d0a3a 55%, #130620 100%);
+      border: 1px solid rgba(200,110,255,0.55);
       border-radius: 6px;
       z-index: 2;
       animation: border-pulse 3s ease-in-out infinite;
     }
 
     @keyframes border-pulse {
-      0%, 100% { border-color: rgba(160,50,255,0.35); box-shadow: inset 0 0 40px rgba(80,10,160,0.12); }
-      50%       { border-color: rgba(210,110,255,0.7); box-shadow: inset 0 0 60px rgba(130,30,220,0.2);  }
+      0%, 100% { border-color: rgba(175,65,255,0.45);  box-shadow: inset 0 0 40px rgba(80,10,160,0.15); }
+      50%       { border-color: rgba(220,120,255,0.82); box-shadow: inset 0 0 60px rgba(130,30,220,0.28); }
     }
 
-    /* Nếp gấp */
+    /* Shadow từ flap đổ xuống body */
+    .env-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 54%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, transparent 100%);
+      border-radius: 6px 6px 0 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Nếp gấp — đậm hơn */
     .env-fold-left {
       position: absolute;
       inset: 0;
-      background: rgba(80,15,150,0.25);
+      background: linear-gradient(125deg, rgba(55,8,120,0.55) 0%, rgba(35,4,80,0.25) 100%);
       clip-path: polygon(0 0, 0 100%, 50% 52%);
       z-index: 3;
       border-radius: 6px 0 0 6px;
@@ -184,7 +254,7 @@
     .env-fold-right {
       position: absolute;
       inset: 0;
-      background: rgba(80,15,150,0.25);
+      background: linear-gradient(235deg, rgba(55,8,120,0.55) 0%, rgba(35,4,80,0.25) 100%);
       clip-path: polygon(100% 0, 50% 52%, 100% 100%);
       z-index: 3;
       border-radius: 0 6px 6px 0;
@@ -193,52 +263,150 @@
     .env-fold-bottom {
       position: absolute;
       inset: 0;
-      background: rgba(100,25,180,0.22);
+      background: rgba(70,12,140,0.38);
       clip-path: polygon(0 100%, 50% 52%, 100% 100%);
       z-index: 3;
+    }
+
+    /* Đường gấp tại nơi các nếp gặp nhau */
+    .env-crease {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .env-crease::before {
+      content: '';
+      position: absolute;
+      top: 52%; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(170,90,255,0.35) 18%,
+        rgba(210,130,255,0.55) 50%,
+        rgba(170,90,255,0.35) 82%,
+        transparent 100%);
+    }
+    .env-crease::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 48%;
+      width: 1px;
+      background: linear-gradient(180deg,
+        transparent 0%,
+        rgba(155,75,255,0.2) 25%,
+        rgba(155,75,255,0.25) 90%,
+        transparent 100%);
     }
 
     /* Nắp phong bì */
     .env-flap {
       position: absolute;
       inset: 0;
-      background: #160228;
+      background: linear-gradient(175deg, #221040 0%, #180830 100%);
       clip-path: polygon(0 0, 100% 0, 50% 50%);
       border-radius: 6px 6px 0 0;
       z-index: 4;
+      transform-origin: 50% 0%;
+    }
+    .env-flap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(165deg, rgba(190,90,255,0.1) 0%, transparent 55%);
+      clip-path: inherit;
+    }
+    .env-flap.open {
+      animation: flap-open 0.48s cubic-bezier(0.4,0,0.6,1) forwards !important;
+    }
+    @keyframes flap-open {
+      0%   { transform: scaleY(1);               opacity: 1;   }
+      55%  { transform: scaleY(-0.08) translateY(-6px);  opacity: 0.4; }
+      100% { transform: scaleY(-0.35) translateY(-14px); opacity: 0;   }
     }
 
-    /* Dấu niêm phong */
+    /* Tem thư góc trên phải */
+    .stamp {
+      position: absolute;
+      top: 10px; right: 13px;
+      width: 38px; height: 38px;
+      border: 2px dotted rgba(185,105,255,0.52);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      background: rgba(55,8,120,0.22);
+    }
+    .stamp-inner { font-size: 18px; opacity: 0.68; line-height: 1; }
+
+    /* Địa chỉ phong bì */
+    .env-address {
+      position: absolute;
+      bottom: 22%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 5;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .addr-to {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(14px, 2.2vw, 22px);
+      color: rgba(210,162,255,0.52);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .addr-line {
+      height: 1px;
+      width: clamp(90px, 15vw, 155px);
+      background: rgba(180,100,255,0.2);
+      margin: 5px auto;
+      border-radius: 1px;
+    }
+    .addr-line.short { width: clamp(55px, 9vw, 96px); }
+
+    /* Dấu niêm phong — organic shape */
     .seal {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: 82px;
       height: 82px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 36%, #7a1a9a, #3a005e);
-      border: 2px solid rgba(200,120,255,0.45);
+      border-radius: 47% 53% 51% 49% / 52% 48% 54% 46%;
+      background: radial-gradient(circle at 36% 33%, #8e22ac, #3d0060 70%);
+      border: 2px solid rgba(215,145,255,0.52);
       box-shadow:
-        0 4px 16px rgba(0,0,0,0.6),
-        inset 0 2px 6px rgba(220,160,255,0.18),
-        inset 0 -2px 4px rgba(0,0,0,0.4);
+        0 4px 18px rgba(0,0,0,0.65),
+        inset 0 2px 8px rgba(230,170,255,0.22),
+        inset 0 -3px 6px rgba(0,0,0,0.5),
+        0 0 0 3px rgba(110,25,200,0.15);
       z-index: 6;
       cursor: pointer;
       outline: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(230,180,255,0.85);
-      font-size: 28px;
-      font-family: Georgia, serif;
       animation: seal-glow 2.2s ease-in-out infinite;
-      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1),
-                  opacity 0.4s ease;
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
+    }
+
+    .seal-letter {
+      font-family: 'Dancing Script', cursive;
+      font-size: 36px;
+      font-weight: 700;
+      color: rgba(242,205,255,0.82);
+      line-height: 1;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.65), 0 0 10px rgba(200,120,255,0.3);
+      pointer-events: none;
+      user-select: none;
     }
 
     @keyframes seal-glow {
-      0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 2px 6px rgba(220,160,255,0.18), 0 0 14px rgba(160,60,255,0.45); }
-      50%       { box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 2px 6px rgba(220,160,255,0.18), 0 0 32px rgba(210,100,255,0.95); }
+      0%, 100% { box-shadow: 0 4px 18px rgba(0,0,0,0.65), inset 0 2px 8px rgba(230,170,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.5), 0 0 16px rgba(160,60,255,0.52); }
+      50%       { box-shadow: 0 4px 18px rgba(0,0,0,0.65), inset 0 2px 8px rgba(230,170,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.5), 0 0 38px rgba(215,105,255,1);    }
     }
 
     .seal.break {
@@ -247,18 +415,26 @@
       pointer-events: none;
     }
 
-    /* Phong bì tan biến */
-    @keyframes dissolve {
-      0%   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0px)  drop-shadow(0 0 30px rgba(160,60,255,0.4)); }
-      40%  { opacity: 0.9; transform: scale(1.05) translateY(-8px);  filter: blur(2px)  drop-shadow(0 0 70px rgba(200,80,255,0.9)); }
-      100% { opacity: 0; transform: scale(1.15) translateY(-20px); filter: blur(16px) drop-shadow(0 0 10px rgba(140,40,255,0));   }
+    /* Giọt sáp rơi quanh seal */
+    .wax-drop {
+      position: absolute;
+      background: radial-gradient(circle at 34% 30%, #9e2ec0, #4d0082);
+      border-radius: 50%;
+      z-index: 5;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.55);
     }
 
+    /* Dissolve */
+    @keyframes dissolve {
+      0%   { opacity: 1;   transform: scale(1)    translateY(0);    filter: blur(0px)  drop-shadow(0 0 30px rgba(160,60,255,0.4)); }
+      40%  { opacity: 0.9; transform: scale(1.05) translateY(-8px);  filter: blur(2px)  drop-shadow(0 0 70px rgba(200,80,255,0.9)); }
+      100% { opacity: 0;   transform: scale(1.15) translateY(-20px); filter: blur(16px) drop-shadow(0 0 10px rgba(140,40,255,0));   }
+    }
     .envelope.dissolve {
       animation: dissolve 0.95s cubic-bezier(0.4,0,0.2,1) forwards !important;
     }
 
-    /* Hiệu ứng burst khi mở */
+    /* Burst */
     .seal-burst {
       position: absolute;
       top: 50%; left: 50%;
@@ -269,32 +445,25 @@
       transform: translate(-50%, -50%);
       background: radial-gradient(circle, rgba(220,140,255,0.9) 0%, rgba(180,60,255,0.4) 40%, transparent 70%);
     }
-
-    .seal-burst.active {
-      animation: burst 0.7s ease-out forwards;
-    }
-
+    .seal-burst.active { animation: burst 0.7s ease-out forwards; }
     @keyframes burst {
       0%   { width: 0;     height: 0;     opacity: 1; }
       100% { width: 380px; height: 380px; opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .envelope, .env-body, .envelope::before { animation-duration: 0.01s !important; }
     }
   </style>
 </head>
 <body>
 
-<!-- Rain (chạy ngầm phía sau) -->
-<div id="rain-wrap">
-  <canvas id="rc"></canvas>
-</div>
-
+<div id="rain-wrap"><canvas id="rc"></canvas></div>
 <audio id="bg-music" src="data/music_2.mp3" loop></audio>
+<div id="flash"></div>
 
-<!-- Countdown -->
-<div id="cd-overlay">
-  <span id="cd-text"></span>
-</div>
+<div id="cd-overlay"><span id="cd-text"></span></div>
 
-<!-- Letter overlay -->
 <div id="letter-overlay">
   <div class="scene">
     <div class="envelope" id="env">
@@ -302,31 +471,42 @@
       <div class="env-fold-left"></div>
       <div class="env-fold-right"></div>
       <div class="env-fold-bottom"></div>
-      <div class="env-flap"></div>
-      <button class="seal" id="seal">✦</button>
+      <div class="env-crease"></div>
+
+      <div class="stamp"><div class="stamp-inner">🌸</div></div>
+
+      <div class="env-address">
+        <div class="addr-to">Gửi: Ká ♥</div>
+        <div class="addr-line"></div>
+        <div class="addr-line short"></div>
+      </div>
+
+      <div class="env-flap" id="flap"></div>
+
+      <div class="wax-drop" style="width:7px;height:6px;top:calc(50% - 54px);left:calc(50% + 50px)"></div>
+      <div class="wax-drop" style="width:5px;height:5px;top:calc(50% + 46px);left:calc(50% - 52px)"></div>
+      <div class="wax-drop" style="width:4px;height:4px;top:calc(50% - 46px);left:calc(50% - 44px)"></div>
+
+      <button class="seal" id="seal" aria-label="Mở phong bì">
+        <span class="seal-letter">K</span>
+      </button>
       <div class="seal-burst" id="burst"></div>
     </div>
   </div>
+  <div id="hint-click">nhấn vào dấu sáp để mở ↑</div>
 </div>
 
 <script>
-  // ===== Rain =====
+  // ===== Rain — ít ký tự, size lớn hơn =====
   const canvas = document.getElementById('rc');
   const ctx    = canvas.getContext('2d');
 
-  const FS    = 9;
+  const FS    = 12;
   const TRAIL = 38;
-
-  const SETS = {
-    hearts: '♥♡❤♦✦✧❧✿❀◆▲●■',
-  };
-
-  const PALS = {
-    purple: [180, 60, 255],
-  };
+  const CHARS = ['♥', '✦', '❀', '✧'];
+  const RAIN_RGB = [180, 60, 255];
 
   let cols, drops, speeds, lengths;
-  const ck = 'purple', sk = 'hearts';
 
   let resizeTimer;
   function resize() {
@@ -346,13 +526,10 @@
     lengths = Array.from({ length: cols }, () => Math.floor(TRAIL * 0.5 + Math.random() * TRAIL * 0.7));
   }
 
-  function randChar() {
-    const s = SETS[sk];
-    return s[Math.floor(Math.random() * s.length)];
-  }
+  function randChar() { return CHARS[Math.floor(Math.random() * CHARS.length)]; }
 
   function draw() {
-    const [r, g, b] = PALS[ck];
+    const [r, g, b] = RAIN_RGB;
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.font = `${FS}px monospace`;
@@ -361,28 +538,17 @@
     for (let i = 0; i < cols; i++) {
       const head = drops[i];
       const len  = lengths[i];
-
       for (let j = 0; j < len; j++) {
         const row = head - j;
         const y   = row * FS;
         if (y < -FS || y > canvas.height) continue;
-
-        const t     = j / len;
-        const alpha = Math.pow(1 - t, 1.6) * (j === 0 ? 1 : 0.85);
-
-        if (j === 0) {
-          ctx.fillStyle = `rgba(255,220,235,${alpha})`;
-        } else if (j < 3) {
-          ctx.fillStyle = `rgba(${Math.min(255,r+30)},${Math.min(255,g+60)},${Math.min(255,b+40)},${alpha})`;
-        } else {
-          ctx.fillStyle = `rgba(${r},${g},${b},${alpha * 0.9})`;
-        }
-
+        const alpha = Math.pow(1 - j / len, 1.6) * (j === 0 ? 1 : 0.85);
+        if (j === 0)      ctx.fillStyle = `rgba(255,220,235,${alpha})`;
+        else if (j < 3)   ctx.fillStyle = `rgba(${Math.min(255,r+30)},${Math.min(255,g+60)},${Math.min(255,b+40)},${alpha})`;
+        else               ctx.fillStyle = `rgba(${r},${g},${b},${alpha * 0.9})`;
         ctx.fillText(randChar(), i * FS, y);
       }
-
       drops[i] += speeds[i];
-
       if (drops[i] * FS > canvas.height + len * FS) {
         drops[i]   = -(Math.random() * TRAIL | 0);
         lengths[i] = Math.floor(TRAIL * 0.4 + Math.random() * TRAIL * 0.8);
@@ -390,56 +556,87 @@
     }
   }
 
-  function loop() {
-    draw();
-    requestAnimationFrame(loop);
-  }
+  function loop() { draw(); requestAnimationFrame(loop); }
 
   resize();
   window.addEventListener('resize', resize);
   if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
   loop();
 
-  // ===== Letter =====
+  // ===== Envelope =====
   const env     = document.getElementById('env');
+  const flap    = document.getElementById('flap');
   const seal    = document.getElementById('seal');
   const overlay = document.getElementById('letter-overlay');
   const music   = document.getElementById('bg-music');
+  const hintEl  = document.getElementById('hint-click');
+
+  // Hint hiện sau 3s nếu chưa click
+  const hintTimer = setTimeout(() => { hintEl.style.opacity = '1'; }, 3000);
 
   seal.addEventListener('click', () => {
-    // 1. Niêm phong vỡ ra + burst hiệu ứng
+    clearTimeout(hintTimer);
+    hintEl.style.opacity = '0';
+
+    // 1. Seal vỡ + burst
     seal.classList.add('break');
     document.getElementById('burst').classList.add('active');
     music.play().catch(() => {});
 
-    // 2. Phong bì tan biến
-    setTimeout(() => {
-      env.classList.add('dissolve');
-    }, 380);
+    // 2. Flap mở
+    setTimeout(() => { flap.classList.add('open'); }, 220);
 
-    // 3. Overlay fade out sau khi dissolve xong → bắt đầu countdown
+    // 3. Dissolve
+    setTimeout(() => { env.classList.add('dissolve'); }, 640);
+
+    // 4. Fade overlay → countdown
     setTimeout(() => {
       overlay.classList.add('fade-out');
       setTimeout(() => {
         overlay.style.display = 'none';
         startCountdown();
       }, 1200);
-    }, 950);
+    }, 1060);
   });
+
+  // ===== Sparkles =====
+  function spawnSparkles() {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const palette = ['#e0a0ff', '#ffffff', '#c060ff', '#ffe8ff', '#b040ff'];
+    for (let i = 0; i < 24; i++) {
+      const p = document.createElement('div');
+      p.className = 'sparkle';
+      const angle = (i / 24) * Math.PI * 2 + Math.random() * 0.4;
+      const dist  = 70 + Math.random() * 170;
+      p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      p.style.left = cx + 'px';
+      p.style.top  = cy + 'px';
+      const sz = 3 + Math.random() * 5;
+      p.style.width  = sz + 'px';
+      p.style.height = sz + 'px';
+      p.style.background = palette[Math.floor(Math.random() * palette.length)];
+      p.style.animationDelay = (Math.random() * 0.08) + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1300);
+    }
+  }
 
   // ===== Countdown =====
   function startCountdown() {
     const cdOverlay = document.getElementById('cd-overlay');
     const cdText    = document.getElementById('cd-text');
+    const flashEl   = document.getElementById('flash');
 
     const steps = [
-      { text: '3',            cls: 'num',  dur: 950  },
-      { text: '2',            cls: 'num',  dur: 950  },
-      { text: '1',            cls: 'num',  dur: 950  },
-      { text: 'HAPPY',    cls: 'word', dur: 1100 },
-      { text: 'BIRTHDAY', cls: 'word', dur: 1100 },
-      { text: 'TO',       cls: 'word', dur: 1100 },
-      { text: 'KÁ',       cls: 'name', dur: 2200 },
+      { text: '3',        cls: 'num',     dur: 950  },
+      { text: '2',        cls: 'num',     dur: 950  },
+      { text: '1',        cls: 'num',     dur: 950  },
+      { text: 'HAPPY',    cls: 'word',    dur: 1100 },
+      { text: 'BIRTHDAY', cls: 'word',    dur: 1100 },
+      { text: 'TO',       cls: 'word',    dur: 1100 },
+      { text: 'KÁ',       cls: 'name ka', dur: 2200 },
     ];
 
     cdOverlay.style.opacity = '1';
@@ -458,16 +655,22 @@
       const { text, cls, dur } = steps[i++];
       cdText.className = cls;
       cdText.textContent = text;
-      // Restart animation bằng cách remove rồi add lại class
       cdText.classList.remove('cd-anim');
       void cdText.offsetWidth;
       cdText.classList.add('cd-anim');
+
+      if (cls.includes('ka')) {
+        flashEl.classList.remove('burst');
+        void flashEl.offsetWidth;
+        flashEl.classList.add('burst');
+        setTimeout(spawnSparkles, 50);
+      }
+
       setTimeout(next, dur);
     }
 
     next();
   }
 </script>
-
 </body>
 </html>
