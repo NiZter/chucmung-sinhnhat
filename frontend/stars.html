@@ -269,13 +269,13 @@
 <canvas id="c"></canvas>
 
 <div id="sticker-wrap">
-  <img id="sticker" src="../data/sticker.gif" alt="" />
+  <img id="sticker" src="/data/sticker.gif" alt="" />
 </div>
 
 <div id="content-wrap">
   <div id="avatar-frame">
     <div class="avatar-inner">
-      <img src="../data/avatar.jpg" alt="avatar" />
+      <img src="/data/avatar.jpg" alt="avatar" />
     </div>
   </div>
   <div id="letter-frame">
@@ -414,7 +414,7 @@
   draw();
 
   // Tiếp tục nhạc từ vị trí đã lưu
-  const music = new Audio('../data/music_2.mp3');
+  const music = new Audio('/data/music_2.mp3');
   music.loop = true;
   const savedTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
   music.currentTime = savedTime;
