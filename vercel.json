@@ -1,8 +1,4 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/", "destination": "/frontend/index.html" },
-    { "source": "/stars", "destination": "/frontend/stars.html" },
-    { "source": "/data/(.*)", "destination": "/data/$1" }
-  ]
+  "outputDirectory": "public"
 }
