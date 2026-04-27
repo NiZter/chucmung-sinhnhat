@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make a Wish ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100vh; height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      cursor: pointer;
+    }
+
+    body { animation: fadein 1s ease forwards; }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+    canvas { position: fixed; inset: 0; display: block; }
+
+    /* ===== SCENE ===== */
+    #scene {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(16px, 3vh, 28px);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    #hint {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(22px, 4.5vw, 36px);
+      color: rgba(220, 180, 255, 0.92);
+      text-shadow: 0 0 24px rgba(180, 60, 255, 0.7);
+      animation: pulse-text 2s ease-in-out infinite;
+      letter-spacing: 1px;
+      transition: opacity 0.8s ease;
+    }
+
+    @keyframes pulse-text {
+      0%, 100% { opacity: 0.75; }
+      50%       { opacity: 1;    }
+    }
+
+    /* ===== CAKE ===== */
+    .cake {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Candles row */
+    .candles-row {
+      display: flex;
+      gap: clamp(14px, 3.5vw, 26px);
+      margin-bottom: -2px;
+      position: relative;
+      z-index: 3;
+      align-items: flex-end;
+    }
+
+    .candle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Flame wrapper */
+    .flame-wrap {
+      position: relative;
+      width: clamp(12px, 2vw, 16px);
+      height: clamp(22px, 3.5vw, 30px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .flame {
+      width: clamp(10px, 1.8vw, 14px);
+      height: clamp(18px, 3vw, 24px);
+      background: radial-gradient(ellipse at 50% 80%,
+        #fff 0%, #ffe066 22%, #ff9500 52%, rgba(255,60,0,0.25) 82%, transparent 100%);
+      border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+      animation: flicker 0.22s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 7px rgba(255,180,0,0.95));
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      flex-shrink: 0;
+    }
+
+    @keyframes flicker {
+      0%   { transform: scaleX(1)    scaleY(1)    rotate(-2deg); }
+      100% { transform: scaleX(0.82) scaleY(0.88) rotate(2.5deg); }
+    }
+
+    .flame.out {
+      opacity: 0;
+      transform: scaleY(0) !important;
+    }
+
+    /* Smoke */
+    .smoke {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 28px;
+      opacity: 0;
+      background: linear-gradient(to top, rgba(200,180,220,0.6), transparent);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .smoke.puff {
+      animation: smoke-rise 1.8s ease-out forwards;
+    }
+
+    @keyframes smoke-rise {
+      0%   { opacity: 0.65; transform: translateX(-50%) translateY(0)    scaleX(1);   }
+      40%  { opacity: 0.35; transform: translateX(-54%) translateY(-18px) scaleX(1.8); }
+      100% { opacity: 0;    transform: translateX(-48%) translateY(-42px) scaleX(3);   }
+    }
+
+    /* Candle body */
+    .candle-body {
+      width: clamp(12px, 2vw, 16px);
+      height: clamp(30px, 5vw, 46px);
+      background: linear-gradient(170deg, #e8d0ff 0%, #b87ee0 45%, #7030b0 100%);
+      border-radius: 3px 3px 1px 1px;
+      box-shadow: inset -2px 0 5px rgba(0,0,0,0.25), 0 0 8px rgba(160,80,255,0.3);
+      position: relative;
+    }
+
+    /* Wick */
+    .candle-body::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 6px;
+      background: #1a0028;
+      border-radius: 1px;
+    }
+
+    /* Candle stripe decoration */
+    .candle-body::after {
+      content: '';
+      position: absolute;
+      top: 30%; left: 0; right: 0;
+      height: 2px;
+      background: rgba(230,180,255,0.35);
+    }
+
+    /* Cake layers */
+    .layer {
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .layer::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(220,160,255,0.3), transparent);
+    }
+
+    .layer-top {
+      width: clamp(130px, 22vw, 200px);
+      height: clamp(34px, 5.5vw, 52px);
+      background: linear-gradient(180deg, #3d0068 0%, #220040 100%);
+      border: 1px solid rgba(190,100,255,0.5);
+      box-shadow: 0 0 20px rgba(150,50,255,0.3), inset 0 1px 0 rgba(230,170,255,0.15);
+    }
+
+    .layer-mid {
+      width: clamp(185px, 31vw, 285px);
+      height: clamp(42px, 7vw, 64px);
+      background: linear-gradient(180deg, #300054 0%, #1c0038 100%);
+      border: 1px solid rgba(165,75,230,0.4);
+      box-shadow: 0 0 16px rgba(120,35,210,0.25);
+      margin-top: -1px;
+    }
+
+    .layer-bot {
+      width: clamp(240px, 40vw, 375px);
+      height: clamp(50px, 8.5vw, 78px);
+      background: linear-gradient(180deg, #280044 0%, #140022 100%);
+      border: 1px solid rgba(145,55,200,0.35);
+      box-shadow: 0 0 24px rgba(110,25,200,0.3);
+      margin-top: -1px;
+    }
+
+    /* "22" text on middle layer */
+    .layer-mid::before {
+      content: '22';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(18px, 3vw, 26px);
+      color: rgba(210,155,255,0.4);
+      letter-spacing: 3px;
+    }
+
+    /* Dots on top & bottom layers */
+    .layer-top::before, .layer-bot::before {
+      content: '· · · · ·';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(200,140,255,0.3);
+      font-size: 11px;
+      letter-spacing: 7px;
+      white-space: nowrap;
+    }
+
+    /* Frosting drips on top layer */
+    .drips {
+      display: flex;
+      gap: 0;
+      width: clamp(130px, 22vw, 200px);
+      justify-content: space-around;
+      margin-bottom: -1px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .drip {
+      width: clamp(10px, 1.6vw, 14px);
+      height: clamp(8px, 1.4vw, 12px);
+      background: rgba(200,140,255,0.2);
+      border-radius: 0 0 50% 50%;
+      border: 1px solid rgba(200,140,255,0.35);
+      border-top: none;
+    }
+
+    .plate {
+      width: clamp(265px, 44vw, 415px);
+      height: clamp(10px, 1.6vw, 14px);
+      background: linear-gradient(180deg, rgba(160,80,255,0.18), transparent);
+      border-radius: 50%;
+      border: 1px solid rgba(160,80,255,0.18);
+      margin-top: 2px;
+    }
+
+    /* ===== WISH MESSAGE ===== */
+    #wish-msg {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    #wish-msg.show {
+      animation: wish-fade 2.8s ease forwards;
+    }
+
+    @keyframes wish-fade {
+      0%   { opacity: 0; }
+      25%  { opacity: 1; }
+      75%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    #wish-msg span {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(26px, 5.5vw, 50px);
+      color: #fff8e0;
+      text-shadow:
+        0 0 20px rgba(255,200,60,0.9),
+        0 0 50px rgba(255,150,0,0.5);
+      text-align: center;
+      padding: 0 20px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="scene">
+  <div id="hint">Thổi nến đi! 🎂</div>
+  <div class="cake">
+    <div class="candles-row" id="candles-row"></div>
+    <div class="drips" id="drips"></div>
+    <div class="layer layer-top"></div>
+    <div class="layer layer-mid"></div>
+    <div class="layer layer-bot"></div>
+    <div class="plate"></div>
+  </div>
+</div>
+
+<div id="wish-msg"><span>✨ Ước mơ thành hiện thực nhé, Ká!</span></div>
+
+<script>
+  // ── Stars background ─────────────────────────────────────
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  let gradient;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gradient = ctx.createRadialGradient(
+      canvas.width*.5, canvas.height*.3, 0,
+      canvas.width*.5, canvas.height*.5, canvas.height
+    );
+    gradient.addColorStop(0,   '#0d0a2e');
+    gradient.addColorStop(0.4, '#070518');
+    gradient.addColorStop(1,   '#000008');
+  }
+
+  let stars = [];
+  function initStars() {
+    const palette = [[255,255,255],[220,210,255],[200,220,255],[255,240,210]];
+    stars = Array.from({ length: 260 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.2,
+      alpha: Math.random(),
+      speed: Math.random() * 0.006 + 0.002,
+      dir: Math.random() > 0.5 ? 1 : -1,
+      color: palette[Math.floor(Math.random() * palette.length)],
+    }));
+  }
+
+  let shooters = [];
+  setInterval(() => {
+    shooters.push({
+      x: Math.random() * canvas.width * 0.8, y: Math.random() * canvas.height * 0.4,
+      len: Math.random() * 120 + 60, spd: Math.random() * 10 + 8, alpha: 1, tail: 0,
+    });
+  }, 3500);
+
+  function drawFrame() {
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      s.alpha += s.speed * s.dir;
+      if (s.alpha >= 1) { s.alpha = 1; s.dir = -1; }
+      if (s.alpha <= 0.1) { s.alpha = 0.1; s.dir = 1; }
+      const [r,g,b] = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha})`;
+      ctx.fill();
+    }
+    shooters = shooters.filter(sh => sh.alpha > 0);
+    for (const sh of shooters) {
+      sh.tail += sh.spd; sh.alpha -= 0.018;
+      const g2 = ctx.createLinearGradient(sh.x+sh.tail-sh.len, sh.y+sh.tail-sh.len, sh.x+sh.tail, sh.y+sh.tail);
+      g2.addColorStop(0, 'rgba(255,255,255,0)');
+      g2.addColorStop(1, `rgba(255,255,255,${sh.alpha})`);
+      ctx.beginPath();
+      ctx.moveTo(sh.x+sh.tail-sh.len, sh.y+sh.tail-sh.len);
+      ctx.lineTo(sh.x+sh.tail, sh.y+sh.tail);
+      ctx.strokeStyle = g2; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    requestAnimationFrame(drawFrame);
+  }
+
+  resize(); initStars();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  drawFrame();
+
+  // ── Music ────────────────────────────────────────────────
+  const music = new Audio('data/music_2.mp3');
+  music.loop = true;
+  music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
+  music.play().catch(() => {});
+
+  // ── Build cake ───────────────────────────────────────────
+  const N_CANDLES = 5;
+  const row   = document.getElementById('candles-row');
+  const drips = document.getElementById('drips');
+
+  // Frosting drips
+  for (let i = 0; i < 7; i++) {
+    const d = document.createElement('div');
+    d.className = 'drip';
+    drips.appendChild(d);
+  }
+
+  // Candles
+  const flames = [], smokes = [];
+  for (let i = 0; i < N_CANDLES; i++) {
+    const c = document.createElement('div');
+    c.className = 'candle';
+    c.innerHTML = `
+      <div class="flame-wrap">
+        <div class="flame" id="fl-${i}"></div>
+        <div class="smoke" id="sm-${i}"></div>
+      </div>
+      <div class="candle-body"></div>`;
+    row.appendChild(c);
+    flames.push(document.getElementById(`fl-${i}`));
+    smokes.push(document.getElementById(`sm-${i}`));
+  }
+
+  // ── Blow logic ───────────────────────────────────────────
+  let blown = false;
+  const hintEl   = document.getElementById('hint');
+  const wishMsg  = document.getElementById('wish-msg');
+
+  document.body.addEventListener('click', () => {
+    if (blown) return;
+    blown = true;
+
+    // Blow candles one by one
+    for (let i = 0; i < N_CANDLES; i++) {
+      setTimeout(() => {
+        flames[i].classList.add('out');
+        smokes[i].classList.add('puff');
+      }, i * 380);
+    }
+
+    // Hint fades out
+    setTimeout(() => { hintEl.style.opacity = '0'; }, 300);
+
+    // Wish message + navigate
+    setTimeout(() => {
+      wishMsg.classList.add('show');
+      setTimeout(() => {
+        sessionStorage.setItem('musicTime', music.currentTime);
+        window.location.href = 'stars.html';
+      }, 2600);
+    }, N_CANDLES * 380 + 300);
+  });
+</script>
+</body>
+</html>

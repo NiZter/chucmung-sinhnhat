@@ -264,6 +264,31 @@
     #letter-frame::-webkit-scrollbar-track { background: transparent; }
     #letter-frame::-webkit-scrollbar-thumb { background: rgba(180,130,210,0.35); border-radius: 4px; }
 
+    /* ===== WISH BUBBLES ===== */
+    .wish-bubble {
+      position: fixed;
+      bottom: -70px;
+      background: rgba(110, 30, 190, 0.18);
+      border: 1px solid rgba(200, 140, 255, 0.38);
+      border-radius: 26px;
+      padding: 8px 20px;
+      color: rgba(235, 210, 255, 0.92);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(14px, 2.2vw, 18px);
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 12;
+      animation: bubble-float var(--dur, 10s) ease-in forwards;
+    }
+
+    @keyframes bubble-float {
+      0%   { bottom: -70px; opacity: 0; }
+      12%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { bottom: 108vh; opacity: 0; }
+    }
+
     /* ===== PORTRAIT ===== */
     @media (orientation: portrait) {
       #content-wrap {
@@ -442,6 +467,35 @@
   const savedTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
   music.currentTime = savedTime;
   music.play().catch(() => {});
+
+  // ── Wish bubbles ─────────────────────────────────────────
+  const wishes = [
+    'Vui vẻ, bình an, và hạnh phúc 🌸',
+    'Mọi ước mơ đều thành hiện thực ✨',
+    'Luôn khỏe mạnh và tỏa sáng 💜',
+    'Một năm thật trọn vẹn nhé 🌟',
+    'Tuổi mới nhiều niềm vui 🎀',
+    'Ká luôn xinh đẹp mỗi ngày 🌷',
+  ];
+  let wishIdx = 0;
+
+  function spawnBubble() {
+    const el = document.createElement('div');
+    el.className = 'wish-bubble';
+    el.textContent = wishes[wishIdx % wishes.length];
+    wishIdx++;
+    const dur = 9 + Math.random() * 4;
+    el.style.setProperty('--dur', dur + 's');
+    el.style.left = (8 + Math.random() * 68) + '%';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), dur * 1000);
+  }
+
+  // Bắt đầu sau khi content hiện ra (~6s) rồi mỗi 4s spawn 1 bong bóng
+  setTimeout(() => {
+    spawnBubble();
+    setInterval(spawnBubble, 4000);
+  }, 6200);
 </script>
 </body>
 </html>
