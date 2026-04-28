@@ -224,7 +224,7 @@
       font-family: 'Dancing Script', cursive;
       font-size: clamp(14px, 2.2vw, 18px);
       backdrop-filter: blur(6px);
-      white-space: nowrap; z-index: 5;
+      white-space: nowrap; z-index: 12;
       cursor: pointer;
       animation: bubble-float var(--dur, 10s) ease-in forwards;
     }
@@ -577,6 +577,7 @@ function spawnBubble() {
     el.style.setProperty('--peak-opacity', '0.22');
     el.style.pointerEvents = 'none';
     el.style.fontSize = '13px';
+    el.style.zIndex = '4'; // behind letter on mobile
     if (Math.random() < 0.5) {
       el.style.left  = (2 + Math.random() * 20) + '%';
     } else {
