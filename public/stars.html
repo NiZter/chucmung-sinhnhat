@@ -131,7 +131,7 @@
       padding: clamp(26px, 3.5vw, 44px) clamp(28px, 4vw, 50px) clamp(22px, 3vw, 38px);
       color: #2a2a2a; font-family: 'Lora', serif;
       font-size: clamp(12.5px, 1.4vw, 14.5px); line-height: 2;
-      max-width: clamp(280px, 46vw, 500px); max-height: 74vh; overflow-y: auto;
+      width: clamp(280px, 46vw, 500px); height: 74vh; overflow-y: auto;
       transform: rotate(0.6deg); transition: transform 0.4s ease;
       box-shadow:
         0 2px 0 rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.22),
@@ -252,7 +252,7 @@
         flex-shrink: 0;
       }
       #letter-frame {
-        max-width: 100%; max-height: none;
+        width: 100%; height: 62vh;
         font-size: clamp(12px, 3.8vw, 15px);
         padding: clamp(18px, 4vw, 26px) clamp(14px, 4vw, 24px);
       }
@@ -555,12 +555,44 @@ avatarFrame.addEventListener('click', (e) => {
 
 // ─── Wish bubbles ─────────────────────────────────────────────────────────────
 const wishes = [
+  // Nhẹ nhàng, ấm áp
   'Vui vẻ, bình an, và hạnh phúc 🌸',
   'Mọi ước mơ đều thành hiện thực ✨',
   'Luôn khỏe mạnh và tỏa sáng 💜',
   'Một năm thật trọn vẹn nhé 🌟',
   'Tuổi mới nhiều niềm vui 🎀',
   'Cá luôn xinh đẹp mỗi ngày 🌷',
+
+  // Ngọt ngào, dễ thương
+  'Được yêu thương đúng cách mình xứng đáng 🫧',
+  'Mỗi sáng thức dậy đều thấy cuộc đời đẹp 🌤️',
+  'Ngọt ngào như cái tên, dịu dàng như ánh mắt 🍮',
+  'Luôn có người giữ tay khi đường dài mỏi 🤍',
+  'Được chiều chuộng đúng mức cần thiết 🎁',
+  'Nụ cười không bao giờ tắt nhé 😊',
+
+  // Tích cực, truyền cảm hứng
+  'Mạnh mẽ theo cách riêng của mình 🦋',
+  'Dũng cảm bắt đầu những điều còn dang dở 🌱',
+  'Năm nay là năm của mình — cứ tự tin mà bước 👣',
+  'Không hoàn hảo nhưng luôn đủ tốt 💫',
+  'Mọi nỗ lực đều được đền đáp xứng đáng 🏆',
+  'Giữ vững bản thân dù gió có đổi chiều 🍃',
+
+  // Hài hước, vui tươi
+  'Xinh đẹp thêm một tuổi, khôn ngoan thêm vô số 🧠✨',
+  'Ăn ngon, ngủ đủ, không lo nghĩ nhiều 🍜😴',
+  'Đừng già — cứ vintage thôi 🍷',
+  'Sinh nhật vui, ví tiền cũng vui theo 💸',
+  'Càng lớn càng cute, khoa học đã chứng minh 🔬🎀',
+
+  // Sâu sắc, chạm cảm xúc
+  'Bình yên là điều xa xỉ — chúc cá luôn có được 🕊️',
+  'Được là chính mình mỗi ngày — đó là điều quý nhất 🪞',
+  'Những điều tốt đẹp nhất vẫn còn ở phía trước 🌅',
+  'Trái tim luôn ấm dù thế giới có lạnh 🧡',
+  'Đủ can đảm để buông, đủ kiên nhẫn để chờ 🌊',
+  'Hạnh phúc không ồn ào — nhưng cá luôn xứng đáng có 🤫💛',
 ];
 let wishIdx = 0, bubbleInterval;
 
