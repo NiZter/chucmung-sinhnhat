@@ -35,27 +35,39 @@
 
     #hint {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(22px, 4.5vw, 36px);
+      font-size: clamp(20px, 4.5vw, 34px);
       color: rgba(220, 180, 255, 0.92);
       text-shadow: 0 0 24px rgba(180, 60, 255, 0.7);
       animation: pulse-text 2s ease-in-out infinite;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       transition: opacity 0.8s ease;
     }
-
     @keyframes pulse-text {
-      0%, 100% { opacity: 0.75; }
+      0%, 100% { opacity: 0.72; }
       50%       { opacity: 1;    }
     }
 
-    /* ===== CAKE ===== */
-    .cake {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* ===== HALO GLOW (warm candlelight under cake) ===== */
+    #cake-glow {
+      position: fixed;
+      bottom: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(280px, 50vw, 480px);
+      height: 70px;
+      background: radial-gradient(ellipse at center,
+        rgba(255,180,50,0.22) 0%,
+        rgba(255,120,20,0.1)  45%,
+        transparent 72%);
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 1.6s ease;
     }
+    #cake-glow.out { opacity: 0; }
 
-    /* Candles row */
+    /* ===== CAKE ===== */
+    .cake { display: flex; flex-direction: column; align-items: center; }
+
     .candles-row {
       display: flex;
       gap: clamp(14px, 3.5vw, 26px);
@@ -72,7 +84,6 @@
       position: relative;
     }
 
-    /* Flame wrapper */
     .flame-wrap {
       position: relative;
       width: clamp(12px, 2vw, 16px);
@@ -82,6 +93,7 @@
       justify-content: center;
     }
 
+    /* Flame — duration/delay set per-candle via JS for random flicker */
     .flame {
       width: clamp(10px, 1.8vw, 14px);
       height: clamp(18px, 3vw, 24px);
@@ -90,42 +102,48 @@
       border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
       animation: flicker 0.22s ease-in-out infinite alternate;
       filter: drop-shadow(0 0 7px rgba(255,180,0,0.95));
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition: opacity 0.35s ease, transform 0.35s ease;
       flex-shrink: 0;
     }
-
     @keyframes flicker {
       0%   { transform: scaleX(1)    scaleY(1)    rotate(-2deg); }
       100% { transform: scaleX(0.82) scaleY(0.88) rotate(2.5deg); }
     }
+    .flame.out { opacity: 0; transform: scaleY(0) !important; }
 
-    .flame.out {
-      opacity: 0;
-      transform: scaleY(0) !important;
-    }
-
-    /* Smoke */
+    /* Smoke — base puff */
     .smoke {
       position: absolute;
-      top: -2px;
-      left: 50%;
+      top: -2px; left: 50%;
       transform: translateX(-50%);
-      width: 5px;
-      height: 28px;
+      width: 5px; height: 28px;
       opacity: 0;
       background: linear-gradient(to top, rgba(200,180,220,0.6), transparent);
       border-radius: 50%;
       pointer-events: none;
     }
-
-    .smoke.puff {
-      animation: smoke-rise 1.8s ease-out forwards;
+    .smoke.puff { animation: smoke-up 1.9s ease-out forwards; }
+    @keyframes smoke-up {
+      0%   { opacity: 0.65; transform: translateX(-50%) translateY(0)    scaleX(1);   }
+      40%  { opacity: 0.35; transform: translateX(-55%) translateY(-20px) scaleX(1.9); }
+      100% { opacity: 0;    transform: translateX(-48%) translateY(-46px) scaleX(3.2); }
     }
 
-    @keyframes smoke-rise {
-      0%   { opacity: 0.65; transform: translateX(-50%) translateY(0)    scaleX(1);   }
-      40%  { opacity: 0.35; transform: translateX(-54%) translateY(-18px) scaleX(1.8); }
-      100% { opacity: 0;    transform: translateX(-48%) translateY(-42px) scaleX(3);   }
+    /* Extra drift puffs — drift direction via --drift CSS var */
+    .smoke-extra {
+      position: absolute;
+      top: -2px; left: 50%;
+      width: 4px; height: 22px;
+      opacity: 0;
+      background: linear-gradient(to top, rgba(200,180,220,0.5), transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: smoke-drift 2.1s ease-out forwards;
+    }
+    @keyframes smoke-drift {
+      0%   { opacity: 0.55; transform: translateX(-50%) translateY(0) scaleX(1); }
+      45%  { opacity: 0.28; transform: translateX(calc(-50% + var(--drift, 14px))) translateY(-26px) scaleX(2); }
+      100% { opacity: 0;    transform: translateX(calc(-50% + calc(var(--drift, 14px) * 1.6))) translateY(-54px) scaleX(3.5); }
     }
 
     /* Candle body */
@@ -137,20 +155,15 @@
       box-shadow: inset -2px 0 5px rgba(0,0,0,0.25), 0 0 8px rgba(160,80,255,0.3);
       position: relative;
     }
-
-    /* Wick */
     .candle-body::before {
       content: '';
       position: absolute;
       top: -5px; left: 50%;
       transform: translateX(-50%);
-      width: 2px;
-      height: 6px;
+      width: 2px; height: 6px;
       background: #1a0028;
       border-radius: 1px;
     }
-
-    /* Candle stripe decoration */
     .candle-body::after {
       content: '';
       position: absolute;
@@ -159,13 +172,19 @@
       background: rgba(230,180,255,0.35);
     }
 
-    /* Cake layers */
-    .layer {
-      border-radius: 6px;
-      position: relative;
-      overflow: hidden;
+    /* Camera shake on blow */
+    .cake.shake { animation: cam-shake 0.28s ease; }
+    @keyframes cam-shake {
+      0%   { transform: translateX(0);   }
+      20%  { transform: translateX(-3px); }
+      40%  { transform: translateX(3px);  }
+      60%  { transform: translateX(-2px); }
+      80%  { transform: translateX(2px);  }
+      100% { transform: translateX(0);   }
     }
 
+    /* Cake layers */
+    .layer { border-radius: 6px; position: relative; overflow: hidden; }
     .layer::after {
       content: '';
       position: absolute;
@@ -181,6 +200,16 @@
       border: 1px solid rgba(190,100,255,0.5);
       box-shadow: 0 0 20px rgba(150,50,255,0.3), inset 0 1px 0 rgba(230,170,255,0.15);
     }
+    .layer-top::before {
+      content: '· · · · ·';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      color: rgba(200,140,255,0.3);
+      font-size: 11px;
+      letter-spacing: 7px;
+      white-space: nowrap;
+    }
 
     .layer-mid {
       width: clamp(185px, 31vw, 285px);
@@ -189,6 +218,22 @@
       border: 1px solid rgba(165,75,230,0.4);
       box-shadow: 0 0 16px rgba(120,35,210,0.25);
       margin-top: -1px;
+    }
+    /* "22" pulsing with candle glow rhythm */
+    .layer-mid::before {
+      content: '22';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(18px, 3vw, 26px);
+      color: rgba(215,160,255,0.42);
+      letter-spacing: 3px;
+      animation: num-pulse 2.1s ease-in-out infinite;
+    }
+    @keyframes num-pulse {
+      0%, 100% { color: rgba(210,150,255,0.38); text-shadow: none; }
+      50%       { color: rgba(225,175,255,0.68); text-shadow: 0 0 14px rgba(200,140,255,0.55); }
     }
 
     .layer-bot {
@@ -199,42 +244,26 @@
       box-shadow: 0 0 24px rgba(110,25,200,0.3);
       margin-top: -1px;
     }
-
-    /* "22" text on middle layer */
-    .layer-mid::before {
-      content: '22';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'Dancing Script', cursive;
-      font-size: clamp(18px, 3vw, 26px);
-      color: rgba(210,155,255,0.4);
-      letter-spacing: 3px;
-    }
-
-    /* Dots on top & bottom layers */
-    .layer-top::before, .layer-bot::before {
+    .layer-bot::before {
       content: '· · · · ·';
       position: absolute;
       top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%,-50%);
       color: rgba(200,140,255,0.3);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
     }
 
-    /* Frosting drips on top layer */
+    /* Frosting drips */
     .drips {
       display: flex;
-      gap: 0;
       width: clamp(130px, 22vw, 200px);
       justify-content: space-around;
       margin-bottom: -1px;
       position: relative;
       z-index: 2;
     }
-
     .drip {
       width: clamp(10px, 1.6vw, 14px);
       height: clamp(8px, 1.4vw, 12px);
@@ -263,38 +292,74 @@
       z-index: 10;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.5s;
     }
-
-    #wish-msg.show {
-      animation: wish-fade 2.8s ease forwards;
-    }
-
+    #wish-msg.show { animation: wish-fade 2.8s ease forwards; }
     @keyframes wish-fade {
       0%   { opacity: 0; }
-      25%  { opacity: 1; }
+      22%  { opacity: 1; }
       75%  { opacity: 1; }
       100% { opacity: 0; }
     }
-
     #wish-msg span {
       font-family: 'Dancing Script', cursive;
       font-size: clamp(26px, 5.5vw, 50px);
       color: #fff8e0;
-      text-shadow:
-        0 0 20px rgba(255,200,60,0.9),
-        0 0 50px rgba(255,150,0,0.5);
+      text-shadow: 0 0 20px rgba(255,200,60,0.9), 0 0 50px rgba(255,150,0,0.5);
       text-align: center;
       padding: 0 20px;
+    }
+
+    /* ===== CONFETTI ===== */
+    .confetti-piece {
+      position: fixed;
+      width: var(--w, 6px);
+      height: var(--h, 8px);
+      background: var(--color, #ff69b4);
+      top: -12px;
+      left: var(--x, 50%);
+      z-index: 14;
+      pointer-events: none;
+      opacity: 1;
+      animation: confetti-fall var(--dur, 3s) ease-in var(--delay, 0s) forwards;
+    }
+    @keyframes confetti-fall {
+      0%   { top: -12px; transform: rotate(0deg) translateX(0); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { top: 110vh;  transform: rotate(var(--spin, 360deg)) translateX(var(--sway, 30px)); opacity: 0; }
+    }
+
+    /* ===== MUTE BUTTON ===== */
+    #mute-btn {
+      position: fixed;
+      top: 14px; right: 14px;
+      z-index: 20;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(70,8,140,0.38);
+      border: 1px solid rgba(180,100,255,0.42);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+      pointer-events: auto;
+    }
+    #mute-btn:hover { background: rgba(100,15,180,0.55); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flame, #hint, .layer-mid::before { animation: none !important; }
     }
   </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="cake-glow"></div>
 
 <div id="scene">
-  <div id="hint">Thổi nến đi! 🎂</div>
-  <div class="cake">
+  <div id="hint">Ước một điều thật to nha 🌙</div>
+  <div class="cake" id="cake">
     <div class="candles-row" id="candles-row"></div>
     <div class="drips" id="drips"></div>
     <div class="layer layer-top"></div>
@@ -305,12 +370,16 @@
 </div>
 
 <div id="wish-msg"><span>✨ Hép pi bớt đâyyyy!</span></div>
+<button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
 
 <script>
   // ── Stars background ─────────────────────────────────────
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d');
   let gradient;
+
+  const isMobile = window.innerWidth < 768;
+  const STAR_COUNT = isMobile ? 120 : 260;
 
   function resize() {
     canvas.width  = window.innerWidth;
@@ -327,7 +396,7 @@
   let stars = [];
   function initStars() {
     const palette = [[255,255,255],[220,210,255],[200,220,255],[255,240,210]];
-    stars = Array.from({ length: 260 }, () => ({
+    stars = Array.from({ length: STAR_COUNT }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       r: Math.random() * 1.5 + 0.2,
@@ -341,8 +410,8 @@
   let shooters = [];
   setInterval(() => {
     shooters.push({
-      x: Math.random() * canvas.width * 0.8, y: Math.random() * canvas.height * 0.4,
-      len: Math.random() * 120 + 60, spd: Math.random() * 10 + 8, alpha: 1, tail: 0,
+      x: Math.random()*canvas.width*0.8, y: Math.random()*canvas.height*0.4,
+      len: Math.random()*120+60, spd: Math.random()*10+8, alpha: 1, tail: 0,
     });
   }, 3500);
 
@@ -351,11 +420,11 @@
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     for (const s of stars) {
       s.alpha += s.speed * s.dir;
-      if (s.alpha >= 1) { s.alpha = 1; s.dir = -1; }
-      if (s.alpha <= 0.1) { s.alpha = 0.1; s.dir = 1; }
+      if (s.alpha >= 1)   { s.alpha = 1;   s.dir = -1; }
+      if (s.alpha <= 0.1) { s.alpha = 0.1; s.dir =  1; }
       const [r,g,b] = s.color;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
       ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha})`;
       ctx.fill();
     }
@@ -383,20 +452,32 @@
   music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
   music.play().catch(() => {});
 
+  // Mute toggle
+  const muteBtn = document.getElementById('mute-btn');
+  let muted = false;
+  muteBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    muted = !muted;
+    music.muted = muted;
+    muteBtn.textContent = muted ? '🔇' : '🔊';
+  });
+
   // ── Build cake ───────────────────────────────────────────
   const N_CANDLES = 5;
   const row   = document.getElementById('candles-row');
   const drips = document.getElementById('drips');
 
-  // Frosting drips
   for (let i = 0; i < 7; i++) {
     const d = document.createElement('div');
     d.className = 'drip';
     drips.appendChild(d);
   }
 
-  // Candles
-  const flames = [], smokes = [];
+  // Randomised flicker timing per candle
+  const flickerDurations = [0.19, 0.24, 0.21, 0.27, 0.18];
+  const flickerDelays    = [0,    0.07, 0.14, 0.04, 0.11 ];
+
+  const flames = [], smokes = [], flameWraps = [];
   for (let i = 0; i < N_CANDLES; i++) {
     const c = document.createElement('div');
     c.className = 'candle';
@@ -407,38 +488,98 @@
       </div>
       <div class="candle-body"></div>`;
     row.appendChild(c);
-    flames.push(document.getElementById(`fl-${i}`));
+
+    const fl = document.getElementById(`fl-${i}`);
+    fl.style.animationDuration = flickerDurations[i] + 's';
+    fl.style.animationDelay    = flickerDelays[i]    + 's';
+
+    flames.push(fl);
     smokes.push(document.getElementById(`sm-${i}`));
+    flameWraps.push(c.querySelector('.flame-wrap'));
+  }
+
+  // ── Confetti ─────────────────────────────────────────────
+  function spawnConfetti() {
+    const colors = ['#ff6eb4','#ffd700','#b06fff','#5bc8ff','#7dff7d','#ff7d5b','#ffb347'];
+    for (let i = 0; i < 50; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const w   = 4 + Math.random() * 6;
+      const h   = 5 + Math.random() * 9;
+      const dur = 2.4 + Math.random() * 2.2;
+      const delay = Math.random() * 0.9;
+      p.style.cssText = `
+        --color:${colors[Math.floor(Math.random()*colors.length)]};
+        --w:${w}px; --h:${h}px;
+        --x:${Math.random()*100}%;
+        --dur:${dur}s; --delay:${delay}s;
+        --sway:${-60+Math.random()*120}px;
+        --spin:${180+Math.random()*360}deg;
+        border-radius:${Math.random()>.5?'2px':'50%'};
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), (dur + delay + 0.5) * 1000);
+    }
   }
 
   // ── Blow logic ───────────────────────────────────────────
   let blown = false;
-  const hintEl   = document.getElementById('hint');
-  const wishMsg  = document.getElementById('wish-msg');
+  const hintEl  = document.getElementById('hint');
+  const wishMsg = document.getElementById('wish-msg');
+  const cakeEl  = document.getElementById('cake');
+  const glowEl  = document.getElementById('cake-glow');
+
+  function blowCandle(i) {
+    flames[i].classList.add('out');
+    smokes[i].classList.add('puff');
+
+    // 2 extra drift puffs
+    [-1, 1].forEach((dir, j) => {
+      const extra = document.createElement('div');
+      extra.className = 'smoke-extra';
+      extra.style.setProperty('--drift', dir * (12 + Math.random() * 12) + 'px');
+      extra.style.animationDelay = (j * 0.18) + 's';
+      flameWraps[i].appendChild(extra);
+      setTimeout(() => extra.remove(), 2400);
+    });
+  }
 
   document.body.addEventListener('click', () => {
     if (blown) return;
     blown = true;
+    document.body.style.pointerEvents = 'none';
+    muteBtn.style.pointerEvents = 'auto'; // keep mute clickable
 
-    // Blow candles one by one
+    // Haptic on mobile
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    // Camera shake
+    cakeEl.classList.add('shake');
+    setTimeout(() => cakeEl.classList.remove('shake'), 320);
+
+    // Blow candles
     for (let i = 0; i < N_CANDLES; i++) {
-      setTimeout(() => {
-        flames[i].classList.add('out');
-        smokes[i].classList.add('puff');
-      }, i * 380);
+      setTimeout(() => blowCandle(i), i * 360);
     }
 
-    // Hint fades out
-    setTimeout(() => { hintEl.style.opacity = '0'; }, 300);
+    // Hint fades
+    setTimeout(() => { hintEl.style.opacity = '0'; }, 280);
 
-    // Wish message + navigate
+    // Glow fades → "tắt đèn" effect
+    setTimeout(() => { glowEl.classList.add('out'); }, N_CANDLES * 360 + 100);
+
+    // Wish + confetti + navigate
     setTimeout(() => {
       wishMsg.classList.add('show');
+      spawnConfetti();
       setTimeout(() => {
-        sessionStorage.setItem('musicTime', music.currentTime);
+        const timeToSave = music.readyState >= 2
+          ? music.currentTime
+          : parseFloat(sessionStorage.getItem('musicTime') || '0');
+        sessionStorage.setItem('musicTime', timeToSave);
         window.location.href = 'stars.html';
-      }, 2600);
-    }, N_CANDLES * 380 + 300);
+      }, 2650);
+    }, N_CANDLES * 360 + 320);
   });
 </script>
 </body>
