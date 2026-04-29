@@ -10,8 +10,7 @@
 
     html, body {
       width: 100%; height: 100vh; height: 100dvh;
-      overflow: hidden;
-      background: #000;
+      overflow: hidden; background: #000;
     }
 
     canvas { position: fixed; inset: 0; display: block; }
@@ -19,24 +18,12 @@
     body { animation: fadein 1.4s ease forwards; }
     @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
 
-    /* ===== STICKER ===== */
-    #sticker-wrap {
-      position: fixed; inset: 0; z-index: 10;
-      display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
-    }
-    #sticker {
-      max-width: min(60vw, 420px); max-height: min(60vh, 420px);
+    /* ===== STAR CANVAS (z=0) / TREE CANVAS (z=1) ===== */
+    #tree-canvas {
+      z-index: 1;
       opacity: 0;
-      filter: drop-shadow(0 0 30px rgba(180,120,255,0.5));
-      animation: sticker-show 4.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
-    @keyframes sticker-show {
-      0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
-      12%  { opacity: 1; transform: scale(1.15) rotate(4deg); }
-      22%  { opacity: 1; transform: scale(1)    rotate(0deg); }
-      75%  { opacity: 1; transform: scale(1)    rotate(0deg); }
-      100% { opacity: 0; transform: scale(1.2)  rotate(2deg); }
+      transition: opacity 0.7s ease;
+      pointer-events: none;
     }
 
     /* ===== CONTENT WRAP ===== */
@@ -47,9 +34,7 @@
       padding: clamp(20px, 4vw, 50px);
       opacity: 0;
     }
-    #content-wrap.visible {
-      animation: fadein-content 1.2s ease forwards;
-    }
+    #content-wrap.visible { animation: fadein-content 1.2s ease forwards; }
     @keyframes fadein-content {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -69,12 +54,10 @@
     }
     #avatar-frame::before {
       content: ''; position: absolute; inset: -8px; border-radius: 50%;
-      background: conic-gradient(
-        from 0deg,
+      background: conic-gradient(from 0deg,
         rgba(180,60,255,0.8), rgba(220,140,255,0.4),
         rgba(140,40,255,0.9), rgba(220,140,255,0.4),
-        rgba(180,60,255,0.8)
-      );
+        rgba(180,60,255,0.8));
       animation: ring-spin 6s linear infinite; z-index: 0;
     }
     #avatar-frame::after {
@@ -111,7 +94,7 @@
       border: 1px solid rgba(200,140,255,0.5); border-radius: 20px;
       padding: 6px 18px;
       color: #f0d8ff; font-family: 'Dancing Script', cursive; font-size: 18px;
-      white-space: nowrap; opacity: 0; transform: translateY(0);
+      white-space: nowrap; opacity: 0;
     }
     #avatar-tip.show { animation: tip-float 2s ease forwards; }
     @keyframes tip-float {
@@ -125,7 +108,8 @@
     #letter-frame {
       position: relative;
       background:
-        repeating-linear-gradient(transparent, transparent 27px, rgba(180,140,210,0.22) 27px, rgba(180,140,210,0.22) 28px),
+        repeating-linear-gradient(transparent, transparent 27px,
+          rgba(180,140,210,0.22) 27px, rgba(180,140,210,0.22) 28px),
         linear-gradient(175deg, #fffdf5 0%, #fff8ee 100%);
       border-top: 3px solid #c49ad8; border-radius: 2px;
       padding: clamp(26px, 3.5vw, 44px) clamp(28px, 4vw, 50px) clamp(22px, 3vw, 38px);
@@ -139,10 +123,9 @@
         8px 8px 0 rgba(0,0,0,0.015);
     }
     #letter-frame:hover { transform: rotate(0deg) scale(1.01); }
-    #letter-frame::before { content: '✿'; position: absolute; top: 10px; left: 12px;  font-size: 15px; color: rgba(180,120,210,0.45); }
-    #letter-frame::after  { content: '✿'; position: absolute; top: 10px; right: 12px; font-size: 15px; color: rgba(180,120,210,0.45); }
+    #letter-frame::before { content:'✿'; position:absolute; top:10px; left:12px;  font-size:15px; color:rgba(180,120,210,0.45); }
+    #letter-frame::after  { content:'✿'; position:absolute; top:10px; right:12px; font-size:15px; color:rgba(180,120,210,0.45); }
 
-    /* Paper fold crease */
     .letter-crease {
       position: absolute; left: 0; right: 0; top: 50%; height: 1px;
       background: linear-gradient(90deg,
@@ -180,22 +163,17 @@
     #letter-frame .sign {
       margin-top: 20px; text-align: right;
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(15px, 1.9vw, 20px);
-      color: #7a3fa0; font-weight: 700;
+      font-size: clamp(15px, 1.9vw, 20px); color: #7a3fa0; font-weight: 700;
     }
 
-    /* Typewriter cursor */
     .tw-cursor {
       display: inline-block; width: 2px; height: 1em;
       background: #7a3fa0; margin-left: 2px; vertical-align: text-bottom;
       animation: cursor-blink 0.7s step-end infinite;
     }
     @keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-    /* Elements hidden until typewriter fires */
     [data-tw] { opacity: 0; }
 
-    /* Scrollbar */
     #letter-frame::-webkit-scrollbar { width: 4px; }
     #letter-frame::-webkit-scrollbar-track { background: transparent; }
     #letter-frame::-webkit-scrollbar-thumb { background: rgba(180,130,210,0.35); border-radius: 4px; }
@@ -204,8 +182,7 @@
     #mute-btn {
       position: fixed; top: 14px; right: 14px; z-index: 30;
       width: 36px; height: 36px; border-radius: 50%;
-      background: rgba(60,10,100,0.7);
-      border: 1px solid rgba(200,140,255,0.4);
+      background: rgba(60,10,100,0.7); border: 1px solid rgba(200,140,255,0.4);
       color: #fff; font-size: 16px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(6px);
@@ -224,8 +201,7 @@
       font-family: 'Dancing Script', cursive;
       font-size: clamp(14px, 2.2vw, 18px);
       backdrop-filter: blur(6px);
-      white-space: nowrap; z-index: 12;
-      cursor: pointer;
+      white-space: nowrap; z-index: 12; cursor: pointer;
       animation: bubble-float var(--dur, 10s) ease-in forwards;
     }
     .wish-bubble.paused {
@@ -268,11 +244,11 @@
   </style>
 </head>
 <body>
-<canvas id="c"></canvas>
 
-<div id="sticker-wrap">
-  <img id="sticker" src="data/sticker.gif" alt="" />
-</div>
+<!-- Star background -->
+<canvas id="c"></canvas>
+<!-- Cherry blossom tree (accumulative — no clear) -->
+<canvas id="tree-canvas"></canvas>
 
 <div id="content-wrap">
   <div id="avatar-frame">
@@ -298,11 +274,12 @@
 </div>
 
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
-
 <div id="avatar-tip"></div>
 
 <script>
-// ─── AudioContext for typewriter tick ────────────────────────────────────────
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 let audioCtx;
 function ensureAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -310,7 +287,7 @@ function ensureAudio() {
 function tick() {
   try {
     ensureAudio();
-    const osc  = audioCtx.createOscillator();
+    const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
     osc.frequency.value = 880;
@@ -321,128 +298,321 @@ function tick() {
   } catch(e) {}
 }
 
-// ─── Sticker skip ─────────────────────────────────────────────────────────────
-const stickerWrap = document.getElementById('sticker-wrap');
-const contentWrap = document.getElementById('content-wrap');
-const seenSticker = !!sessionStorage.getItem('seenSticker');
-
-if (seenSticker) {
-  stickerWrap.style.display = 'none';
-  contentWrap.style.opacity = '1';
-  contentWrap.style.transform = 'none';
-  startTypewriter();
-} else {
-  sessionStorage.setItem('seenSticker', '1');
-  setTimeout(() => {
-    contentWrap.classList.add('visible');
-    setTimeout(startTypewriter, 1300);
-  }, 4550);
-}
-
-// Show mute button after content appears
-setTimeout(() => document.getElementById('mute-btn').classList.add('visible'),
-           seenSticker ? 400 : 5900);
-
-// ─── Canvas ───────────────────────────────────────────────────────────────────
+// ─── Star canvas ──────────────────────────────────────────────────────────────
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
-
-function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-  buildGradient();
-}
-
 let gradient;
+
 function buildGradient() {
   gradient = ctx.createRadialGradient(
-    canvas.width * 0.5, canvas.height * 0.3, 0,
-    canvas.width * 0.5, canvas.height * 0.5, canvas.height
+    canvas.width*.5, canvas.height*.3, 0,
+    canvas.width*.5, canvas.height*.5, canvas.height
   );
   gradient.addColorStop(0,   '#0d0a2e');
   gradient.addColorStop(0.4, '#070518');
   gradient.addColorStop(1,   '#000008');
 }
 
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  buildGradient();
+}
+
 const STAR_COUNT = window.innerWidth < 640 ? 160 : 320;
 let stars = [];
-
 function initStars() {
   stars = Array.from({ length: STAR_COUNT }, () => ({
-    x:     Math.random() * canvas.width,
-    y:     Math.random() * canvas.height,
-    r:     Math.random() * 1.6 + 0.2,
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.6 + 0.2,
     alpha: Math.random(),
     speed: Math.random() * 0.006 + 0.002,
     dir:   Math.random() > 0.5 ? 1 : -1,
-    color: [
-      [255,255,255],[220,210,255],[200,220,255],[255,240,210]
-    ][Math.floor(Math.random() * 4)],
+    color: [[255,255,255],[220,210,255],[200,220,255],[255,240,210]][Math.floor(Math.random()*4)],
   }));
 }
 
 let shooters = [];
-function spawnShooter() {
+setInterval(() => {
   shooters.push({
-    x: Math.random() * canvas.width * 0.8,
-    y: Math.random() * canvas.height * 0.4,
-    len: Math.random() * 120 + 60,
-    spd: Math.random() * 10 + 8,
-    alpha: 1, tail: 0,
+    x: Math.random()*canvas.width*0.8, y: Math.random()*canvas.height*0.4,
+    len: Math.random()*120+60, spd: Math.random()*10+8, alpha: 1, tail: 0,
   });
-}
-setInterval(spawnShooter, 3200);
+}, 3200);
 
-function draw() {
+function drawStars() {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   for (const s of stars) {
     s.alpha += s.speed * s.dir;
     if (s.alpha >= 1)   { s.alpha = 1;   s.dir = -1; }
     if (s.alpha <= 0.1) { s.alpha = 0.1; s.dir =  1; }
     const [r,g,b] = s.color;
     ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
     ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha})`;
     ctx.fill();
     if (s.r > 1.2) {
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha * 0.08})`;
+      ctx.arc(s.x, s.y, s.r*2.5, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${s.alpha*0.08})`;
       ctx.fill();
     }
   }
-
   shooters = shooters.filter(sh => sh.alpha > 0);
   for (const sh of shooters) {
-    sh.tail  += sh.spd;
-    sh.alpha -= 0.018;
-    const grad = ctx.createLinearGradient(
-      sh.x + sh.tail - sh.len, sh.y + sh.tail - sh.len,
-      sh.x + sh.tail,          sh.y + sh.tail
-    );
-    grad.addColorStop(0, `rgba(255,255,255,0)`);
-    grad.addColorStop(1, `rgba(255,255,255,${sh.alpha})`);
+    sh.tail += sh.spd; sh.alpha -= 0.018;
+    const g2 = ctx.createLinearGradient(
+      sh.x+sh.tail-sh.len, sh.y+sh.tail-sh.len, sh.x+sh.tail, sh.y+sh.tail);
+    g2.addColorStop(0, 'rgba(255,255,255,0)');
+    g2.addColorStop(1, `rgba(255,255,255,${sh.alpha})`);
     ctx.beginPath();
-    ctx.moveTo(sh.x + sh.tail - sh.len, sh.y + sh.tail - sh.len);
-    ctx.lineTo(sh.x + sh.tail,          sh.y + sh.tail);
-    ctx.strokeStyle = grad; ctx.lineWidth = 1.5;
-    ctx.stroke();
+    ctx.moveTo(sh.x+sh.tail-sh.len, sh.y+sh.tail-sh.len);
+    ctx.lineTo(sh.x+sh.tail, sh.y+sh.tail);
+    ctx.strokeStyle = g2; ctx.lineWidth = 1.5; ctx.stroke();
   }
-
-  requestAnimationFrame(draw);
+  requestAnimationFrame(drawStars);
 }
 
-resize(); initStars();
-window.addEventListener('resize', () => { resize(); initStars(); });
-draw();
+resizeCanvas(); initStars();
+window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+drawStars();
+
+// ─── Cherry Blossom Tree ──────────────────────────────────────────────────────
+const treeCv  = document.getElementById('tree-canvas');
+const treeCt  = treeCv.getContext('2d');
+let tW, tH, sx, sy;
+
+function resizeTree() {
+  treeCv.width = tW = window.innerWidth;
+  treeCv.height = tH = window.innerHeight;
+  sx = tW / 1100;
+  sy = tH / 680;
+}
+resizeTree();
+
+// Point helpers
+function Pt(x, y) { this.x = x||0; this.y = y||0; }
+Pt.prototype = {
+  clone() { return new Pt(this.x, this.y); },
+  add(o)  { var p=this.clone(); p.x+=o.x; p.y+=o.y; return p; },
+  mul(n)  { var p=this.clone(); p.x*=n;   p.y*=n;   return p; },
+};
+function sp(x, y) { return new Pt(x * sx, y * sy); }
+function sr(r)    { return r * Math.min(sx, sy); }
+function bezier(pts, t) {
+  return pts[0].mul((1-t)*(1-t)).add(pts[1].mul(2*t*(1-t))).add(pts[2].mul(t*t));
+}
+
+// Heart-shaped petal points (from original repo)
+const heartPts = [];
+(function() {
+  for (let i = 10; i < 30; i += 0.2) {
+    const t = i / Math.PI;
+    heartPts.push(new Pt(
+      16 * Math.pow(Math.sin(t), 3),
+      13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)
+    ));
+  }
+})();
+
+// Branch class
+function Branch(p1, p2, p3, r, maxLen, subs) {
+  this.p1=p1; this.p2=p2; this.p3=p3;
+  this.r=r; this.maxLen=maxLen||100;
+  this.len=0; this.t=1/(this.maxLen-1);
+  this.subs=subs||[]; this.done=false; this.spawned=false;
+}
+Branch.prototype.grow = function(pool) {
+  if (this.done) return;
+  if (this.len > this.maxLen) {
+    this.done = true;
+    if (!this.spawned) {
+      this.spawned = true;
+      for (const s of this.subs) {
+        pool.push(new Branch(
+          sp(s[0],s[1]), sp(s[2],s[3]), sp(s[4],s[5]),
+          sr(s[6]), s[7], s[8]||[]
+        ));
+      }
+    }
+    return;
+  }
+  const p = bezier([this.p1, this.p2, this.p3], this.len * this.t);
+  treeCt.save();
+  treeCt.beginPath();
+  treeCt.fillStyle = 'rgb(38, 14, 62)';
+  treeCt.shadowColor = 'rgba(160, 80, 255, 0.28)';
+  treeCt.shadowBlur = 3;
+  treeCt.arc(p.x, p.y, Math.max(0.5, this.r), 0, Math.PI*2);
+  treeCt.closePath();
+  treeCt.fill();
+  treeCt.restore();
+  this.len++;
+  this.r *= 0.97;
+};
+
+// Bloom (heart-shaped petals)
+const BLOOM_PALETTE = [
+  [248, 162, 255], [255, 178, 218], [208, 128, 255],
+  [255, 205, 228], [228, 108, 248], [255, 220, 240],
+];
+function Bloom(x, y) {
+  this.x=x; this.y=y;
+  const c = BLOOM_PALETTE[Math.floor(Math.random() * BLOOM_PALETTE.length)];
+  this.r=c[0]; this.g=c[1]; this.b=c[2];
+  this.alpha = 0.35 + Math.random() * 0.45;
+  this.angle = Math.random() * Math.PI * 2;
+  this.scale = 0.04 + Math.random() * 0.04;
+  this.maxScale = 0.18 + Math.random() * 0.28;
+  this.done = false;
+}
+Bloom.prototype.grow = function() {
+  this.draw();
+  this.scale += 0.05;
+  if (this.scale >= this.maxScale) this.done = true;
+};
+Bloom.prototype.draw = function() {
+  treeCt.save();
+  treeCt.globalAlpha = this.alpha;
+  treeCt.fillStyle = `rgb(${this.r},${this.g},${this.b})`;
+  treeCt.translate(this.x, this.y);
+  treeCt.scale(this.scale, this.scale);
+  treeCt.rotate(this.angle);
+  treeCt.beginPath();
+  treeCt.moveTo(0, 0);
+  for (const pt of heartPts) treeCt.lineTo(pt.x, -pt.y);
+  treeCt.closePath();
+  treeCt.fill();
+  treeCt.restore();
+};
+
+// Branch data — original 1100×680 coordinate system (from shibobo/happybirthday)
+const BRANCH_DATA = [[535,680,570,250,500,200,30,100,[
+  [540,500,455,417,340,400,13,100,[[450,435,434,430,394,395,2,40]]],
+  [550,445,600,356,680,345,12,100,[[578,400,648,409,661,426,3,80]]],
+  [539,281,537,248,534,217,3,40],
+  [546,397,413,247,328,244,9,80,[
+    [427,286,383,253,371,205,2,40],
+    [498,345,435,315,395,330,4,60]
+  ]],
+  [546,357,608,252,678,221,6,100,[[590,293,646,277,648,271,2,80]]]
+]]];
+
+// Bloom spawn zones (original coords, mapped to branch tip areas)
+const BLOOM_ZONES = [
+  [310,230,460,420], [640,220,700,360],
+  [460,195,560,265], [575,215,685,305],
+  [335,192,505,275], [395,275,565,425],
+];
+function makeBloomPositions(n) {
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const z = BLOOM_ZONES[Math.floor(Math.random() * BLOOM_ZONES.length)];
+    out.push({
+      x: (z[0] + Math.random() * (z[2] - z[0])) * sx,
+      y: (z[1] + Math.random() * (z[3] - z[1])) * sy,
+    });
+  }
+  return out;
+}
+
+// Main tree animation — returns a Promise that resolves when letter should appear
+function runTreeAnimation() {
+  return new Promise(resolve => {
+    treeCv.style.opacity = '1';
+
+    const pool = BRANCH_DATA.map(b =>
+      new Branch(sp(b[0],b[1]), sp(b[2],b[3]), sp(b[4],b[5]), sr(b[6]), b[7], b[8]||[])
+    );
+
+    let branchOffscreen = null; // snapshot of branches only, for fall-phase redraw
+
+    // Phase 1 — Grow branches
+    function growLoop() {
+      const alive = pool.some(b => !b.done);
+      if (!alive) {
+        // Snapshot branches before any bloom is drawn
+        branchOffscreen = document.createElement('canvas');
+        branchOffscreen.width  = treeCv.width;
+        branchOffscreen.height = treeCv.height;
+        branchOffscreen.getContext('2d').drawImage(treeCv, 0, 0);
+        bloomLoop();
+        return;
+      }
+      for (const b of [...pool]) { b.grow(pool); b.grow(pool); }
+      requestAnimationFrame(growLoop);
+    }
+
+    // Phase 2 — Bloom petals (collect finished blooms for fall)
+    const bloomPos  = makeBloomPositions(260);
+    let   bi        = 0;
+    const liveBloom = [];
+    const allBlooms = []; // finished blooms kept for fall phase
+
+    function bloomLoop() {
+      for (let i = 0; i < 5 && bi < bloomPos.length; i++, bi++) {
+        liveBloom.push(new Bloom(bloomPos[bi].x, bloomPos[bi].y));
+      }
+      for (let i = liveBloom.length - 1; i >= 0; i--) {
+        liveBloom[i].grow();
+        if (liveBloom[i].done) allBlooms.push(liveBloom.splice(i, 1)[0]);
+      }
+      if (bi < bloomPos.length || liveBloom.length > 0) {
+        requestAnimationFrame(bloomLoop);
+      } else {
+        setTimeout(() => startFall(allBlooms), 400);
+      }
+    }
+
+    // Phase 3 — Petals fall; letter reveals simultaneously
+    function startFall(blooms) {
+      blooms.forEach(b => {
+        b.vx       = (Math.random() - 0.5) * 2.5;
+        b.vy       = Math.random() * 0.8;        // start drifting downward
+        b.gravity  = 0.055 + Math.random() * 0.055;
+        b.angleVel = (Math.random() - 0.5) * 0.04;
+        b.falling  = true;
+      });
+
+      resolve(); // letter fades in while petals fall
+
+      function fallFrame() {
+        treeCt.clearRect(0, 0, treeCv.width, treeCv.height);
+        if (branchOffscreen) treeCt.drawImage(branchOffscreen, 0, 0);
+
+        let anyAlive = false;
+        for (const b of blooms) {
+          if (!b.falling) continue;
+          b.vy    += b.gravity;
+          b.x     += b.vx;
+          b.y     += b.vy;
+          b.angle += b.angleVel;
+          b.alpha *= 0.997;
+          if (b.y > tH + 30) { b.falling = false; continue; }
+          anyAlive = true;
+          b.draw();
+        }
+
+        if (anyAlive) {
+          requestAnimationFrame(fallFrame);
+        } else {
+          treeCv.style.transition = 'opacity 1.4s ease';
+          treeCv.style.opacity = '0';
+        }
+      }
+      requestAnimationFrame(fallFrame);
+    }
+
+    requestAnimationFrame(growLoop);
+  });
+}
 
 // ─── Music ────────────────────────────────────────────────────────────────────
 const music = new Audio('data/music_2.mp3');
-music.loop = true;
-const savedTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
-music.currentTime = savedTime;
+music.loop  = true;
+music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
 music.play().catch(() => {});
 
 const muteBtn = document.getElementById('mute-btn');
@@ -461,19 +631,17 @@ function typewriter(el, speed, onDone) {
   cursor.className = 'tw-cursor';
   el.appendChild(cursor);
 
-  // Tokenise: HTML tags (instant) vs characters (timed)
   const tokens = [];
   let i = 0;
   while (i < html.length) {
     if (html[i] === '<') {
       const close = html.indexOf('>', i);
-      if (close === -1) { tokens.push({ t: 'c', v: html[i++] }); continue; }
-      tokens.push({ t: 'tag', v: html.slice(i, close + 1) });
+      if (close === -1) { tokens.push({ t:'c', v:html[i++] }); continue; }
+      tokens.push({ t:'tag', v:html.slice(i, close+1) });
       i = close + 1;
     } else {
-      // Grab full Unicode code point (handles emoji)
       const ch = [...html.slice(i)][0];
-      tokens.push({ t: 'c', v: ch });
+      tokens.push({ t:'c', v:ch });
       i += ch.length;
     }
   }
@@ -482,11 +650,7 @@ function typewriter(el, speed, onDone) {
   const frame = document.getElementById('letter-frame');
 
   function type() {
-    if (ti >= tokens.length) {
-      cursor.remove();
-      if (onDone) onDone();
-      return;
-    }
+    if (ti >= tokens.length) { cursor.remove(); if (onDone) onDone(); return; }
     const tok = tokens[ti++];
     cursor.insertAdjacentHTML('beforebegin', tok.v);
     if (tok.t === 'tag') {
@@ -504,7 +668,6 @@ function typewriter(el, speed, onDone) {
 function startTypewriter() {
   const els = [...document.querySelectorAll('[data-tw]')];
   let idx = 0;
-
   function next() {
     if (idx >= els.length) return;
     const el  = els[idx++];
@@ -514,13 +677,45 @@ function startTypewriter() {
   next();
 }
 
+// ─── Main flow ────────────────────────────────────────────────────────────────
+const contentWrap = document.getElementById('content-wrap');
+const seenSticker = !!sessionStorage.getItem('seenSticker');
+
+function showContent() {
+  contentWrap.classList.add('visible');
+  setTimeout(startTypewriter, 1300);
+  muteBtn.classList.add('visible');
+}
+
+function startBubbles(afterMs) {
+  setTimeout(() => {
+    spawnBubble();
+    bubbleInterval = setInterval(spawnBubble, 4000);
+  }, afterMs);
+}
+
+if (seenSticker) {
+  // Came from candle page — skip tree, show letter immediately
+  contentWrap.style.opacity = '1';
+  contentWrap.style.transform = 'none';
+  muteBtn.classList.add('visible');
+  startTypewriter();
+  startBubbles(1200);
+} else {
+  // Direct visit — tree grows → petals fall → letter appears
+  runTreeAnimation().then(() => {
+    showContent();
+    startBubbles(2000);
+  });
+}
+
 // ─── Avatar click burst ───────────────────────────────────────────────────────
 const avatarFrame = document.getElementById('avatar-frame');
 const avatarTip   = document.getElementById('avatar-tip');
-const tipMsgs     = ['Xinh quá đi! 🌸', 'Cá dễ thương vl 💜', 'Best friend 4ever ✨', 'Tui yêu cậu nha! 🩷'];
+const tipMsgs = ['Xinh quá đi! 🌸','Cá dễ thương vl 💜','Best friend 4ever ✨','Tui yêu cậu nha! 🩷'];
 let tipIdx = 0, tipTimer;
 
-avatarFrame.addEventListener('click', (e) => {
+avatarFrame.addEventListener('click', () => {
   ensureAudio();
   const rect = avatarFrame.getBoundingClientRect();
   const cx = rect.left + rect.width  / 2;
@@ -528,71 +723,40 @@ avatarFrame.addEventListener('click', (e) => {
   const sparkColors = ['#ff6eb4','#a855f7','#facc15','#38bdf8','#fb923c','#f0d8ff','#c084fc'];
 
   for (let i = 0; i < 16; i++) {
-    const sp  = document.createElement('div');
-    sp.className = 'av-spark';
-    const ang = (i / 16) * Math.PI * 2 + Math.random() * 0.4;
-    const d   = 28 + Math.random() * 80;
-    sp.style.cssText = `left:${cx}px; top:${cy}px;
-      background:${sparkColors[Math.floor(Math.random() * sparkColors.length)]};`;
-    sp.style.setProperty('--tx', (Math.cos(ang) * d) + 'px');
-    sp.style.setProperty('--ty', (Math.sin(ang) * d) + 'px');
-    sp.style.setProperty('--dur', (0.45 + Math.random() * 0.45) + 's');
-    document.body.appendChild(sp);
-    setTimeout(() => sp.remove(), 1100);
+    const el  = document.createElement('div');
+    el.className = 'av-spark';
+    const ang = (i/16)*Math.PI*2 + Math.random()*0.4;
+    const d   = 28 + Math.random()*80;
+    el.style.cssText = `left:${cx}px;top:${cy}px;background:${sparkColors[Math.floor(Math.random()*sparkColors.length)]};`;
+    el.style.setProperty('--tx', (Math.cos(ang)*d)+'px');
+    el.style.setProperty('--ty', (Math.sin(ang)*d)+'px');
+    el.style.setProperty('--dur', (0.45+Math.random()*0.45)+'s');
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
   }
 
-  // Tooltip
   clearTimeout(tipTimer);
   avatarTip.className = '';
   avatarTip.textContent = tipMsgs[tipIdx++ % tipMsgs.length];
-  // Position above avatar
-  void avatarTip.offsetWidth; // force reflow for width
-  avatarTip.style.left = Math.max(4, cx - avatarTip.offsetWidth / 2) + 'px';
-  avatarTip.style.top  = (cy - rect.height / 2 - 44) + 'px';
+  void avatarTip.offsetWidth;
+  avatarTip.style.left = Math.max(4, cx - avatarTip.offsetWidth/2) + 'px';
+  avatarTip.style.top  = (cy - rect.height/2 - 44) + 'px';
   requestAnimationFrame(() => avatarTip.className = 'show');
   tipTimer = setTimeout(() => { avatarTip.className = ''; }, 2100);
 });
 
 // ─── Wish bubbles ─────────────────────────────────────────────────────────────
 const wishes = [
-  // Nhẹ nhàng, ấm áp
-  'Vui vẻ, bình an, và hạnh phúc 🌸',
-  'Mọi ước mơ đều thành hiện thực ✨',
-  'Luôn khỏe mạnh và tỏa sáng 💜',
-  'Một năm thật trọn vẹn nhé 🌟',
-  'Tuổi mới nhiều niềm vui 🎀',
-  'Cá luôn xinh đẹp mỗi ngày 🌷',
-
-  // Ngọt ngào, dễ thương
-  'Được yêu thương đúng cách mình xứng đáng 🫧',
-  'Mỗi sáng thức dậy đều thấy cuộc đời đẹp 🌤️',
-  'Ngọt ngào như cái tên, dịu dàng như ánh mắt 🍮',
-  'Luôn có người giữ tay khi đường dài mỏi 🤍',
-  'Được chiều chuộng đúng mức cần thiết 🎁',
-  'Nụ cười không bao giờ tắt nhé 😊',
-
-  // Tích cực, truyền cảm hứng
-  'Mạnh mẽ theo cách riêng của mình 🦋',
-  'Dũng cảm bắt đầu những điều còn dang dở 🌱',
-  'Năm nay là năm của mình — cứ tự tin mà bước 👣',
-  'Không hoàn hảo nhưng luôn đủ tốt 💫',
-  'Mọi nỗ lực đều được đền đáp xứng đáng 🏆',
-  'Giữ vững bản thân dù gió có đổi chiều 🍃',
-
-  // Hài hước, vui tươi
-  'Xinh đẹp thêm một tuổi, khôn ngoan thêm vô số 🧠✨',
-  'Ăn ngon, ngủ đủ, không lo nghĩ nhiều 🍜😴',
-  'Đừng già — cứ vintage thôi 🍷',
-  'Sinh nhật vui, ví tiền cũng vui theo 💸',
-  'Càng lớn càng cute, khoa học đã chứng minh 🔬🎀',
-
-  // Sâu sắc, chạm cảm xúc
-  'Bình yên là điều xa xỉ — chúc cá luôn có được 🕊️',
-  'Được là chính mình mỗi ngày — đó là điều quý nhất 🪞',
-  'Những điều tốt đẹp nhất vẫn còn ở phía trước 🌅',
-  'Trái tim luôn ấm dù thế giới có lạnh 🧡',
-  'Đủ can đảm để buông, đủ kiên nhẫn để chờ 🌊',
-  'Hạnh phúc không ồn ào — nhưng cá luôn xứng đáng có 🤫💛',
+  'Vui vẻ, bình an, và hạnh phúc 🌸','Mọi ước mơ đều thành hiện thực ✨',
+  'Luôn khỏe mạnh và tỏa sáng 💜','Một năm thật trọn vẹn nhé 🌟',
+  'Tuổi mới nhiều niềm vui 🎀','Cá luôn xinh đẹp mỗi ngày 🌷',
+  'Được yêu thương đúng cách mình xứng đáng 🫧','Mỗi sáng thức dậy đều thấy cuộc đời đẹp 🌤️',
+  'Ngọt ngào như cái tên, dịu dàng như ánh mắt 🍮','Luôn có người giữ tay khi đường dài mỏi 🤍',
+  'Mạnh mẽ theo cách riêng của mình 🦋','Năm nay là năm của mình — cứ tự tin mà bước 👣',
+  'Không hoàn hảo nhưng luôn đủ tốt 💫','Xinh đẹp thêm một tuổi, khôn ngoan thêm vô số 🧠✨',
+  'Đừng già — cứ vintage thôi 🍷','Những điều tốt đẹp nhất vẫn còn ở phía trước 🌅',
+  'Trái tim luôn ấm dù thế giới có lạnh 🧡','Hạnh phúc không ồn ào — nhưng cá luôn xứng đáng có 🤫💛',
+  'Bình yên là điều xa xỉ — chúc Cá luôn có được 🕊️','Ăn ngon, ngủ đủ, không lo nghĩ nhiều 🍜😴',
 ];
 let wishIdx = 0, bubbleInterval;
 
@@ -605,27 +769,19 @@ function spawnBubble() {
   el.style.setProperty('--dur', dur + 's');
 
   if (portrait) {
-    // Mobile: ghost-faint, non-interactive, float anywhere
     el.style.setProperty('--peak-opacity', '0.22');
     el.style.pointerEvents = 'none';
     el.style.fontSize = '13px';
-    el.style.zIndex = '4'; // behind letter on mobile
-    if (Math.random() < 0.5) {
-      el.style.left  = (2 + Math.random() * 20) + '%';
-    } else {
-      el.style.right = (2 + Math.random() * 20) + '%';
-    }
+    el.style.zIndex = '4';
+    if (Math.random() < 0.5) el.style.left  = (2+Math.random()*20)+'%';
+    else                      el.style.right = (2+Math.random()*20)+'%';
   } else {
-    // Desktop: visible, side zones only to avoid center letter
     el.style.setProperty('--peak-opacity', '0.75');
-    const leftSide = Math.random() < 0.5;
-    if (leftSide) {
-      el.style.left  = (1 + Math.random() * 22) + '%';
+    if (Math.random() < 0.5) {
+      el.style.left  = (1+Math.random()*22)+'%';
     } else {
-      // anchor from right edge so text never overflows
-      el.style.right = (1 + Math.random() * 22) + '%';
+      el.style.right = (1+Math.random()*22)+'%';
     }
-    // Click to pause/resume
     let paused = false;
     el.addEventListener('click', () => {
       paused = !paused;
@@ -636,12 +792,6 @@ function spawnBubble() {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), dur * 1000 + 100);
 }
-
-const bubbleStart = seenSticker ? 1600 : 6300;
-setTimeout(() => {
-  spawnBubble();
-  bubbleInterval = setInterval(spawnBubble, 4000);
-}, bubbleStart);
 
 // ─── Cleanup ──────────────────────────────────────────────────────────────────
 window.addEventListener('beforeunload', () => {

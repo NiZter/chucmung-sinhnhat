@@ -348,6 +348,25 @@
     }
     #mute-btn:hover { background: rgba(100,15,180,0.55); }
 
+    /* ===== STICKER ===== */
+    #sticker-wrap {
+      position: fixed; inset: 0; z-index: 15;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .sticker-img {
+      max-width: min(60vw, 420px); max-height: min(60vh, 420px);
+      filter: drop-shadow(0 0 30px rgba(180,120,255,0.5));
+      animation: sticker-show 4.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes sticker-show {
+      0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+      12%  { opacity: 1; transform: scale(1.15) rotate(4deg); }
+      22%  { opacity: 1; transform: scale(1)    rotate(0deg); }
+      75%  { opacity: 1; transform: scale(1)    rotate(0deg); }
+      100% { opacity: 0; transform: scale(1.2)  rotate(2deg); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .flame, #hint, .layer-mid::before { animation: none !important; }
     }
@@ -370,6 +389,7 @@
 </div>
 
 <div id="wish-msg"><span>✨ Hép pi bớt đâyyyy!</span></div>
+<div id="sticker-wrap"></div>
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
 
 <script>
@@ -568,17 +588,29 @@
     // Glow fades → "tắt đèn" effect
     setTimeout(() => { glowEl.classList.add('out'); }, N_CANDLES * 360 + 100);
 
-    // Wish + confetti + navigate
+    // Wish + confetti, then sticker, then navigate
     setTimeout(() => {
       wishMsg.classList.add('show');
       spawnConfetti();
+
+      // Show sticker.gif after wish text peaks (≈2 s overlap while wish fades)
+      setTimeout(() => {
+        const wrap = document.getElementById('sticker-wrap');
+        const img  = document.createElement('img');
+        img.src   = 'data/sticker.gif';
+        img.className = 'sticker-img';
+        wrap.appendChild(img);
+      }, 2000);
+
+      // Navigate after sticker finishes (~4.5 s after it appears)
       setTimeout(() => {
         const timeToSave = music.readyState >= 2
           ? music.currentTime
           : parseFloat(sessionStorage.getItem('musicTime') || '0');
         sessionStorage.setItem('musicTime', timeToSave);
+        sessionStorage.setItem('seenSticker', '1');
         window.location.href = 'stars.html';
-      }, 2650);
+      }, 6400);
     }, N_CANDLES * 360 + 320);
   });
 </script>
