@@ -33,7 +33,9 @@
       gap: clamp(20px, 4vw, 50px);
       padding: clamp(20px, 4vw, 50px);
       opacity: 0;
+      pointer-events: none;   /* pass clicks through to canvas for puzzle */
     }
+    #letter-frame, #avatar-frame { pointer-events: auto; }
     #content-wrap.visible { animation: fadein-content 1.2s ease forwards; }
     @keyframes fadein-content {
       from { opacity: 0; transform: translateY(20px); }
@@ -234,6 +236,36 @@
       }
     }
 
+    /* ===== PUZZLE REWARD ===== */
+    #letter-extra {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 1.6s ease, opacity 1s ease 0.4s;
+    }
+    #letter-extra.revealed { max-height: 260px; opacity: 1; }
+    #letter-extra p {
+      margin-top: 12px;
+      font-style: italic;
+      color: #4a2a6a;
+      line-height: 1.9;
+    }
+    /* Hint nudge — faint text below the sky */
+    #puzzle-hint {
+      position: fixed; bottom: 18px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(11px, 1.6vw, 14px);
+      color: rgba(180,160,230,0.38);
+      pointer-events: none; z-index: 5;
+      animation: hint-pulse 4s ease-in-out infinite;
+      white-space: nowrap;
+    }
+    @keyframes hint-pulse {
+      0%,100% { opacity: 0.28; } 50% { opacity: 0.62; }
+    }
+    #puzzle-hint.hidden { display: none; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -270,9 +302,16 @@
     </div>
     <p class="flowers">🌸 🌸 🌸</p>
     <p data-tw data-speed="34">Tuổi mới tui chúc Cá luôn luôn vui tươi hạnh phúc nha, mong bạn sẽ có một năm thật trọn vẹn.</p>
+    <!-- Revealed only after constellation puzzle is solved -->
+    <div id="letter-extra">
+      <div class="letter-divider">— ✦ —</div>
+      <p>P/s: Cá đã kiên nhẫn nối 22 ngôi sao — vừa khéo đúng bằng số tuổi. Tui giấu mấy dòng này ở đây để thưởng cho người tỉ mỉ nhất. Happy birthday lần nữa nha — vì 22 lần chúc vẫn chưa đủ 🌟</p>
+      <p class="sign">— người bạn thích giấu bí mật ✨</p>
+    </div>
   </div>
 </div>
 
+<div id="puzzle-hint">✦ Nối 22 ngôi sao theo thứ tự ✦</div>
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
 <div id="avatar-tip"></div>
 
@@ -372,12 +411,174 @@ function drawStars() {
     ctx.lineTo(sh.x+sh.tail, sh.y+sh.tail);
     ctx.strokeStyle = g2; ctx.lineWidth = 1.5; ctx.stroke();
   }
+  drawPuzzleOverlay();
   requestAnimationFrame(drawStars);
 }
 
 resizeCanvas(); initStars();
 window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
 drawStars();
+
+// ─── Constellation Puzzle ─────────────────────────────────────────────────────
+// 22 special stars whose connect-the-dots trace "22"
+// Positions as fractions of viewport (x: 0→1 left→right, y: 0→1 top→bottom)
+const PUZZLE_STARS = [
+  // ── first  "2"  (stars 1–11) ─────────────────────────────
+  {x:.21,y:.08}, {x:.16,y:.05}, {x:.10,y:.07}, {x:.08,y:.13},
+  {x:.10,y:.19}, {x:.15,y:.22}, {x:.20,y:.24}, {x:.22,y:.29},
+  {x:.19,y:.34}, {x:.09,y:.37}, {x:.22,y:.37},
+  // ── second "2"  (stars 12–22) ────────────────────────────
+  {x:.45,y:.08}, {x:.40,y:.05}, {x:.34,y:.07}, {x:.32,y:.13},
+  {x:.34,y:.19}, {x:.39,y:.22}, {x:.44,y:.24}, {x:.46,y:.29},
+  {x:.43,y:.34}, {x:.33,y:.37}, {x:.46,y:.37},
+];
+
+let pzConn    = [];       // indices connected so far (expected: 0,1,2,…,21)
+let pzSolved  = false;
+let pzWinTs   = 0;        // timestamp of solve, for win shimmer
+
+// px coordinates of star i
+function pxStar(i) {
+  return { x: PUZZLE_STARS[i].x * canvas.width,
+           y: PUZZLE_STARS[i].y * canvas.height };
+}
+
+function drawPuzzleOverlay() {
+  if (pzSolved && performance.now() - pzWinTs > 5000) return; // hide 5s after win
+  const t   = performance.now();
+  const W   = canvas.width;
+  const TAP = Math.min(W, canvas.height) * 0.052; // tap-target radius in px
+
+  ctx.save();
+
+  // ── connection lines already drawn ──────────────────────
+  if (pzConn.length > 1) {
+    ctx.lineWidth  = 1.6;
+    ctx.lineCap    = 'round';
+    ctx.shadowColor = 'rgba(255,215,60,0.75)';
+    ctx.shadowBlur  = 7;
+    for (let i = 0; i < pzConn.length - 1; i++) {
+      const a = pxStar(pzConn[i]);
+      const b = pxStar(pzConn[i+1]);
+      const gr = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+      gr.addColorStop(0, 'rgba(255,235,100,0.65)');
+      gr.addColorStop(1, 'rgba(255,200,60,0.65)');
+      ctx.strokeStyle = gr;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  // ── win shimmer — all lines pulse gold then fade ─────────
+  if (pzSolved) {
+    const age   = (t - pzWinTs) / 1000;          // seconds since win
+    const fade  = Math.max(0, 1 - (age - 1) / 4); // fade out after 1s, over 4s
+    ctx.globalAlpha = fade;
+    ctx.lineWidth   = 2;
+    ctx.strokeStyle = `rgba(255,240,120,${0.85 * fade})`;
+    ctx.shadowColor = `rgba(255,220,60,${0.9 * fade})`;
+    ctx.shadowBlur  = 12 + 8 * Math.sin(t * 0.006);
+    for (let i = 0; i < PUZZLE_STARS.length - 1; i++) {
+      const a = pxStar(i), b = pxStar(i+1);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur  = 0;
+  }
+
+  // ── special stars ────────────────────────────────────────
+  const pulse    = 0.5 + 0.5 * Math.sin(t * 0.0022);
+  const nextIdx  = pzSolved ? -1
+    : (pzConn.length === 0 ? 0 : pzConn[pzConn.length-1] + 1);
+
+  for (let i = 0; i < PUZZLE_STARS.length; i++) {
+    const px  = pxStar(i);
+    const done = pzConn.includes(i);
+    const next = i === nextIdx;
+
+    const r     = done ? 4.5 : next ? 3 + pulse * 2 : 2.5;
+    const alpha = done ? 0.95 : next ? 0.65 + pulse * 0.35 : 0.42;
+
+    // outer glow halo
+    ctx.beginPath();
+    ctx.arc(px.x, px.y, r * 3.5, 0, Math.PI*2);
+    ctx.fillStyle = done
+      ? `rgba(255,230,80,${0.10 + pulse * 0.05})`
+      : `rgba(190,210,255,${0.06 + pulse * 0.04})`;
+    ctx.fill();
+
+    // star dot
+    ctx.beginPath();
+    ctx.arc(px.x, px.y, r, 0, Math.PI*2);
+    ctx.fillStyle  = done ? `rgba(255,240,110,${alpha})` : `rgba(195,215,255,${alpha})`;
+    ctx.shadowColor = done ? 'rgba(255,230,60,0.95)' : 'rgba(190,210,255,0.7)';
+    ctx.shadowBlur  = done ? 12 : next ? 8 : 4;
+    ctx.fill();
+    ctx.shadowBlur  = 0;
+
+    // faint number (hidden once connected)
+    if (!done && !pzSolved) {
+      const fs = Math.max(9, W * 0.0085);
+      ctx.font      = `${fs}px monospace`;
+      ctx.fillStyle = `rgba(200,220,255,${next ? 0.58 : 0.20})`;
+      ctx.textAlign = 'center';
+      ctx.fillText(i + 1, px.x, px.y - r - 5);
+    }
+  }
+
+  ctx.restore();
+}
+
+// ── Tap / click handler ──────────────────────────────────────────────────────
+canvas.addEventListener('pointerdown', e => {
+  if (pzSolved) return;
+  const TAP = Math.min(canvas.width, canvas.height) * 0.052;
+
+  for (let i = 0; i < PUZZLE_STARS.length; i++) {
+    const px = pxStar(i);
+    const dx = e.clientX - px.x;
+    const dy = e.clientY - px.y;
+    if (Math.sqrt(dx*dx + dy*dy) > TAP) continue;
+
+    const expected = pzConn.length === 0 ? 0 : pzConn[pzConn.length-1] + 1;
+
+    if (i === expected) {
+      pzConn.push(i);
+      if (pzConn.length === PUZZLE_STARS.length) triggerPuzzleWin();
+    } else if (i === 0 && pzConn.length > 0) {
+      // tap star 1 to restart
+      pzConn = [0];
+    }
+    // wrong star — silently ignore (don't reset progress)
+    break;
+  }
+});
+
+function triggerPuzzleWin() {
+  pzSolved = true;
+  pzWinTs  = performance.now();
+
+  // Flash the sky
+  canvas.style.transition = 'filter 0.08s';
+  canvas.style.filter     = 'brightness(5) saturate(0.3)';
+  setTimeout(() => {
+    canvas.style.transition = 'filter 3s ease';
+    canvas.style.filter     = 'brightness(1) saturate(1)';
+  }, 90);
+
+  // Hide puzzle hint
+  const hint = document.getElementById('puzzle-hint');
+  if (hint) hint.classList.add('hidden');
+
+  // Reveal hidden paragraph
+  setTimeout(() => {
+    const extra = document.getElementById('letter-extra');
+    if (extra) extra.classList.add('revealed');
+    // Scroll letter to show it
+    const frame = document.getElementById('letter-frame');
+    if (frame) setTimeout(() => frame.scrollTo({ top: frame.scrollHeight, behavior: 'smooth' }), 300);
+  }, 900);
+}
 
 // ─── Cherry Blossom Tree ──────────────────────────────────────────────────────
 const treeCv  = document.getElementById('tree-canvas');
