@@ -957,7 +957,8 @@ function startTypewriter() {
 
 // ─── Main flow ────────────────────────────────────────────────────────────────
 const contentWrap = document.getElementById('content-wrap');
-const seenSticker = !!sessionStorage.getItem('seenSticker');
+// seenStars is set by THIS page after animation finishes (not by candle.html)
+const seenStars = !!sessionStorage.getItem('seenStars');
 
 function showContent() {
   contentWrap.classList.add('visible');
@@ -972,8 +973,8 @@ function startBubbles(afterMs) {
   }, afterMs);
 }
 
-if (seenSticker) {
-  // Came from candle page — skip all animations, show letter directly
+if (seenStars) {
+  // Already watched the animation this session — skip straight to letter
   pzPhase = 'done';
   contentWrap.style.opacity = '1';
   contentWrap.style.transform = 'none';
@@ -981,10 +982,10 @@ if (seenSticker) {
   startTypewriter();
   startBubbles(1200);
 } else {
-  // Direct / first visit:
-  // "22" constellation → collapse to seed → seed drops → tree grows
-  // → petals fall toward letter → letter fades in
+  // First time on this page (from candle or direct):
+  // "22" constellation → collapse to seed → tree grows → petals → letter
   startConstellationFlow(() => {
+    sessionStorage.setItem('seenStars', '1');
     showContent();
     startBubbles(2000);
   });
