@@ -418,15 +418,33 @@ function drawStars() {
 // ─── Constellation "22" — auto-animate ───────────────────────────────────────
 // MUST be declared before drawStars() is first called (const/let are not hoisted)
 // 22 bright pulsing stars; after 3 s they auto-connect one by one, tracing "22"
+// Each "2" drawn clockwise: top-left arc → top → top-right → right side down
+//   → diagonal to lower-left → bottom stroke left→right
 const PUZZLE_STARS = [
   // ── first "2"  (1–11) ─────────────────────────────────────
-  {x:.21,y:.08}, {x:.16,y:.05}, {x:.10,y:.07}, {x:.08,y:.13},
-  {x:.10,y:.19}, {x:.15,y:.22}, {x:.20,y:.24}, {x:.22,y:.29},
-  {x:.19,y:.34}, {x:.09,y:.37}, {x:.22,y:.37},
+  {x:.08,y:.09}, // 1  top-left of arc
+  {x:.15,y:.05}, // 2  top centre
+  {x:.21,y:.09}, // 3  top-right
+  {x:.23,y:.16}, // 4  right side coming down
+  {x:.20,y:.22}, // 5  diagonal starts (right→left)
+  {x:.15,y:.27}, // 6  diagonal centre
+  {x:.10,y:.31}, // 7  diagonal lower
+  {x:.07,y:.36}, // 8  lower-left corner
+  {x:.07,y:.38}, // 9  bottom-left
+  {x:.15,y:.38}, // 10 bottom centre
+  {x:.23,y:.38}, // 11 bottom-right
   // ── second "2"  (12–22) ───────────────────────────────────
-  {x:.45,y:.08}, {x:.40,y:.05}, {x:.34,y:.07}, {x:.32,y:.13},
-  {x:.34,y:.19}, {x:.39,y:.22}, {x:.44,y:.24}, {x:.46,y:.29},
-  {x:.43,y:.34}, {x:.33,y:.37}, {x:.46,y:.37},
+  {x:.32,y:.09}, // 12 top-left of arc
+  {x:.39,y:.05}, // 13 top centre
+  {x:.45,y:.09}, // 14 top-right
+  {x:.47,y:.16}, // 15 right side coming down
+  {x:.44,y:.22}, // 16 diagonal starts
+  {x:.39,y:.27}, // 17 diagonal centre
+  {x:.34,y:.31}, // 18 diagonal lower
+  {x:.31,y:.36}, // 19 lower-left corner
+  {x:.31,y:.38}, // 20 bottom-left
+  {x:.39,y:.38}, // 21 bottom centre
+  {x:.47,y:.38}, // 22 bottom-right
 ];
 
 let pzConn   = [];    // indices added so far
