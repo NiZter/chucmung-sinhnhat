@@ -368,8 +368,43 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .flame, #hint, .layer-mid::before { animation: none !important; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
+
+    /* ===== AUTOPLAY BUTTON ===== */
+    #play-btn {
+      position: fixed; bottom: 22px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200; display: none;
+      align-items: center; gap: 8px;
+      background: rgba(110,20,190,0.88);
+      border: 1px solid rgba(200,140,255,0.65);
+      border-radius: 24px; padding: 10px 24px;
+      color: #f0d8ff; font-size: 15px; cursor: pointer;
+      backdrop-filter: blur(10px);
+      font-family: 'Dancing Script', cursive;
+      white-space: nowrap;
+      animation: play-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes play-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(160,60,255,0.55); }
+      50%     { box-shadow: 0 0 0 14px rgba(160,60,255,0); }
+    }
+
+    /* Page-out transition overlay */
+    #nav-overlay {
+      position: fixed; inset: 0; background: #000;
+      z-index: 9999; opacity: 0;
+      transition: opacity 0.42s ease;
+      pointer-events: none;
+    }
+
+    /* Sticker clickable hint */
+    #sticker-wrap { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -391,6 +426,8 @@
 <div id="wish-msg"><span>✨ Hép pi bớt đâyyyy!</span></div>
 <div id="sticker-wrap"></div>
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
+<div id="nav-overlay"></div>
+<button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
 
 <script>
   // ── Stars background ─────────────────────────────────────
@@ -470,7 +507,36 @@
   const music = new Audio('data/music_2.mp3');
   music.loop = true;
   music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
-  music.play().catch(() => {});
+  const playBtn = document.getElementById('play-btn');
+  music.play().catch(() => { playBtn.style.display = 'flex'; });
+  playBtn.addEventListener('click', () => {
+    music.play().catch(() => {});
+    playBtn.style.display = 'none';
+  });
+
+  // ── Navigate with fade + volume fade ────────────────────
+  const navOverlay = document.getElementById('nav-overlay');
+  function navigateTo(href) {
+    navOverlay.style.pointerEvents = 'all';
+    navOverlay.style.opacity = '1';
+    const origVol = music.volume;
+    let step = 0;
+    const iv = setInterval(() => {
+      step++;
+      music.volume = Math.max(0, origVol * (1 - step / 20));
+      if (step >= 20) {
+        clearInterval(iv);
+        sessionStorage.setItem('musicTime',
+          music.readyState >= 2 ? music.currentTime : parseFloat(sessionStorage.getItem('musicTime') || '0'));
+        window.location.href = href;
+      }
+    }, 20);
+  }
+
+  // ── Tab visibility — pause shooting stars ────────────────
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) shooters.length = 0; // clear queue when hidden
+  });
 
   // Mute toggle
   const muteBtn = document.getElementById('mute-btn');
@@ -564,8 +630,18 @@
     });
   }
 
-  document.body.addEventListener('click', () => {
-    if (blown) return;
+  // ── Blow: pointerdown + movement threshold (avoid firing on scroll) ──
+  let pointerStartX = 0, pointerStartY = 0, pointerMoved = false;
+  document.body.addEventListener('pointerdown', (e) => {
+    pointerStartX = e.clientX; pointerStartY = e.clientY; pointerMoved = false;
+  });
+  document.body.addEventListener('pointermove', (e) => {
+    if (Math.abs(e.clientX - pointerStartX) > 8 || Math.abs(e.clientY - pointerStartY) > 8)
+      pointerMoved = true;
+  });
+  document.body.addEventListener('pointerup', doBlow);
+  function doBlow() {
+    if (pointerMoved || blown) return;
     blown = true;
     document.body.style.pointerEvents = 'none';
     muteBtn.style.pointerEvents = 'auto'; // keep mute clickable
@@ -600,19 +676,25 @@
         img.src   = 'data/sticker.gif';
         img.className = 'sticker-img';
         wrap.appendChild(img);
+        wrap.style.pointerEvents = 'auto';
+
+        // Click sticker → navigate immediately
+        let stickerClicked = false;
+        wrap.addEventListener('click', () => {
+          if (stickerClicked) return;
+          stickerClicked = true;
+          sessionStorage.setItem('seenSticker', '1');
+          navigateTo('stars.html');
+        });
       }, 2000);
 
-      // Navigate after sticker finishes (~4.5 s after it appears)
+      // Navigate after sticker animation finishes (~4.5 s after it appears)
       setTimeout(() => {
-        const timeToSave = music.readyState >= 2
-          ? music.currentTime
-          : parseFloat(sessionStorage.getItem('musicTime') || '0');
-        sessionStorage.setItem('musicTime', timeToSave);
         sessionStorage.setItem('seenSticker', '1');
-        window.location.href = 'stars.html';
+        navigateTo('stars.html');
       }, 6400);
     }, N_CANDLES * 360 + 320);
-  });
+  }
 </script>
 </body>
 </html>

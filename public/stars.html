@@ -273,6 +273,86 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* Avatar hover glow */
+    #avatar-frame:hover .avatar-inner {
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.4), 0 0 28px rgba(180,80,255,0.55);
+    }
+    #avatar-frame { transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    #avatar-frame:hover { transform: scale(1.06); }
+
+    /* Focus rings */
+    #mute-btn:focus-visible {
+      outline: 3px solid rgba(210,140,255,0.85);
+      outline-offset: 3px;
+    }
+
+    /* ===== AUTOPLAY BUTTON ===== */
+    #play-btn {
+      position: fixed; bottom: 22px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200; display: none;
+      align-items: center; gap: 8px;
+      background: rgba(110,20,190,0.88);
+      border: 1px solid rgba(200,140,255,0.65);
+      border-radius: 24px; padding: 10px 24px;
+      color: #f0d8ff; font-size: 15px; cursor: pointer;
+      backdrop-filter: blur(10px);
+      font-family: 'Dancing Script', cursive;
+      white-space: nowrap;
+      animation: play-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes play-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(160,60,255,0.55); }
+      50%     { box-shadow: 0 0 0 14px rgba(160,60,255,0); }
+    }
+
+    /* Avatar 22-click easter egg overlay */
+    #egg-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(10,0,30,0.88); backdrop-filter: blur(16px);
+    }
+    #egg-overlay.show { display: flex; animation: egg-in 0.5s ease both; }
+    @keyframes egg-in {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    #egg-inner {
+      text-align: center; padding: 40px 48px;
+      background: rgba(60,10,130,0.7);
+      border: 1px solid rgba(200,140,255,0.55);
+      border-radius: 24px;
+      font-family: 'Dancing Script', cursive;
+      color: #f0d0ff;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.6);
+    }
+    #egg-inner p { font-size: clamp(18px,3vw,26px); line-height: 1.7; margin-bottom: 18px; }
+    #egg-close {
+      margin-top: 4px; padding: 8px 26px;
+      background: rgba(150,60,255,0.4);
+      border: 1px solid rgba(200,140,255,0.5);
+      border-radius: 18px; color: #f0d8ff;
+      font-family: 'Dancing Script', cursive;
+      font-size: 17px; cursor: pointer;
+    }
+
+    /* Konami code day theme */
+    body.day-theme { background: #fef9e7; }
+    body.day-theme #c { filter: hue-rotate(200deg) brightness(1.3) saturate(0.5); }
+    body.day-theme #tree-canvas { filter: hue-rotate(80deg) saturate(1.2); }
+    body.day-theme .wish-bubble { background: rgba(255,235,180,0.5); border-color: rgba(255,180,60,0.5); color: #7a4a00; }
+    body.day-theme #letter-frame { background: linear-gradient(175deg,#fffdf5 0%,#fff8e0 100%); }
+    body.day-theme #mute-btn { background: rgba(255,200,80,0.6); border-color: rgba(200,140,30,0.6); color: #5a3a00; }
+
+    /* Skip typewriter hint */
+    #tw-skip-hint {
+      position: fixed; bottom: 14px; right: 14px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 13px; color: rgba(200,160,255,0.5);
+      z-index: 25; pointer-events: none;
+      opacity: 0; transition: opacity 0.6s;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -289,7 +369,7 @@
     </div>
   </div>
 
-  <div id="letter-frame">
+  <div id="letter-frame" aria-live="polite" aria-label="Bức thư sinh nhật">
     <div class="letter-crease"></div>
     <p class="letter-title" data-tw data-speed="28">NHIỆT LIỆT CHÀO MỪNG<br>TUỔI TÁC ĐỔI MỚI LẦN THỨ XXII !</p>
     <div class="letter-divider">— ✦ —</div>
@@ -314,6 +394,14 @@
 <div id="puzzle-hint">✦ 22 ✦</div>
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
 <div id="avatar-tip"></div>
+<button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
+<div id="tw-skip-hint">Nhấn Space hoặc chạm 2 lần để skip</div>
+<div id="egg-overlay" role="dialog" aria-modal="true" aria-label="Bí mật">
+  <div id="egg-inner">
+    <p>🌟 22 lần nhấn cho 22 tuổi 🌟<br>Cậu tỉ mỉ thật đấy!<br>Tui thích cậu lắm lắm — mãi nha 💜</p>
+    <button id="egg-close">Đóng lại ✨</button>
+  </div>
+</div>
 
 <script>
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -901,7 +989,12 @@ function runTreeAnimation() {
 const music = new Audio('data/music_2.mp3');
 music.loop  = true;
 music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
-music.play().catch(() => {});
+const playBtn = document.getElementById('play-btn');
+music.play().catch(() => { playBtn.style.display = 'flex'; });
+playBtn.addEventListener('click', () => {
+  music.play().catch(() => {});
+  playBtn.style.display = 'none';
+});
 
 const muteBtn = document.getElementById('mute-btn');
 muteBtn.addEventListener('click', () => {
@@ -953,16 +1046,40 @@ function typewriter(el, speed, onDone) {
   type();
 }
 
+const twSkipHint = document.getElementById('tw-skip-hint');
 function startTypewriter() {
   const els = [...document.querySelectorAll('[data-tw]')];
   let idx = 0;
+
+  // Show skip hint for returning visitors
+  if (localStorage.getItem('visited')) {
+    twSkipHint.style.opacity = '1';
+    setTimeout(() => { twSkipHint.style.opacity = '0'; }, 4000);
+  }
+
   function next() {
-    if (idx >= els.length) return;
+    if (idx >= els.length) { twSkipHint.style.opacity = '0'; return; }
     const el  = els[idx++];
     const spd = parseInt(el.dataset.speed || '35');
     typewriter(el, spd, () => setTimeout(next, 320));
   }
   next();
+
+  // Space key / double-tap → finish all remaining typewriters instantly
+  let lastTap2 = 0;
+  const skipAll = () => {
+    els.forEach(el => {
+      if (!el.style.opacity || el.style.opacity === '0') {
+        el.innerHTML = el.innerHTML; // trigger in case cursor is there
+        el.style.opacity = '1';
+      }
+    });
+    twSkipHint.style.opacity = '0';
+  };
+  const onKey2 = (e) => { if (e.code === 'Space') { e.preventDefault(); skipAll(); } };
+  const onTap2 = () => { const now = Date.now(); if (now - lastTap2 < 350) skipAll(); lastTap2 = now; };
+  document.addEventListener('keydown', onKey2);
+  document.addEventListener('pointerdown', onTap2);
 }
 
 // ─── Main flow ────────────────────────────────────────────────────────────────
@@ -1084,6 +1201,84 @@ function spawnBubble() {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), dur * 1000 + 100);
 }
+
+// ─── Tab visibility — pause bubbles & shooting stars ─────────────────────────
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(bubbleInterval);
+    bubbleInterval = null;
+    shooters.length = 0;
+  } else {
+    // resume bubbles only if content is already showing
+    if (document.getElementById('content-wrap').style.opacity === '1' ||
+        document.getElementById('content-wrap').classList.contains('visible')) {
+      if (!bubbleInterval) {
+        spawnBubble();
+        bubbleInterval = setInterval(spawnBubble, 4000);
+      }
+    }
+  }
+});
+
+// ─── Parallax stars on mouse / gyro ──────────────────────────────────────────
+(function() {
+  let px = 0, py = 0;
+  // Mouse
+  window.addEventListener('mousemove', (e) => {
+    px = (e.clientX / window.innerWidth  - 0.5) * 2;
+    py = (e.clientY / window.innerHeight - 0.5) * 2;
+    applyParallax();
+  });
+  // Device tilt (mobile)
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.gamma == null) return;
+    px = Math.max(-1, Math.min(1, e.gamma / 30));
+    py = Math.max(-1, Math.min(1, (e.beta - 30) / 40));
+    applyParallax();
+  });
+  function applyParallax() {
+    const tx = px * 12, ty = py * 8;
+    document.getElementById('c').style.transform = `translate(${tx}px,${ty}px)`;
+  }
+})();
+
+// ─── Avatar 22-click easter egg ───────────────────────────────────────────────
+(function() {
+  let clickCount = 0;
+  const eggOverlay = document.getElementById('egg-overlay');
+  const eggClose   = document.getElementById('egg-close');
+  const origClick  = avatarFrame.onclick;
+
+  avatarFrame.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount === 22) {
+      clickCount = 0;
+      eggOverlay.classList.add('show');
+    }
+  });
+  eggClose.addEventListener('click', () => eggOverlay.classList.remove('show'));
+  eggOverlay.addEventListener('click', (e) => {
+    if (e.target === eggOverlay) eggOverlay.classList.remove('show');
+  });
+})();
+
+// ─── Konami code — switch to pastel day theme ─────────────────────────────────
+(function() {
+  const CODE = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+                'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let ki = 0;
+  document.addEventListener('keydown', (e) => {
+    if (e.key === CODE[ki]) {
+      ki++;
+      if (ki === CODE.length) {
+        ki = 0;
+        document.body.classList.toggle('day-theme');
+      }
+    } else {
+      ki = e.key === CODE[0] ? 1 : 0;
+    }
+  });
+})();
 
 // ─── Cleanup ──────────────────────────────────────────────────────────────────
 window.addEventListener('beforeunload', () => {

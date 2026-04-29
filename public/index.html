@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <link rel="preload" href="data/sticker.gif" as="image">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -452,7 +453,76 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .envelope, .env-body, .envelope::before { animation-duration: 0.01s !important; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ===== AUTOPLAY BUTTON ===== */
+    #play-btn {
+      position: fixed; bottom: 22px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200; display: none;
+      align-items: center; gap: 8px;
+      background: rgba(110,20,190,0.88);
+      border: 1px solid rgba(200,140,255,0.65);
+      border-radius: 24px; padding: 10px 24px;
+      color: #f0d8ff; font-size: 15px; cursor: pointer;
+      backdrop-filter: blur(10px);
+      font-family: 'Dancing Script', cursive;
+      white-space: nowrap;
+      animation: play-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes play-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(160,60,255,0.55); }
+      50%     { box-shadow: 0 0 0 14px rgba(160,60,255,0); }
+    }
+
+    /* Focus ring for seal */
+    .seal:focus-visible {
+      outline: 3px solid rgba(210,140,255,0.85);
+      outline-offset: 5px;
+    }
+
+    /* Long-press easter egg */
+    #lp-msg {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 300; display: none;
+      background: rgba(55,8,115,0.94);
+      border: 1px solid rgba(200,140,255,0.65);
+      border-radius: 20px; padding: 20px 32px;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(18px, 3vw, 24px);
+      color: #f0d0ff; white-space: nowrap;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+      animation: lp-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes lp-pop {
+      from { opacity: 0; transform: translate(-50%,-50%) scale(0.65); }
+      to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    }
+
+    /* Page-out transition overlay */
+    #nav-overlay {
+      position: fixed; inset: 0; background: #000;
+      z-index: 9999; opacity: 0;
+      transition: opacity 0.42s ease;
+      pointer-events: none;
+    }
+
+    /* Skip hint during countdown */
+    #skip-hint {
+      position: fixed; bottom: 16px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: 14px; color: rgba(200,160,255,0.6);
+      z-index: 10; pointer-events: none;
+      opacity: 0; transition: opacity 0.5s;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -461,6 +531,10 @@
 <div id="rain-wrap"><canvas id="rc"></canvas></div>
 <audio id="bg-music" src="data/music_2.mp3" loop></audio>
 <div id="flash"></div>
+<div id="nav-overlay"></div>
+<button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
+<div id="lp-msg">Tớ biết là cậu sẽ thử mà 😏</div>
+<div id="skip-hint">Nhấn Space hoặc chạm 2 lần để bỏ qua</div>
 
 <div id="cd-overlay"><span id="cd-text"></span></div>
 
@@ -570,18 +644,67 @@
   const overlay = document.getElementById('letter-overlay');
   const music   = document.getElementById('bg-music');
   const hintEl  = document.getElementById('hint-click');
+  const navOverlay = document.getElementById('nav-overlay');
+  const playBtn    = document.getElementById('play-btn');
+  const lpMsg      = document.getElementById('lp-msg');
+  const skipHint   = document.getElementById('skip-hint');
+
+  // ── Music autoplay ──────────────────────────────────────────
+  music.play().catch(() => {
+    playBtn.style.display = 'flex';
+  });
+  playBtn.addEventListener('click', () => {
+    music.play().catch(() => {});
+    playBtn.style.display = 'none';
+  });
+
+  // ── Navigate with fade-to-black + volume fade ───────────────
+  function navigateTo(href) {
+    navOverlay.style.pointerEvents = 'all';
+    navOverlay.style.opacity = '1';
+    const origVol = music.volume;
+    let step = 0;
+    const iv = setInterval(() => {
+      step++;
+      music.volume = Math.max(0, origVol * (1 - step / 20));
+      if (step >= 20) {
+        clearInterval(iv);
+        sessionStorage.setItem('musicTime',
+          music.readyState >= 2 ? music.currentTime : parseFloat(sessionStorage.getItem('musicTime') || '0'));
+        window.location.href = href;
+      }
+    }, 20);
+  }
+
+  // ── Long-press seal easter egg (2 s) ────────────────────────
+  let lpTimer = null, lpFired = false;
+  seal.addEventListener('pointerdown', () => {
+    lpFired = false;
+    lpTimer = setTimeout(() => {
+      lpFired = true;
+      lpMsg.style.display = 'block';
+      setTimeout(() => { lpMsg.style.display = 'none'; }, 2800);
+    }, 2000);
+  });
+  ['pointerup','pointermove','pointercancel'].forEach(ev =>
+    seal.addEventListener(ev, () => clearTimeout(lpTimer)));
 
   // Hint hiện sau 3s nếu chưa click
   const hintTimer = setTimeout(() => { hintEl.style.opacity = '1'; }, 3000);
 
+  let sealOpened = false;
   seal.addEventListener('click', () => {
+    if (lpFired || sealOpened) return;
+    sealOpened = true;
     clearTimeout(hintTimer);
     hintEl.style.opacity = '0';
+    localStorage.setItem('visited', '1');
 
     // 1. Seal vỡ + burst
     seal.classList.add('break');
     document.getElementById('burst').classList.add('active');
     music.play().catch(() => {});
+    playBtn.style.display = 'none';
 
     // 2. Flap mở
     setTimeout(() => { flap.classList.add('open'); }, 220);
@@ -640,18 +763,25 @@
     ];
 
     cdOverlay.style.opacity = '1';
-    let i = 0;
+    let i = 0, done = false;
+
+    // Show skip hint for returning visitors
+    if (localStorage.getItem('visited')) {
+      skipHint.style.opacity = '1';
+    }
+
+    function finish() {
+      if (done) return;
+      done = true;
+      skipHint.style.opacity = '0';
+      cdOverlay.style.transition = 'opacity 0.5s';
+      cdOverlay.style.opacity = '0';
+      setTimeout(() => navigateTo('candle.html'), 550);
+    }
 
     function next() {
-      if (i >= steps.length) {
-        cdOverlay.style.transition = 'opacity 1s';
-        cdOverlay.style.opacity = '0';
-        setTimeout(() => {
-          sessionStorage.setItem('musicTime', music.currentTime);
-          window.location.href = 'candle.html';
-        }, 1100);
-        return;
-      }
+      if (done) return;
+      if (i >= steps.length) { finish(); return; }
       const { text, cls, dur } = steps[i++];
       cdText.className = cls;
       cdText.textContent = text;
@@ -670,6 +800,15 @@
     }
 
     next();
+
+    // Space key skip
+    const onKey = (e) => { if (e.code === 'Space') { e.preventDefault(); removeHandlers(); finish(); } };
+    // Double-tap skip
+    let lastTap = 0;
+    const onTap = () => { const now = Date.now(); if (now - lastTap < 350) { removeHandlers(); finish(); } lastTap = now; };
+    function removeHandlers() { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onTap); }
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onTap);
   }
 </script>
 </body>
