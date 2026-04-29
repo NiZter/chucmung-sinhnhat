@@ -415,11 +415,8 @@ function drawStars() {
   requestAnimationFrame(drawStars);
 }
 
-resizeCanvas(); initStars();
-window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
-drawStars();
-
 // ─── Constellation "22" — auto-animate ───────────────────────────────────────
+// MUST be declared before drawStars() is first called (const/let are not hoisted)
 // 22 bright pulsing stars; after 3 s they auto-connect one by one, tracing "22"
 const PUZZLE_STARS = [
   // ── first "2"  (1–11) ─────────────────────────────────────
@@ -575,6 +572,11 @@ function triggerWin() {
     if (frame) setTimeout(() => frame.scrollTo({ top: frame.scrollHeight, behavior: 'smooth' }), 350);
   }, 1000);
 }
+
+// ── start star loop (puzzle vars are all declared above, safe to call now) ───
+resizeCanvas(); initStars();
+window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+drawStars();
 
 // ─── Cherry Blossom Tree ──────────────────────────────────────────────────────
 const treeCv  = document.getElementById('tree-canvas');
