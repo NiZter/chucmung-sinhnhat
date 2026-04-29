@@ -654,8 +654,11 @@ Pt.prototype = {
   add(o)  { var p=this.clone(); p.x+=o.x; p.y+=o.y; return p; },
   mul(n)  { var p=this.clone(); p.x*=n;   p.y*=n;   return p; },
 };
-function sp(x, y) { return new Pt(x * sx, y * sy); }
-function sr(r)    { return r * Math.min(sx, sy); }
+// Centre the tree horizontally so it stays centred on any viewport size
+function sp(x, y) {
+  return new Pt((x - 550) * sx + tW * 0.5, y * sy);
+}
+function sr(r) { return r * Math.min(sx, sy) * 1.45; } // 45 % thicker branches
 function bezier(pts, t) {
   return pts[0].mul((1-t)*(1-t)).add(pts[1].mul(2*t*(1-t))).add(pts[2].mul(t*t));
 }
@@ -697,30 +700,32 @@ Branch.prototype.grow = function(pool) {
   const p = bezier([this.p1, this.p2, this.p3], this.len * this.t);
   treeCt.save();
   treeCt.beginPath();
-  treeCt.fillStyle = 'rgb(38, 14, 62)';
-  treeCt.shadowColor = 'rgba(160, 80, 255, 0.28)';
-  treeCt.shadowBlur = 3;
-  treeCt.arc(p.x, p.y, Math.max(0.5, this.r), 0, Math.PI*2);
+  treeCt.fillStyle = 'rgb(52, 12, 74)';
+  treeCt.shadowColor = 'rgba(185, 95, 255, 0.55)';
+  treeCt.shadowBlur = 7;
+  treeCt.arc(p.x, p.y, Math.max(0.6, this.r), 0, Math.PI*2);
   treeCt.closePath();
   treeCt.fill();
   treeCt.restore();
   this.len++;
-  this.r *= 0.97;
+  this.r *= 0.972;
 };
 
 // Bloom (heart-shaped petals)
 const BLOOM_PALETTE = [
-  [248, 162, 255], [255, 178, 218], [208, 128, 255],
-  [255, 205, 228], [228, 108, 248], [255, 220, 240],
+  [255, 140, 220], [248, 162, 255], [255, 178, 218],
+  [208, 128, 255], [255, 205, 228], [228, 108, 248],
+  [255, 220, 240], [255, 100, 180], [220, 80, 255],
+  [255, 240, 250], [255, 160, 200], [180, 100, 255],
 ];
 function Bloom(x, y) {
   this.x=x; this.y=y;
   const c = BLOOM_PALETTE[Math.floor(Math.random() * BLOOM_PALETTE.length)];
   this.r=c[0]; this.g=c[1]; this.b=c[2];
-  this.alpha = 0.35 + Math.random() * 0.45;
+  this.alpha = 0.50 + Math.random() * 0.42;
   this.angle = Math.random() * Math.PI * 2;
   this.scale = 0.04 + Math.random() * 0.04;
-  this.maxScale = 0.18 + Math.random() * 0.28;
+  this.maxScale = 0.28 + Math.random() * 0.42;
   this.done = false;
 }
 Bloom.prototype.grow = function() {
@@ -731,6 +736,8 @@ Bloom.prototype.grow = function() {
 Bloom.prototype.draw = function() {
   treeCt.save();
   treeCt.globalAlpha = this.alpha;
+  treeCt.shadowColor = `rgba(${this.r},${this.g},${this.b},0.7)`;
+  treeCt.shadowBlur = 8;
   treeCt.fillStyle = `rgb(${this.r},${this.g},${this.b})`;
   treeCt.translate(this.x, this.y);
   treeCt.scale(this.scale, this.scale);
@@ -760,6 +767,9 @@ const BLOOM_ZONES = [
   [310,230,460,420], [640,220,700,360],
   [460,195,560,265], [575,215,685,305],
   [335,192,505,275], [395,275,565,425],
+  [280,250,370,380], [680,200,730,320],
+  [430,180,530,250], [520,190,620,280],
+  [350,300,480,440], [560,240,660,380],
 ];
 function makeBloomPositions(n) {
   const out = [];
@@ -801,7 +811,7 @@ function runTreeAnimation() {
     }
 
     // Phase 2 — Bloom petals (collect finished blooms for fall)
-    const bloomPos  = makeBloomPositions(260);
+    const bloomPos  = makeBloomPositions(480);
     let   bi        = 0;
     const liveBloom = [];
     const allBlooms = []; // finished blooms kept for fall phase
