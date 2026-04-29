@@ -415,180 +415,218 @@ function drawStars() {
   requestAnimationFrame(drawStars);
 }
 
-// ─── Constellation "22" — auto-animate ───────────────────────────────────────
+// ─── Constellation "22" — centered, phases: show→connect→collapse→seed ────────
 // MUST be declared before drawStars() is first called (const/let are not hoisted)
-// 22 bright pulsing stars; after 3 s they auto-connect one by one, tracing "22"
-// Each "2" drawn clockwise: top-left arc → top → top-right → right side down
-//   → diagonal to lower-left → bottom stroke left→right
+//
+// Each "2": CW arc top-left→top→top-right → right side down
+//           → diagonal to lower-left → bottom stroke left→right
+// Positions centred on screen (x 0.27–0.73, y 0.28–0.72)
 const PUZZLE_STARS = [
-  // ── first "2"  (1–11) ─────────────────────────────────────
-  {x:.08,y:.09}, // 1  top-left of arc
-  {x:.15,y:.05}, // 2  top centre
-  {x:.21,y:.09}, // 3  top-right
-  {x:.23,y:.16}, // 4  right side coming down
-  {x:.20,y:.22}, // 5  diagonal starts (right→left)
-  {x:.15,y:.27}, // 6  diagonal centre
-  {x:.10,y:.31}, // 7  diagonal lower
-  {x:.07,y:.36}, // 8  lower-left corner
-  {x:.07,y:.38}, // 9  bottom-left
-  {x:.15,y:.38}, // 10 bottom centre
-  {x:.23,y:.38}, // 11 bottom-right
-  // ── second "2"  (12–22) ───────────────────────────────────
-  {x:.32,y:.09}, // 12 top-left of arc
-  {x:.39,y:.05}, // 13 top centre
-  {x:.45,y:.09}, // 14 top-right
-  {x:.47,y:.16}, // 15 right side coming down
-  {x:.44,y:.22}, // 16 diagonal starts
-  {x:.39,y:.27}, // 17 diagonal centre
-  {x:.34,y:.31}, // 18 diagonal lower
-  {x:.31,y:.36}, // 19 lower-left corner
-  {x:.31,y:.38}, // 20 bottom-left
-  {x:.39,y:.38}, // 21 bottom centre
-  {x:.47,y:.38}, // 22 bottom-right
+  // ── first "2"  (stars 1–11) ───────────────────────────────
+  {x:.28,y:.33}, {x:.36,y:.28}, {x:.42,y:.33}, {x:.44,y:.43},
+  {x:.41,y:.51}, {x:.36,y:.57}, {x:.30,y:.63}, {x:.27,y:.69},
+  {x:.27,y:.72}, {x:.36,y:.72}, {x:.44,y:.72},
+  // ── second "2"  (stars 12–22) ─────────────────────────────
+  {x:.57,y:.33}, {x:.65,y:.28}, {x:.71,y:.33}, {x:.73,y:.43},
+  {x:.70,y:.51}, {x:.65,y:.57}, {x:.59,y:.63}, {x:.56,y:.69},
+  {x:.56,y:.72}, {x:.65,y:.72}, {x:.73,y:.72},
 ];
 
-let pzConn   = [];    // indices added so far
-let pzSolved = false;
-let pzWinTs  = 0;
+// Seed convergence point = mid-bottom of the "22"
+const SEED_FX = 0.50;
+const SEED_FY = 0.72;
+
+// Phase management
+// 'show'→'connect'→'hold'→'collapse'→'seed'→'done'
+let pzPhase   = 'done'; // starts 'done'; set to 'show' by startConstellationFlow
+let pzPhaseTs = 0;
+let pzConn    = [];     // star indices connected so far
+let pzOnSeed  = null;   // callback fired when seed hits ground
+
+// Live star positions (updated during collapse lerp)
+let pzCurPos  = PUZZLE_STARS.map(s => ({x: s.x, y: s.y}));
 
 function pxStar(i) {
-  return { x: PUZZLE_STARS[i].x * canvas.width,
-           y: PUZZLE_STARS[i].y * canvas.height };
+  return { x: pzCurPos[i].x * canvas.width,
+           y: pzCurPos[i].y * canvas.height };
 }
 
-function drawPuzzleOverlay() {
-  const t = performance.now();
-  // hide everything 7 s after win
-  if (pzSolved && t - pzWinTs > 7000) return;
+function easeIO(t) { return t < .5 ? 2*t*t : -1+(4-2*t)*t; }
 
+function drawPuzzleOverlay() {
+  if (pzPhase === 'done') return;
+  const t = performance.now();
   ctx.save();
 
-  // ── drawn lines ────────────────────────────────────────────
+  // ── COLLAPSE: stars lerp toward seed ─────────────────────
+  if (pzPhase === 'collapse') {
+    const prog = easeIO(Math.min(1, (t - pzPhaseTs) / 1300));
+    const sx   = SEED_FX * canvas.width;
+    const sy   = SEED_FY * canvas.height;
+
+    for (let i = 0; i < PUZZLE_STARS.length; i++) {
+      pzCurPos[i].x = PUZZLE_STARS[i].x + (SEED_FX - PUZZLE_STARS[i].x) * prog;
+      pzCurPos[i].y = PUZZLE_STARS[i].y + (SEED_FY - PUZZLE_STARS[i].y) * prog;
+    }
+
+    // Fading lines
+    const la = 1 - prog;
+    if (la > 0.02) {
+      ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+      for (let i = 0; i < pzConn.length - 1; i++) {
+        const a = pxStar(pzConn[i]), b = pxStar(pzConn[i+1]);
+        ctx.strokeStyle = `rgba(255,235,110,${0.72*la})`;
+        ctx.shadowColor = `rgba(255,215,60,${0.85*la})`;
+        ctx.shadowBlur  = 7 * la;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+    }
+
+    // Stars shrinking toward seed
+    for (let i = 0; i < PUZZLE_STARS.length; i++) {
+      const px = pxStar(i);
+      const r  = Math.max(1, 6 * (1 - prog * 0.88));
+      ctx.beginPath();
+      ctx.arc(px.x, px.y, r, 0, Math.PI*2);
+      ctx.fillStyle   = `rgba(255,242,130,1)`;
+      ctx.shadowColor = 'rgba(255,225,60,1)';
+      ctx.shadowBlur  = 12 + prog * 20;
+      ctx.fill();
+      ctx.shadowBlur  = 0;
+    }
+
+    // Seed glow growing at convergence point
+    const sg   = ctx.createRadialGradient(sx,sy,0, sx,sy, 8+prog*30);
+    sg.addColorStop(0,   `rgba(255,255,210,${prog})`);
+    sg.addColorStop(0.4, `rgba(255,220,60,${prog*0.6})`);
+    sg.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(sx, sy, 8+prog*30, 0, Math.PI*2);
+    ctx.fillStyle = sg; ctx.fill();
+
+    if (prog >= 1) { pzPhase = 'seed'; pzPhaseTs = t; }
+    ctx.restore(); return;
+  }
+
+  // ── SEED DROP ────────────────────────────────────────────
+  if (pzPhase === 'seed') {
+    const prog = easeIO(Math.min(1, (t - pzPhaseTs) / 750));
+    const sx   = SEED_FX * canvas.width;
+    const sy0  = SEED_FY * canvas.height;
+    const sy   = sy0 + (canvas.height * 1.06 - sy0) * prog;
+    const r    = 8 * (1 - prog * 0.55);
+
+    // Sparkle trail
+    for (let i = 1; i <= 6; i++) {
+      const ta = (1-i/7) * (1 - prog * 0.7);
+      const tr = Math.max(0.5, r * (1 - i * 0.1));
+      ctx.beginPath();
+      ctx.arc(sx, sy - i*14, tr, 0, Math.PI*2);
+      ctx.fillStyle   = `rgba(255,238,130,${ta})`;
+      ctx.shadowColor = 'rgba(255,215,60,0.8)';
+      ctx.shadowBlur  = 7;
+      ctx.fill();
+      ctx.shadowBlur  = 0;
+    }
+
+    // Seed core
+    const sg = ctx.createRadialGradient(sx,sy,0, sx,sy, r*2.8);
+    sg.addColorStop(0,   `rgba(255,255,210,${1-prog*0.3})`);
+    sg.addColorStop(0.5, `rgba(255,220,60,${0.7*(1-prog*0.2)})`);
+    sg.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(sx, sy, r*2.8, 0, Math.PI*2);
+    ctx.fillStyle = sg; ctx.fill();
+
+    if (prog >= 1) {
+      pzPhase = 'done';
+      if (pzOnSeed) pzOnSeed();
+    }
+    ctx.restore(); return;
+  }
+
+  // ── SHOW / CONNECT / HOLD: normal constellation ───────────
   if (pzConn.length > 1) {
-    ctx.lineWidth   = 1.8;
-    ctx.lineCap     = 'round';
-    ctx.shadowColor = 'rgba(255,215,60,0.85)';
-    ctx.shadowBlur  = 8;
+    ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(255,215,60,0.85)'; ctx.shadowBlur = 8;
     for (let i = 0; i < pzConn.length - 1; i++) {
       const a = pxStar(pzConn[i]), b = pxStar(pzConn[i+1]);
-      const gr = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-      gr.addColorStop(0, 'rgba(255,238,120,0.72)');
-      gr.addColorStop(1, 'rgba(255,200,60,0.72)');
+      const gr = ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+      gr.addColorStop(0,'rgba(255,238,120,0.72)');
+      gr.addColorStop(1,'rgba(255,200,60,0.72)');
       ctx.strokeStyle = gr;
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
     }
     ctx.shadowBlur = 0;
   }
 
-  // ── win shimmer — full constellation pulses gold then fades ─
-  if (pzSolved) {
-    const age  = (t - pzWinTs) / 1000;
-    const fade = Math.max(0, 1 - Math.max(0, age - 1.5) / 5);
-    if (fade > 0) {
-      ctx.globalAlpha = fade;
-      ctx.lineWidth   = 2.4;
-      ctx.strokeStyle = `rgba(255,245,140,${0.88*fade})`;
-      ctx.shadowColor = `rgba(255,225,60,1)`;
-      ctx.shadowBlur  = 16 + 10 * Math.sin(t * 0.005);
-      for (let i = 0; i < PUZZLE_STARS.length - 1; i++) {
-        const a = pxStar(i), b = pxStar(i+1);
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur  = 0;
-    }
-  }
-
-  // ── special stars ──────────────────────────────────────────
   const pulse   = 0.5 + 0.5 * Math.sin(t * 0.0022);
-  const nextIdx = pzSolved ? -1 : pzConn.length; // next star about to light up
+  const nextIdx = pzConn.length;
 
   for (let i = 0; i < PUZZLE_STARS.length; i++) {
     const px   = pxStar(i);
-    const done = i < pzConn.length;          // already connected
-    const next = i === nextIdx;              // about to be connected (pre-flash)
+    const done = i < pzConn.length;
+    const next = i === nextIdx;
+    const r    = done ? 6 : next ? 5 + pulse*3 : 5;
+    const al   = done ? 1.0 : next ? 0.75+pulse*.25 : 0.72+pulse*.15;
 
-    // Sizes: done=6, next=5+pulse*3, idle=5
-    const r     = done ? 6 : next ? 5 + pulse * 3 : 5;
-    const alpha = done ? 1.0 : next ? 0.75 + pulse*0.25 : 0.72 + pulse*0.15;
+    // Halo
+    const gh = ctx.createRadialGradient(px.x,px.y,0, px.x,px.y, r*5);
+    gh.addColorStop(0,   done?`rgba(255,235,90,0.50)`:`rgba(200,220,255,0.38)`);
+    gh.addColorStop(0.4, done?`rgba(255,220,60,0.20)`:`rgba(180,205,255,0.15)`);
+    gh.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath(); ctx.arc(px.x,px.y,r*5,0,Math.PI*2);
+    ctx.fillStyle = gh; ctx.fill();
 
-    // radial glow halo
-    const grad = ctx.createRadialGradient(px.x, px.y, 0, px.x, px.y, r * 5);
-    grad.addColorStop(0,   done ? `rgba(255,235,90,0.45)`  : `rgba(200,220,255,0.32)`);
-    grad.addColorStop(0.4, done ? `rgba(255,220,60,0.18)`  : `rgba(180,205,255,0.12)`);
-    grad.addColorStop(1,   'rgba(0,0,0,0)');
-    ctx.beginPath();
-    ctx.arc(px.x, px.y, r * 5, 0, Math.PI*2);
-    ctx.fillStyle = grad;
-    ctx.fill();
+    // Core
+    ctx.beginPath(); ctx.arc(px.x,px.y,r,0,Math.PI*2);
+    ctx.fillStyle   = done?`rgba(255,244,130,${al})`:`rgba(210,228,255,${al})`;
+    ctx.shadowColor = done?'rgba(255,230,60,1)':'rgba(200,220,255,0.9)';
+    ctx.shadowBlur  = done?20:next?16:12;
+    ctx.fill(); ctx.shadowBlur = 0;
 
-    // core dot
-    ctx.beginPath();
-    ctx.arc(px.x, px.y, r, 0, Math.PI*2);
-    ctx.fillStyle   = done ? `rgba(255,244,130,${alpha})` : `rgba(210,228,255,${alpha})`;
-    ctx.shadowColor = done ? 'rgba(255,230,60,1)'         : 'rgba(200,220,255,0.9)';
-    ctx.shadowBlur  = done ? 20 : next ? 16 : 12;
-    ctx.fill();
-    ctx.shadowBlur  = 0;
-
-    // 4-point cross sparkle on done star
+    // Cross sparkle on connected stars
     if (done) {
-      const sp = r * 2.2;
-      ctx.strokeStyle = `rgba(255,248,160,${0.55 + pulse*0.3})`;
-      ctx.lineWidth   = 1;
+      const sp = r*2.2;
+      ctx.strokeStyle=`rgba(255,248,160,${0.55+pulse*0.3})`;
+      ctx.lineWidth=1;
       ctx.beginPath();
-      ctx.moveTo(px.x - sp, px.y); ctx.lineTo(px.x + sp, px.y);
-      ctx.moveTo(px.x, px.y - sp); ctx.lineTo(px.x, px.y + sp);
+      ctx.moveTo(px.x-sp,px.y); ctx.lineTo(px.x+sp,px.y);
+      ctx.moveTo(px.x,px.y-sp); ctx.lineTo(px.x,px.y+sp);
       ctx.stroke();
     }
   }
-
   ctx.restore();
 }
 
-// ── Auto-connect sequence ─────────────────────────────────────────────────────
-function startAutoConnect() {
-  let idx = 0;
-  const STEP = 195; // ms per connection
+// ── Phases ────────────────────────────────────────────────────────────────────
+function startConstellationFlow(onTreeDone) {
+  pzPhase  = 'show';
+  pzConn   = [];
+  pzCurPos = PUZZLE_STARS.map(s => ({x:s.x, y:s.y}));
 
-  function tick() {
-    pzConn.push(idx);
-    idx++;
-    if (idx < PUZZLE_STARS.length) {
-      setTimeout(tick, STEP);
-    } else {
-      setTimeout(triggerWin, 480);
+  // 2.5 s: let stars be seen
+  setTimeout(() => {
+    // Auto-connect stars one by one
+    pzPhase  = 'connect';
+    let idx  = 0;
+    function tick() {
+      pzConn.push(idx++);
+      if (idx < PUZZLE_STARS.length) setTimeout(tick, 145);
+      else setTimeout(beginCollapse, 700); // hold full "22" briefly
     }
+    tick();
+  }, 2500);
+
+  function beginCollapse() {
+    pzPhase   = 'collapse';
+    pzPhaseTs = performance.now();
+    // After collapse (1300 ms) + seed drop (750 ms) + buffer → tree
+    pzOnSeed  = () => {
+      runTreeAnimation().then(onTreeDone);
+    };
   }
-  tick();
-}
-
-// start 3 s after page load so stars are visible first
-setTimeout(startAutoConnect, 3000);
-
-function triggerWin() {
-  pzSolved = true;
-  pzWinTs  = performance.now();
-
-  // Sky flash white then back
-  canvas.style.transition = 'filter 0.08s';
-  canvas.style.filter     = 'brightness(6) saturate(0.2)';
-  setTimeout(() => {
-    canvas.style.transition = 'filter 3.5s ease';
-    canvas.style.filter     = 'brightness(1) saturate(1)';
-  }, 80);
-
-  // Hide hint
-  const hint = document.getElementById('puzzle-hint');
-  if (hint) hint.classList.add('hidden');
-
-  // Reveal hidden paragraph in letter
-  setTimeout(() => {
-    const extra = document.getElementById('letter-extra');
-    if (extra) extra.classList.add('revealed');
-    const frame = document.getElementById('letter-frame');
-    if (frame) setTimeout(() => frame.scrollTo({ top: frame.scrollHeight, behavior: 'smooth' }), 350);
-  }, 1000);
 }
 
 // ── start star loop (puzzle vars are all declared above, safe to call now) ───
@@ -783,17 +821,22 @@ function runTreeAnimation() {
       }
     }
 
-    // Phase 3 — Petals fall; letter reveals simultaneously
+    // Phase 3 — Petals fall then spiral into letter shape
     function startFall(blooms) {
       blooms.forEach(b => {
         b.vx       = (Math.random() - 0.5) * 2.5;
-        b.vy       = Math.random() * 0.8;        // start drifting downward
+        b.vy       = Math.random() * 0.8;
         b.gravity  = 0.055 + Math.random() * 0.055;
         b.angleVel = (Math.random() - 0.5) * 0.04;
         b.falling  = true;
       });
 
       resolve(); // letter fades in while petals fall
+
+      // Approximate letter centre (desktop: right-centre; portrait: lower-centre)
+      const portrait = tH > tW;
+      const letterX  = portrait ? tW * 0.50 : tW * 0.63;
+      const letterY  = portrait ? tH * 0.62 : tH * 0.50;
 
       function fallFrame() {
         treeCt.clearRect(0, 0, treeCv.width, treeCv.height);
@@ -803,11 +846,29 @@ function runTreeAnimation() {
         for (const b of blooms) {
           if (!b.falling) continue;
           b.vy    += b.gravity;
+
+          // Once past 40 % of screen height, attract toward letter centre
+          if (b.y > tH * 0.40) {
+            const dx   = letterX - b.x;
+            const dy   = letterY - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 8) {
+              const pull = 0.14;
+              b.vx += (dx / dist) * pull;
+              b.vy += (dy / dist) * pull;
+              const spd = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
+              if (spd > 5) { b.vx *= 5/spd; b.vy *= 5/spd; }
+            }
+            // Fade fast when very close to letter centre
+            if (dist < tW * 0.12) b.alpha *= 0.95;
+          }
+
           b.x     += b.vx;
           b.y     += b.vy;
           b.angle += b.angleVel;
           b.alpha *= 0.997;
-          if (b.y > tH + 30) { b.falling = false; continue; }
+
+          if (b.alpha < 0.03 || b.y > tH + 30) { b.falling = false; continue; }
           anyAlive = true;
           b.draw();
         }
@@ -912,15 +973,18 @@ function startBubbles(afterMs) {
 }
 
 if (seenSticker) {
-  // Came from candle page — skip tree, show letter immediately
+  // Came from candle page — skip all animations, show letter directly
+  pzPhase = 'done';
   contentWrap.style.opacity = '1';
   contentWrap.style.transform = 'none';
   muteBtn.classList.add('visible');
   startTypewriter();
   startBubbles(1200);
 } else {
-  // Direct visit — tree grows → petals fall → letter appears
-  runTreeAnimation().then(() => {
+  // Direct / first visit:
+  // "22" constellation → collapse to seed → seed drops → tree grows
+  // → petals fall toward letter → letter fades in
+  startConstellationFlow(() => {
     showContent();
     startBubbles(2000);
   });
