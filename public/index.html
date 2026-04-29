@@ -28,15 +28,15 @@
     #flash {
       position: fixed;
       inset: 0;
-      background: rgba(230,200,255,1);
+      background: rgba(255,235,180,0.88);
       opacity: 0;
       pointer-events: none;
       z-index: 9;
     }
-    #flash.burst { animation: flash-burst 0.55s ease-out forwards; }
+    #flash.burst { animation: flash-burst 0.6s ease-out forwards; }
     @keyframes flash-burst {
-      0%   { opacity: 0.5; }
-      100% { opacity: 0;   }
+      0%   { opacity: 0.55; }
+      100% { opacity: 0;    }
     }
 
     /* ===== SPARKLES ===== */
@@ -69,9 +69,7 @@
       color: #fff;
       text-align: center;
       line-height: 1.15;
-      text-shadow:
-        0 0 12px rgba(210,120,255,0.6),
-        0 0 30px rgba(180,60,255,0.35);
+      text-shadow: 0 2px 60px rgba(0,0,0,0.8), 0 0 18px rgba(180,100,255,0.18);
       white-space: pre-line;
     }
 
@@ -79,14 +77,16 @@
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
       font-size: clamp(80px, 20vw, 220px);
-      letter-spacing: 2px;
+      letter-spacing: 0px;
+      color: rgba(245,235,255,0.96);
     }
 
     #cd-text.word {
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
-      font-size: clamp(30px, 8vw, 90px);
-      letter-spacing: 14px;
+      font-size: clamp(26px, 7vw, 82px);
+      letter-spacing: clamp(8px, 2vw, 18px);
+      color: rgba(230,215,255,0.90);
     }
 
     #cd-text.name {
@@ -96,30 +96,30 @@
       letter-spacing: 16px;
     }
 
-    /* KÁ special — gradient + letter-spacing sweep */
+    /* KÁ special — warm gold gradient */
     #cd-text.ka {
-      background: linear-gradient(135deg, #d880ff 0%, #ffffff 45%, #b040ff 100%);
+      background: linear-gradient(135deg, #fde68a 0%, #ffffff 48%, #f59e0b 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: none;
-      filter: drop-shadow(0 0 24px rgba(200,100,255,0.8));
+      filter: drop-shadow(0 0 22px rgba(245,158,11,0.62));
     }
     #cd-text.ka.cd-anim {
       animation: ka-reveal 2.2s cubic-bezier(0.4,0,0.2,1) forwards !important;
     }
     @keyframes ka-reveal {
-      0%   { opacity: 0; letter-spacing: 52px; transform: scale(1.7);  filter: blur(10px) drop-shadow(0 0 8px rgba(200,100,255,0.3)); }
-      22%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter: blur(0)    drop-shadow(0 0 24px rgba(200,100,255,0.8)); }
-      75%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter:            drop-shadow(0 0 24px rgba(200,100,255,0.8)); }
-      100% { opacity: 0; letter-spacing: 16px; transform: scale(0.92); filter: blur(4px)  drop-shadow(0 0 4px rgba(200,100,255,0)); }
+      0%   { opacity: 0; letter-spacing: 52px; transform: scale(1.7);  filter: blur(10px) drop-shadow(0 0 8px rgba(245,158,11,0.25)); }
+      22%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter: blur(0)    drop-shadow(0 0 22px rgba(245,158,11,0.62)); }
+      75%  { opacity: 1; letter-spacing: 16px; transform: scale(1);    filter:            drop-shadow(0 0 22px rgba(245,158,11,0.62)); }
+      100% { opacity: 0; letter-spacing: 16px; transform: scale(0.92); filter: blur(4px)  drop-shadow(0 0 4px rgba(245,158,11,0)); }
     }
 
     @keyframes cd-flash {
-      0%   { opacity: 0; transform: scale(2.2); filter: blur(8px); }
+      0%   { opacity: 0; transform: scale(2.0); filter: blur(6px); }
       18%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
       72%  { opacity: 1; transform: scale(1);   filter: blur(0);   }
-      100% { opacity: 0; transform: scale(0.7); filter: blur(4px); }
+      100% { opacity: 0; transform: scale(0.75); filter: blur(4px); }
     }
     .cd-anim { animation: cd-flash 1s cubic-bezier(0.4,0,0.2,1) forwards; }
 
@@ -129,6 +129,7 @@
       inset: 0;
       background: #070010;
       z-index: 10;
+      background: radial-gradient(ellipse at 50% 40%, #120828 0%, #070010 65%, #050008 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -157,12 +158,12 @@
       transform: translateX(-50%);
       font-family: 'Dancing Script', cursive;
       font-size: clamp(13px, 2vw, 17px);
-      color: rgba(200,150,255,0.75);
+      color: rgba(215,175,255,0.80);
       opacity: 0;
       transition: opacity 1.4s ease;
       pointer-events: none;
       white-space: nowrap;
-      text-shadow: 0 0 14px rgba(160,80,255,0.45);
+      text-shadow: 0 0 12px rgba(140,60,230,0.35);
     }
 
     /* ===== ENVELOPE ===== */
@@ -206,7 +207,7 @@
       50%       { opacity: 1;   transform: scale(1.08); }
     }
 
-    /* Thân phong bì — sáng hơn, có texture chéo nhẹ */
+    /* Thân phong bì — midnight blue, fine linen texture */
     .env-body {
       position: absolute;
       inset: 0;
@@ -215,19 +216,19 @@
           -48deg,
           transparent,
           transparent 4px,
-          rgba(255,255,255,0.013) 4px,
-          rgba(255,255,255,0.013) 8px
+          rgba(255,255,255,0.012) 4px,
+          rgba(255,255,255,0.012) 8px
         ),
-        linear-gradient(160deg, #2c1450 0%, #1d0a3a 55%, #130620 100%);
-      border: 1px solid rgba(200,110,255,0.55);
+        linear-gradient(160deg, #1e1042 0%, #140830 55%, #0c0420 100%);
+      border: 1px solid rgba(190,105,255,0.42);
       border-radius: 6px;
       z-index: 2;
-      animation: border-pulse 3s ease-in-out infinite;
+      animation: border-pulse 3.5s ease-in-out infinite;
     }
 
     @keyframes border-pulse {
-      0%, 100% { border-color: rgba(175,65,255,0.45);  box-shadow: inset 0 0 40px rgba(80,10,160,0.15); }
-      50%       { border-color: rgba(220,120,255,0.82); box-shadow: inset 0 0 60px rgba(130,30,220,0.28); }
+      0%, 100% { border-color: rgba(165,60,240,0.35);  box-shadow: inset 0 0 35px rgba(70,8,150,0.14); }
+      50%       { border-color: rgba(210,115,255,0.68); box-shadow: inset 0 0 55px rgba(120,28,210,0.24); }
     }
 
     /* Shadow từ flap đổ xuống body */
@@ -369,28 +370,30 @@
     }
     .addr-line.short { width: clamp(55px, 9vw, 96px); }
 
-    /* Dấu niêm phong — organic shape */
+    /* Dấu niêm phong — rich wax seal */
     .seal {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 82px;
-      height: 82px;
-      border-radius: 47% 53% 51% 49% / 52% 48% 54% 46%;
-      background: radial-gradient(circle at 36% 33%, #8e22ac, #3d0060 70%);
-      border: 2px solid rgba(215,145,255,0.52);
+      width: 86px;
+      height: 86px;
+      border-radius: 46% 54% 52% 48% / 51% 49% 53% 47%;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255,200,255,0.18) 0%, transparent 36%),
+        radial-gradient(circle at 38% 32%, #a21caf, #6b21a8 40%, #3b0764 75%);
+      border: 2px solid rgba(220,150,255,0.48);
       box-shadow:
-        0 4px 18px rgba(0,0,0,0.65),
-        inset 0 2px 8px rgba(230,170,255,0.22),
-        inset 0 -3px 6px rgba(0,0,0,0.5),
-        0 0 0 3px rgba(110,25,200,0.15);
+        0 5px 22px rgba(0,0,0,0.70),
+        inset 0 2px 8px rgba(240,175,255,0.24),
+        inset 0 -4px 8px rgba(0,0,0,0.55),
+        0 0 0 3px rgba(167,139,250,0.14);
       z-index: 6;
       cursor: pointer;
       outline: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: seal-glow 2.2s ease-in-out infinite;
+      animation: seal-glow 2.4s ease-in-out infinite;
       transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
     }
 
@@ -398,16 +401,16 @@
       font-family: 'Dancing Script', cursive;
       font-size: 36px;
       font-weight: 700;
-      color: rgba(242,205,255,0.82);
+      color: rgba(248,218,255,0.90);
       line-height: 1;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.65), 0 0 10px rgba(200,120,255,0.3);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.65), 0 0 8px rgba(210,130,255,0.28);
       pointer-events: none;
       user-select: none;
     }
 
     @keyframes seal-glow {
-      0%, 100% { box-shadow: 0 4px 18px rgba(0,0,0,0.65), inset 0 2px 8px rgba(230,170,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.5), 0 0 16px rgba(160,60,255,0.52); }
-      50%       { box-shadow: 0 4px 18px rgba(0,0,0,0.65), inset 0 2px 8px rgba(230,170,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.5), 0 0 38px rgba(215,105,255,1);    }
+      0%, 100% { box-shadow: 0 5px 22px rgba(0,0,0,0.70), inset 0 2px 8px rgba(240,175,255,0.24), inset 0 -4px 8px rgba(0,0,0,0.55), 0 0 14px rgba(162,28,175,0.45); }
+      50%       { box-shadow: 0 5px 22px rgba(0,0,0,0.70), inset 0 2px 8px rgba(240,175,255,0.24), inset 0 -4px 8px rgba(0,0,0,0.55), 0 0 34px rgba(192,58,210,0.85); }
     }
 
     .seal.break {
@@ -444,12 +447,12 @@
       pointer-events: none;
       z-index: 7;
       transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(220,140,255,0.9) 0%, rgba(180,60,255,0.4) 40%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,235,180,0.92) 0%, rgba(245,158,11,0.38) 40%, transparent 70%);
     }
-    .seal-burst.active { animation: burst 0.7s ease-out forwards; }
+    .seal-burst.active { animation: burst 0.75s ease-out forwards; }
     @keyframes burst {
       0%   { width: 0;     height: 0;     opacity: 1; }
-      100% { width: 380px; height: 380px; opacity: 0; }
+      100% { width: 420px; height: 420px; opacity: 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -462,22 +465,20 @@
 
     /* ===== AUTOPLAY BUTTON ===== */
     #play-btn {
-      position: fixed; bottom: 22px; left: 50%;
+      position: fixed; bottom: 20px; left: 50%;
       transform: translateX(-50%);
       z-index: 200; display: none;
-      align-items: center; gap: 8px;
-      background: rgba(110,20,190,0.88);
-      border: 1px solid rgba(200,140,255,0.65);
-      border-radius: 24px; padding: 10px 24px;
-      color: #f0d8ff; font-size: 15px; cursor: pointer;
-      backdrop-filter: blur(10px);
-      font-family: 'Dancing Script', cursive;
-      white-space: nowrap;
-      animation: play-pulse 1.8s ease-in-out infinite;
+      align-items: center; gap: 7px;
+      background: rgba(245,158,11,0.16);
+      border: 1px solid rgba(245,158,11,0.45);
+      border-radius: 22px; padding: 8px 20px;
+      color: rgba(253,230,138,0.92); font-size: 13px; cursor: pointer;
+      backdrop-filter: blur(10px); white-space: nowrap;
+      animation: play-pulse 2s ease-in-out infinite;
     }
     @keyframes play-pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(160,60,255,0.55); }
-      50%     { box-shadow: 0 0 0 14px rgba(160,60,255,0); }
+      0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.35); }
+      50%     { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
     }
 
     /* Focus ring for seal */
@@ -516,13 +517,13 @@
 
     /* Skip hint during countdown */
     #skip-hint {
-      position: fixed; bottom: 16px; left: 50%;
+      position: fixed; bottom: 18px; left: 50%;
       transform: translateX(-50%);
-      font-family: 'Dancing Script', cursive;
-      font-size: 14px; color: rgba(200,160,255,0.6);
+      font-family: inherit;
+      font-size: 12px; color: rgba(220,200,255,0.48);
       z-index: 10; pointer-events: none;
       opacity: 0; transition: opacity 0.5s;
-      white-space: nowrap;
+      white-space: nowrap; letter-spacing: 0.3px;
     }
   </style>
 </head>
@@ -726,7 +727,7 @@
   function spawnSparkles() {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
-    const palette = ['#e0a0ff', '#ffffff', '#c060ff', '#ffe8ff', '#b040ff'];
+    const palette = ['#fde68a', '#ffffff', '#f9a8d4', '#fff3c4', '#c084fc', '#fbbf24'];
     for (let i = 0; i < 24; i++) {
       const p = document.createElement('div');
       p.className = 'sparkle';

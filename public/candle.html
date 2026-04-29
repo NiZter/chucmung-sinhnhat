@@ -11,7 +11,7 @@
     html, body {
       width: 100%; height: 100vh; height: 100dvh;
       overflow: hidden;
-      background: #000;
+      background: #060008;
       cursor: pointer;
     }
 
@@ -36,34 +36,40 @@
     #hint {
       font-family: 'Dancing Script', cursive;
       font-size: clamp(20px, 4.5vw, 34px);
-      color: rgba(220, 180, 255, 0.92);
-      text-shadow: 0 0 24px rgba(180, 60, 255, 0.7);
-      animation: pulse-text 2s ease-in-out infinite;
+      color: rgba(253, 230, 138, 0.88);
+      text-shadow: 0 0 18px rgba(251, 146, 60, 0.42), 0 2px 4px rgba(0,0,0,0.4);
+      animation: pulse-text 2.2s ease-in-out infinite;
       letter-spacing: 0.5px;
       transition: opacity 0.8s ease;
     }
     @keyframes pulse-text {
-      0%, 100% { opacity: 0.72; }
+      0%, 100% { opacity: 0.70; }
       50%       { opacity: 1;    }
     }
 
     /* ===== HALO GLOW (warm candlelight under cake) ===== */
     #cake-glow {
       position: fixed;
-      bottom: 28%;
+      bottom: 26%;
       left: 50%;
       transform: translateX(-50%);
-      width: clamp(280px, 50vw, 480px);
-      height: 70px;
+      width: clamp(300px, 55vw, 540px);
+      height: 110px;
       background: radial-gradient(ellipse at center,
-        rgba(255,180,50,0.22) 0%,
-        rgba(255,120,20,0.1)  45%,
-        transparent 72%);
+        rgba(255,210,100,0.34) 0%,
+        rgba(255,160,40,0.18)  38%,
+        rgba(255,100,20,0.07)  62%,
+        transparent 82%);
       pointer-events: none;
       z-index: 1;
-      transition: opacity 1.6s ease;
+      transition: opacity 1.8s ease;
+      animation: glow-flicker 3s ease-in-out infinite;
     }
-    #cake-glow.out { opacity: 0; }
+    @keyframes glow-flicker {
+      0%,100% { opacity: 0.85; transform: translateX(-50%) scaleX(1);   }
+      50%      { opacity: 1;    transform: translateX(-50%) scaleX(1.05); }
+    }
+    #cake-glow.out { opacity: 0; animation: none; }
 
     /* ===== CAKE ===== */
     .cake { display: flex; flex-direction: column; align-items: center; }
@@ -150,9 +156,12 @@
     .candle-body {
       width: clamp(12px, 2vw, 16px);
       height: clamp(30px, 5vw, 46px);
-      background: linear-gradient(170deg, #e8d0ff 0%, #b87ee0 45%, #7030b0 100%);
-      border-radius: 3px 3px 1px 1px;
-      box-shadow: inset -2px 0 5px rgba(0,0,0,0.25), 0 0 8px rgba(160,80,255,0.3);
+      background: linear-gradient(170deg, #fce7f3 0%, #f9a8d4 28%, #db2777 62%, #831843 100%);
+      border-radius: 3px 3px 2px 2px;
+      box-shadow:
+        inset -2px 0 4px rgba(0,0,0,0.20),
+        inset 2px 0 4px rgba(255,200,220,0.18),
+        0 0 6px rgba(219,39,119,0.18);
       position: relative;
     }
     .candle-body::before {
@@ -161,15 +170,15 @@
       top: -5px; left: 50%;
       transform: translateX(-50%);
       width: 2px; height: 6px;
-      background: #1a0028;
+      background: #2a0010;
       border-radius: 1px;
     }
     .candle-body::after {
       content: '';
       position: absolute;
-      top: 30%; left: 0; right: 0;
-      height: 2px;
-      background: rgba(230,180,255,0.35);
+      top: 28%; left: 0; right: 0;
+      height: 1.5px;
+      background: rgba(255,210,230,0.42);
     }
 
     /* Camera shake on blow */
@@ -185,27 +194,33 @@
 
     /* Cake layers */
     .layer { border-radius: 6px; position: relative; overflow: hidden; }
+    /* Frosting top highlight on each layer */
     .layer::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, rgba(220,160,255,0.3), transparent);
+      background: linear-gradient(90deg,
+        transparent 5%, rgba(255,230,180,0.22) 30%,
+        rgba(255,240,210,0.30) 50%, rgba(255,230,180,0.22) 70%, transparent 95%);
     }
 
     .layer-top {
       width: clamp(130px, 22vw, 200px);
       height: clamp(34px, 5.5vw, 52px);
-      background: linear-gradient(180deg, #3d0068 0%, #220040 100%);
-      border: 1px solid rgba(190,100,255,0.5);
-      box-shadow: 0 0 20px rgba(150,50,255,0.3), inset 0 1px 0 rgba(230,170,255,0.15);
+      background: linear-gradient(175deg, #4a0080 0%, #2e0054 55%, #1e0038 100%);
+      border: 1px solid rgba(210,165,255,0.28);
+      box-shadow:
+        inset 0 1px 0 rgba(255,225,160,0.14),
+        0 -2px 0 rgba(255,220,150,0.10),
+        0 6px 24px rgba(80,10,160,0.4);
     }
     .layer-top::before {
       content: '· · · · ·';
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(200,140,255,0.3);
+      color: rgba(220,175,255,0.28);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
@@ -214,12 +229,12 @@
     .layer-mid {
       width: clamp(185px, 31vw, 285px);
       height: clamp(42px, 7vw, 64px);
-      background: linear-gradient(180deg, #300054 0%, #1c0038 100%);
-      border: 1px solid rgba(165,75,230,0.4);
-      box-shadow: 0 0 16px rgba(120,35,210,0.25);
+      background: linear-gradient(180deg, #38005e 0%, #240048 50%, #160030 100%);
+      border: 1px solid rgba(180,100,240,0.22);
+      box-shadow: 0 0 20px rgba(100,20,180,0.3), inset 0 1px 0 rgba(220,170,255,0.06);
       margin-top: -1px;
     }
-    /* "22" pulsing with candle glow rhythm */
+    /* "22" — warm gold, pulses with candle rhythm */
     .layer-mid::before {
       content: '22';
       position: absolute;
@@ -227,21 +242,21 @@
       transform: translate(-50%,-50%);
       font-family: 'Dancing Script', cursive;
       font-size: clamp(18px, 3vw, 26px);
-      color: rgba(215,160,255,0.42);
-      letter-spacing: 3px;
-      animation: num-pulse 2.1s ease-in-out infinite;
+      color: rgba(253,230,138,0.45);
+      letter-spacing: 4px;
+      animation: num-pulse 2.2s ease-in-out infinite;
     }
     @keyframes num-pulse {
-      0%, 100% { color: rgba(210,150,255,0.38); text-shadow: none; }
-      50%       { color: rgba(225,175,255,0.68); text-shadow: 0 0 14px rgba(200,140,255,0.55); }
+      0%, 100% { color: rgba(253,230,138,0.38); text-shadow: none; }
+      50%       { color: rgba(253,230,138,0.78); text-shadow: 0 0 12px rgba(245,158,11,0.55); }
     }
 
     .layer-bot {
       width: clamp(240px, 40vw, 375px);
       height: clamp(50px, 8.5vw, 78px);
-      background: linear-gradient(180deg, #280044 0%, #140022 100%);
-      border: 1px solid rgba(145,55,200,0.35);
-      box-shadow: 0 0 24px rgba(110,25,200,0.3);
+      background: linear-gradient(180deg, #2c0048 0%, #1a0034 55%, #0e001e 100%);
+      border: 1px solid rgba(155,65,215,0.20);
+      box-shadow: 0 0 30px rgba(90,10,170,0.32), 0 8px 20px rgba(0,0,0,0.45);
       margin-top: -1px;
     }
     .layer-bot::before {
@@ -249,13 +264,13 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(200,140,255,0.3);
+      color: rgba(200,140,255,0.22);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
     }
 
-    /* Frosting drips */
+    /* Frosting drips — ivory cream */
     .drips {
       display: flex;
       width: clamp(130px, 22vw, 200px);
@@ -265,21 +280,21 @@
       z-index: 2;
     }
     .drip {
-      width: clamp(10px, 1.6vw, 14px);
-      height: clamp(8px, 1.4vw, 12px);
-      background: rgba(200,140,255,0.2);
+      width: clamp(9px, 1.5vw, 13px);
+      height: clamp(7px, 1.3vw, 11px);
+      background: rgba(255,242,220,0.20);
       border-radius: 0 0 50% 50%;
-      border: 1px solid rgba(200,140,255,0.35);
+      border: 1px solid rgba(255,225,180,0.30);
       border-top: none;
     }
 
     .plate {
       width: clamp(265px, 44vw, 415px);
-      height: clamp(10px, 1.6vw, 14px);
-      background: linear-gradient(180deg, rgba(160,80,255,0.18), transparent);
+      height: clamp(8px, 1.4vw, 12px);
+      background: linear-gradient(180deg, rgba(220,160,80,0.12), rgba(160,80,255,0.06) 60%, transparent);
       border-radius: 50%;
-      border: 1px solid rgba(160,80,255,0.18);
-      margin-top: 2px;
+      border: 1px solid rgba(200,140,60,0.16);
+      margin-top: 3px;
     }
 
     /* ===== WISH MESSAGE ===== */
@@ -333,20 +348,16 @@
       position: fixed;
       top: 14px; right: 14px;
       z-index: 20;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(70,8,140,0.38);
-      border: 1px solid rgba(180,100,255,0.42);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      backdrop-filter: blur(4px);
-      transition: background 0.2s;
-      pointer-events: auto;
+      display: flex; align-items: center; gap: 5px;
+      padding: 7px 16px; border-radius: 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.72); font-size: 13px;
+      cursor: pointer; backdrop-filter: blur(10px);
+      transition: background 0.2s, border-color 0.2s;
+      pointer-events: auto; white-space: nowrap;
     }
-    #mute-btn:hover { background: rgba(100,15,180,0.55); }
+    #mute-btn:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.28); }
 
     /* ===== STICKER ===== */
     #sticker-wrap {
@@ -377,22 +388,20 @@
 
     /* ===== AUTOPLAY BUTTON ===== */
     #play-btn {
-      position: fixed; bottom: 22px; left: 50%;
+      position: fixed; bottom: 20px; left: 50%;
       transform: translateX(-50%);
       z-index: 200; display: none;
-      align-items: center; gap: 8px;
-      background: rgba(110,20,190,0.88);
-      border: 1px solid rgba(200,140,255,0.65);
-      border-radius: 24px; padding: 10px 24px;
-      color: #f0d8ff; font-size: 15px; cursor: pointer;
-      backdrop-filter: blur(10px);
-      font-family: 'Dancing Script', cursive;
-      white-space: nowrap;
-      animation: play-pulse 1.8s ease-in-out infinite;
+      align-items: center; gap: 7px;
+      background: rgba(245,158,11,0.16);
+      border: 1px solid rgba(245,158,11,0.45);
+      border-radius: 22px; padding: 8px 20px;
+      color: rgba(253,230,138,0.92); font-size: 13px; cursor: pointer;
+      backdrop-filter: blur(10px); white-space: nowrap;
+      animation: play-pulse 2s ease-in-out infinite;
     }
     @keyframes play-pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(160,60,255,0.55); }
-      50%     { box-shadow: 0 0 0 14px rgba(160,60,255,0); }
+      0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.35); }
+      50%     { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
     }
 
     /* Page-out transition overlay */
@@ -586,14 +595,14 @@
 
   // ── Confetti ─────────────────────────────────────────────
   function spawnConfetti() {
-    const colors = ['#ff6eb4','#ffd700','#b06fff','#5bc8ff','#7dff7d','#ff7d5b','#ffb347'];
-    for (let i = 0; i < 50; i++) {
+    const colors = ['#f9a8d4','#fde68a','#c084fc','#a5f3fc','#86efac','#fdba74','#f0abfc','#fef08a'];
+    for (let i = 0; i < 28; i++) {
       const p = document.createElement('div');
       p.className = 'confetti-piece';
-      const w   = 4 + Math.random() * 6;
-      const h   = 5 + Math.random() * 9;
-      const dur = 2.4 + Math.random() * 2.2;
-      const delay = Math.random() * 0.9;
+      const w   = 4 + Math.random() * 5;
+      const h   = 5 + Math.random() * 8;
+      const dur = 3.2 + Math.random() * 2.8;
+      const delay = Math.random() * 1.1;
       p.style.cssText = `
         --color:${colors[Math.floor(Math.random()*colors.length)]};
         --w:${w}px; --h:${h}px;
