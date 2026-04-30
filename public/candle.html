@@ -414,6 +414,26 @@
 
     /* Sticker clickable hint */
     #sticker-wrap { cursor: pointer; }
+
+    /* ===== MOBILE / SAFE AREA ===== */
+    @supports (padding: env(safe-area-inset-top)) {
+      #mute-btn {
+        top:   max(12px, calc(env(safe-area-inset-top) + 6px));
+        right: max(12px, calc(env(safe-area-inset-right) + 8px));
+      }
+      #play-btn {
+        bottom: max(20px, calc(env(safe-area-inset-bottom) + 14px));
+      }
+    }
+    /* Cake shrinks on very small screens */
+    @media (max-width: 360px) {
+      .layer-top  { width: clamp(110px, 30vw, 140px); }
+      .layer-mid  { width: clamp(155px, 42vw, 200px); }
+      .layer-bot  { width: clamp(200px, 54vw, 260px); }
+      .drips      { width: clamp(110px, 30vw, 140px); }
+      .plate      { width: clamp(220px, 60vw, 280px); }
+      #hint { font-size: clamp(17px, 4vw, 22px); }
+    }
   </style>
 </head>
 <body>

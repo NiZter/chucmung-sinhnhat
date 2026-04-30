@@ -234,18 +234,68 @@
     /* ===== PORTRAIT ===== */
     @media (orientation: portrait) {
       #content-wrap {
-        flex-direction: column; justify-content: flex-start;
-        padding: 20px 16px; gap: 16px; overflow-y: auto;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: clamp(8px, 2dvh, 16px) 12px clamp(6px, 1dvh, 10px);
+        gap: clamp(8px, 1.4dvh, 13px);
+        overflow: hidden;   /* prevent outer scroll; letter scrolls internally */
       }
+      /* disable float so transform:none on letter-frame works cleanly */
       #avatar-frame {
-        width: clamp(80px, 26vw, 130px); height: clamp(80px, 26vw, 130px);
+        width: clamp(66px, 19vw, 90px);
+        height: clamp(66px, 19vw, 90px);
         flex-shrink: 0;
+        animation: none;    /* stop vertical float on portrait */
       }
+      /* letter fills remaining height */
       #letter-frame {
-        width: 100%; height: 62vh;
-        font-size: clamp(12.5px, 3.9vw, 15px);
-        padding: clamp(20px, 4vw, 30px) clamp(18px, 4.5vw, 28px);
+        flex: 1; min-height: 0;
+        width: 100%; height: auto;
+        font-size: clamp(12px, 3.7vw, 14.5px);
+        line-height: 1.9;
+        padding: clamp(14px, 3.2vw, 20px) clamp(12px, 3.4vw, 18px) clamp(12px, 2.8vw, 18px);
+        transform: none;    /* no tilt on portrait */
       }
+      /* bubbles thinner on portrait so they don't eat letter space */
+      .wish-bubble {
+        font-size: 12px;
+        padding: 5px 14px;
+      }
+      /* mute pill smaller on portrait */
+      #mute-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+    }
+
+    /* Safe-area support (iOS notch / home bar) */
+    @supports (padding: env(safe-area-inset-top)) {
+      @media (orientation: portrait) {
+        #content-wrap {
+          padding-top: max(clamp(8px, 2dvh, 16px), calc(env(safe-area-inset-top) + 6px));
+        }
+        #mute-btn {
+          top:   max(10px, calc(env(safe-area-inset-top) + 6px));
+          right: max(10px, calc(env(safe-area-inset-right) + 8px));
+        }
+        #play-btn {
+          bottom: max(20px, calc(env(safe-area-inset-bottom) + 14px));
+        }
+        #tw-skip-hint {
+          bottom: max(12px, calc(env(safe-area-inset-bottom) + 8px));
+          right:  max(12px, calc(env(safe-area-inset-right) + 10px));
+        }
+      }
+    }
+
+    /* Egg overlay responsive */
+    @media (max-width: 480px) {
+      #egg-inner {
+        padding: 28px 22px; margin: 0 14px;
+        border-radius: 18px;
+      }
+      #egg-inner p { font-size: clamp(15px, 4.2vw, 20px); }
     }
 
     /* ===== PUZZLE REWARD ===== */
@@ -1050,7 +1100,13 @@ function typewriter(el, speed, onDone) {
     } else {
       tickCtr++;
       if (tickCtr % 4 === 0 && speed > 10) tick();
-      if (frame) frame.scrollTop = frame.scrollHeight;
+      // Smart scroll: only follow cursor when it exits the visible area
+      if (frame) {
+        const cursorBottom = cursor.offsetTop + cursor.offsetHeight;
+        const frameBottom  = frame.scrollTop + frame.clientHeight;
+        if (cursorBottom > frameBottom - 28)
+          frame.scrollTop = Math.max(0, cursorBottom - frame.clientHeight + 56);
+      }
       setTimeout(type, speed);
     }
   }
