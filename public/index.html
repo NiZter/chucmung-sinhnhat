@@ -370,7 +370,7 @@
       const maxR = Math.min(window.innerWidth, window.innerHeight) * (0.38 + spd * 0.3);
       const dx  = Math.cos(ang) * maxR;
       const dy  = Math.sin(ang) * maxR - maxR * 0.25; // slight upward bias
-      const fs  = 36 + Math.random() * 44;
+      const fs  = 60 + Math.random() * 80;
       const rot = (Math.random() - 0.5) * 720;
       const dur = 0.9 + Math.random() * 0.9;
       const del = Math.random() * 0.18;
@@ -402,15 +402,15 @@
   let rainCount    = 0;
 
   function startFlowerRain() {
-    const MAX = 160;
+    const MAX = 220;
     rainInterval = setInterval(() => {
       if (rainCount >= MAX) { clearInterval(rainInterval); return; }
-      const batch = 4 + Math.floor(Math.random() * 4); // 4-7 per tick
+      const batch = 6 + Math.floor(Math.random() * 5); // 6-10 per tick
       for (let i = 0; i < batch; i++) {
         const el  = document.createElement('img');
         el.className = 'fl-rain';
         el.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
-        const fs  = 55 + Math.random() * 60;
+        const fs  = 100 + Math.random() * 100;
         const lx  = (Math.random() * 110 - 5) + 'vw';
         const dx  = (Math.random() - 0.5) * 120;
         const rot = (Math.random() - 0.5) * 540;
