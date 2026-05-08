@@ -583,13 +583,15 @@
         el.style.setProperty('--col', clr.col);
         el.style.setProperty('--op',  (0.55 + depthFade * 0.35).toFixed(2));
       } else if (rng < 0.78) {
-        /* ── flower image ── */
+        /* ── meme image ── */
+        const MEMES = ['data/meme1.jpg','data/meme2.jpg','data/meme3.jpg','data/meme4.jpg','data/meme5.jpg'];
         const img = document.createElement('img');
-        img.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
+        img.src = MEMES[Math.floor(Math.random() * MEMES.length)];
         img.draggable = false;
+        img.style.borderRadius = '12px';
         el.appendChild(img);
-        el.style.setProperty('--fs', (55 + Math.random() * 75) + 'px');
-        el.style.setProperty('--op', (0.50 + depthFade * 0.40).toFixed(2));
+        el.style.setProperty('--fs', (70 + Math.random() * 80) + 'px');
+        el.style.setProperty('--op', (0.55 + depthFade * 0.35).toFixed(2));
       } else {
         /* ── emoji ── */
         el.classList.add('bg-emoji');
