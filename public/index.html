@@ -143,10 +143,10 @@
       opacity: 0;
     }
     @keyframes bg-fall {
-      0%   { transform: translateY(0)      translateX(0)         rotate(0deg)      scale(1);        opacity: 0; }
+      0%   { transform: translateZ(var(--z)) translateY(0)      translateX(0)         rotate(0deg)      scale(1);        opacity: 0; }
       7%   { opacity: var(--op); }
       85%  { opacity: var(--op); }
-      100% { transform: translateY(120vh) translateX(var(--dx)) rotate(var(--rot)) scale(var(--sc)); opacity: 0; }
+      100% { transform: translateZ(var(--z)) translateY(120vh) translateX(var(--dx)) rotate(var(--rot)) scale(var(--sc)); opacity: 0; }
     }
     .bg-text {
       font-family: 'Dancing Script', cursive;
@@ -167,9 +167,19 @@
     }
 
     /* =====================================================
-       RAIN (matrix chars)
+       RAIN — 3-D scene
        ===================================================== */
-    #rain-wrap { position: fixed; inset: 0; background: #000; overflow: hidden; }
+    #rain-wrap {
+      position: fixed; inset: 0;
+      background: #000; overflow: hidden;
+      perspective: 750px;
+      perspective-origin: 50% 50%;
+    }
+    #rain-scene {
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transform: rotateX(0deg) rotateY(0deg);
+    }
 
     /* =====================================================
        FLASH (KÁ reveal)
@@ -315,7 +325,7 @@
 <div id="flower-layer"></div>
 
 <!-- ===== EXISTING CONTENT ===== -->
-<div id="rain-wrap"></div>
+<div id="rain-wrap"><div id="rain-scene"></div></div>
 <audio id="bg-music" src="data/music_2.mp3" loop></audio>
 <div id="flash"></div>
 <div id="nav-overlay"></div>
@@ -546,7 +556,7 @@
      BACKGROUND MIXED RAIN  (text + flower images + emoji)
      ============================================================ */
   (function startBgRain() {
-    const wrap = document.getElementById('rain-wrap');
+    const scene3d = document.getElementById('rain-scene');
 
     function spawnRainItem() {
       const clr  = BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)];
@@ -556,6 +566,10 @@
       const sc   = 0.75 + Math.random() * 0.5;
       const dur  = 5.5 + Math.random() * 5;
       const del  = Math.random() * 0.5;
+      /* depth: -500 (far/small) to +320 (near/large) */
+      const z    = -500 + Math.random() * 820;
+      /* depth fog: farther items slightly more transparent */
+      const depthFade = (z + 500) / 820;          // 0‥1
       const rng  = Math.random();
 
       const el = document.createElement('div');
@@ -567,7 +581,7 @@
         el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
         el.style.setProperty('--fs',  (13 + Math.random() * 13) + 'px');
         el.style.setProperty('--col', clr.col);
-        el.style.setProperty('--op',  '0.80');
+        el.style.setProperty('--op',  (0.55 + depthFade * 0.35).toFixed(2));
       } else if (rng < 0.78) {
         /* ── flower image ── */
         const img = document.createElement('img');
@@ -575,15 +589,16 @@
         img.draggable = false;
         el.appendChild(img);
         el.style.setProperty('--fs', (55 + Math.random() * 75) + 'px');
-        el.style.setProperty('--op', '0.85');
+        el.style.setProperty('--op', (0.50 + depthFade * 0.40).toFixed(2));
       } else {
         /* ── emoji ── */
         el.classList.add('bg-emoji');
         el.textContent = BG_EMOJIS[Math.floor(Math.random() * BG_EMOJIS.length)];
         el.style.setProperty('--fs', (18 + Math.random() * 28) + 'px');
-        el.style.setProperty('--op', '0.75');
+        el.style.setProperty('--op', (0.45 + depthFade * 0.35).toFixed(2));
       }
 
+      el.style.setProperty('--z',    z   + 'px');
       el.style.setProperty('--lx',   lx);
       el.style.setProperty('--dx',   dx  + 'px');
       el.style.setProperty('--rot',  rot + 'deg');
@@ -592,11 +607,70 @@
       el.style.setProperty('--del',  del + 's');
       el.style.setProperty('--glow',  clr.glow);
       el.style.setProperty('--glow2', clr.glow2);
-      wrap.appendChild(el);
+      scene3d.appendChild(el);
       setTimeout(() => el.remove(), (dur + del + 0.3) * 1000);
     }
 
     setInterval(spawnRainItem, 180);
+  })();
+
+  /* ============================================================
+     3-D RAIN DRAG — rotate scene on mouse / touch
+     ============================================================ */
+  (function initRainDrag() {
+    const rainScene = document.getElementById('rain-scene');
+    let rotX = 0, rotY = 0;
+    let dragging = false, startX = 0, startY = 0;
+    let velX = 0, velY = 0;
+    let hasMoved = false;
+    let rafId = null;
+    const MAX = 65, SENS = 0.22, FRICTION = 0.90, THRESHOLD = 5;
+
+    function applyRot() {
+      rainScene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    function onStart(x, y) {
+      dragging  = true; hasMoved = false;
+      startX = x; startY = y;
+      velX = velY = 0;
+      cancelAnimationFrame(rafId);
+    }
+    function onMove(x, y) {
+      if (!dragging) return;
+      const dx = x - startX, dy = y - startY;
+      if (!hasMoved && Math.hypot(dx, dy) < THRESHOLD) return;
+      hasMoved = true;
+      velX = dx * SENS; velY = dy * SENS;
+      rotY = clamp(rotY + velX, -MAX, MAX);
+      rotX = clamp(rotX - velY, -MAX, MAX);
+      applyRot();
+      startX = x; startY = y;
+    }
+    function onEnd() {
+      if (!dragging) return;
+      dragging = false;
+      function glide() {
+        velX *= FRICTION; velY *= FRICTION;
+        if (Math.abs(velX) < 0.04 && Math.abs(velY) < 0.04) return;
+        rotY = clamp(rotY + velX, -MAX, MAX);
+        rotX = clamp(rotX - velY, -MAX, MAX);
+        applyRot();
+        rafId = requestAnimationFrame(glide);
+      }
+      glide();
+    }
+
+    /* mouse */
+    document.addEventListener('mousedown',  e => { if (!e.target.closest('#box-wrap')) onStart(e.clientX, e.clientY); });
+    document.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
+    document.addEventListener('mouseup',    onEnd);
+    document.addEventListener('mouseleave', onEnd);
+    /* touch */
+    document.addEventListener('touchstart', e => { const t = e.touches[0]; onStart(t.clientX, t.clientY); }, { passive:true });
+    document.addEventListener('touchmove',  e => { const t = e.touches[0]; onMove(t.clientX, t.clientY); },  { passive:true });
+    document.addEventListener('touchend',   onEnd);
   })();
 
   /* ============================================================
