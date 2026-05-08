@@ -40,97 +40,54 @@
     /* Box outer wrapper — handles float + shake */
     #box-wrap {
       position: relative; z-index: 2;
-      display: flex; flex-direction: column; align-items: center;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      transform: scale(clamp(0.65, 20vmin, 1.15));
-      transform-origin: center bottom;
     }
     #box-wrap.floating { animation: box-float 3s ease-in-out infinite; }
     @keyframes box-float {
-      0%, 100% { transform: scale(clamp(0.65,20vmin,1.15)) translateY(0); }
-      50%       { transform: scale(clamp(0.65,20vmin,1.15)) translateY(-14px); }
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-14px); }
     }
     #box-wrap.shake { animation: box-shake 0.44s ease both !important; }
     @keyframes box-shake {
-      0%  { transform: scale(clamp(0.65,20vmin,1.15)) translateX(0) rotate(0); }
-      10% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(-10px) rotate(-4deg); }
-      22% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(10px) rotate(4deg); }
-      34% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(-8px) rotate(-3deg); }
-      46% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(8px) rotate(3deg); }
-      58% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(-5px) rotate(-1.5deg); }
-      70% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(5px) rotate(1.5deg); }
-      82% { transform: scale(clamp(0.65,20vmin,1.15)) translateX(-2px) rotate(-0.5deg); }
-      100%{ transform: scale(clamp(0.65,20vmin,1.15)) translateX(0) rotate(0); }
+      0%  { transform: translateX(0) rotate(0); }
+      10% { transform: translateX(-10px) rotate(-4deg); }
+      22% { transform: translateX(10px) rotate(4deg); }
+      34% { transform: translateX(-8px) rotate(-3deg); }
+      46% { transform: translateX(8px) rotate(3deg); }
+      58% { transform: translateX(-5px) rotate(-1.5deg); }
+      70% { transform: translateX(5px) rotate(1.5deg); }
+      82% { transform: translateX(-2px) rotate(-0.5deg); }
+      100%{ transform: translateX(0) rotate(0); }
     }
 
-    /* Bow */
-    #box-bow {
-      font-size: 58px; line-height: 1;
-      margin-bottom: -8px; position: relative; z-index: 4;
-      filter: drop-shadow(0 5px 14px rgba(0,0,0,0.55));
-      pointer-events: none; user-select: none;
-      transition: opacity 0.25s, transform 0.25s;
+    /* Gift images */
+    #gift-img-wrap {
+      position: relative;
+      width: clamp(200px, 44vmin, 320px);
+      filter: drop-shadow(0 24px 50px rgba(0,0,0,0.55));
     }
+    #gift-closed, #gift-open {
+      width: 100%; height: auto; display: block;
+      user-select: none; pointer-events: none;
+      -webkit-user-drag: none;
+    }
+    #gift-open {
+      position: absolute; top: 0; left: 0;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    #gift-closed { transition: opacity 0.2s ease; }
 
-    /* Lid */
-    #box-lid {
-      width: 234px; height: 56px;
-      background: linear-gradient(140deg, #fff6f6 0%, #fde9e9 55%, #fbd6d6 100%);
-      border-radius: 8px 8px 0 0;
-      position: relative; overflow: hidden; z-index: 3;
-      box-shadow: 0 -6px 22px rgba(130,0,0,0.13), 0 2px 0 rgba(0,0,0,0.07);
-      transform-origin: bottom center;
+    /* Swap: show open, hide closed + pop scale */
+    #gift-img-wrap.opened #gift-open   { opacity: 1; }
+    #gift-img-wrap.opened #gift-closed { opacity: 0; }
+    #gift-img-wrap.opened {
+      animation: gift-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
     }
-    #box-lid.lid-open {
-      animation: lid-flip 0.7s cubic-bezier(0.4,0,0.55,1) forwards;
-    }
-    @keyframes lid-flip {
-      0%   { transform: perspective(700px) rotateX(0);                         opacity: 1; }
-      55%  { transform: perspective(700px) rotateX(-135deg);                   opacity: 0.7; }
-      100% { transform: perspective(700px) rotateX(-158deg) translateY(-22px); opacity: 0; }
-    }
-    #box-lid::before { /* vertical ribbon */
-      content: ''; position: absolute;
-      top:0; left:50%; transform:translateX(-50%);
-      width:24px; height:100%;
-      background: linear-gradient(180deg,#9b1c1c,#7f1d1d);
-    }
-    #box-lid::after { /* horizontal ribbon */
-      content: ''; position: absolute;
-      top:50%; transform:translateY(-50%);
-      width:100%; height:18px;
-      background: linear-gradient(90deg,transparent 0%,#9b1c1c 8%,#b91c1c 50%,#9b1c1c 92%,transparent 100%);
-    }
-
-    /* Body */
-    #box-body {
-      width: 216px; height: 188px;
-      background: linear-gradient(150deg, #fff9f9 0%, #fde8e8 42%, #fadada 100%);
-      border-radius: 0 0 10px 10px;
-      position: relative; overflow: hidden; z-index: 2;
-      box-shadow:
-        0 22px 55px rgba(0,0,0,0.6),
-        0 8px 22px rgba(120,0,0,0.2),
-        inset 0 2px 0 rgba(255,255,255,0.55);
-    }
-    #box-body::before { /* vertical ribbon */
-      content: ''; position: absolute;
-      top:0; left:50%; transform:translateX(-50%);
-      width:24px; height:100%;
-      background: linear-gradient(180deg,#9b1c1c,#7f1d1d);
-    }
-    #box-body::after { /* horizontal ribbon */
-      content: ''; position: absolute;
-      top:40%; transform:translateY(-50%);
-      width:100%; height:20px;
-      background: linear-gradient(90deg,transparent 0%,#9b1c1c 5%,#b91c1c 50%,#9b1c1c 95%,transparent 100%);
-    }
-    #box-glow { /* pink glow when lid opens */
-      position:absolute; inset:0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(255,170,195,1) 0%, rgba(255,100,140,0.55) 38%, transparent 70%);
-      opacity:0; transition:opacity 0.45s ease;
-      pointer-events:none;
+    @keyframes gift-pop {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.13); }
+      100% { transform: scale(1); }
     }
 
     /* Hint text */
@@ -312,10 +269,9 @@
 <div id="gift-intro">
   <canvas id="gi-stars"></canvas>
   <div id="box-wrap">
-    <div id="box-bow">🎀</div>
-    <div id="box-lid"></div>
-    <div id="box-body">
-      <div id="box-glow"></div>
+    <div id="gift-img-wrap">
+      <img id="gift-closed" src="data/model_gift.png"      alt="Hộp quà" draggable="false">
+      <img id="gift-open"   src="data/model_gift_open.png" alt=""        draggable="false">
     </div>
   </div>
   <p id="gift-hint">Chạm để mở quà 🎁</p>
@@ -377,11 +333,9 @@
   /* ============================================================
      GIFT INTRO — BOX INTERACTION
      ============================================================ */
-  const boxWrap    = document.getElementById('box-wrap');
-  const boxLid     = document.getElementById('box-lid');
-  const boxBow     = document.getElementById('box-bow');
-  const boxGlow    = document.getElementById('box-glow');
-  const giftHint   = document.getElementById('gift-hint');
+  const boxWrap      = document.getElementById('box-wrap');
+  const giftImgWrap  = document.getElementById('gift-img-wrap');
+  const giftHint     = document.getElementById('gift-hint');
   const giftIntro  = document.getElementById('gift-intro');
   const flowerLayer= document.getElementById('flower-layer');
   const music      = document.getElementById('bg-music');
@@ -485,12 +439,9 @@
     boxWrap.classList.remove('floating');
     boxWrap.classList.add('shake');
 
-    // Phase 2 — lid opens (440ms)
+    // Phase 2 — swap to open image (440ms)
     setTimeout(() => {
-      boxBow.style.opacity = '0';
-      boxBow.style.transform = 'translateX(-50%) translateY(-20px) scale(0.5)';
-      boxLid.classList.add('lid-open');
-      boxGlow.style.opacity = '1';
+      giftImgWrap.classList.add('opened');
 
       // Phase 3 — burst flowers (640ms)
       setTimeout(spawnBurstFlowers, 200);
