@@ -133,26 +133,37 @@
       100% { transform: translateY(118vh) translateX(var(--dx)) rotate(var(--rot))   scale(var(--sc)); opacity: 0; }
     }
 
-    /* Background wish text rain (thay matrix rain) */
-    .wr-wish {
+    /* Background mixed rain (text + flower images + emoji) */
+    .bg-item {
       position: absolute;
       pointer-events: none; user-select: none;
+      left: var(--lx); top: -130px;
+      will-change: transform, opacity;
+      animation: bg-fall var(--dur) linear var(--del) forwards;
+      opacity: 0;
+    }
+    @keyframes bg-fall {
+      0%   { transform: translateY(0)      translateX(0)         rotate(0deg)      scale(1);        opacity: 0; }
+      7%   { opacity: var(--op); }
+      85%  { opacity: var(--op); }
+      100% { transform: translateY(120vh) translateX(var(--dx)) rotate(var(--rot)) scale(var(--sc)); opacity: 0; }
+    }
+    .bg-text {
       font-family: 'Dancing Script', cursive;
       font-weight: 700;
       font-size: var(--fs);
       color: var(--col);
       white-space: nowrap;
-      left: var(--lx);
-      top: -50px;
-      text-shadow: 0 0 8px var(--col), 0 0 18px var(--glow);
-      will-change: transform, opacity;
-      animation: wr-fall var(--dur) linear var(--del) forwards;
+      text-shadow: 0 0 7px var(--glow), 0 0 20px var(--glow), 0 0 42px var(--glow2);
     }
-    @keyframes wr-fall {
-      0%   { transform: translateY(0)     rotate(0deg);        opacity: 0; }
-      7%   { opacity: 0.75; }
-      86%  { opacity: 0.75; }
-      100% { transform: translateY(115vh) rotate(var(--rot));  opacity: 0; }
+    .bg-emoji {
+      font-size: var(--fs);
+      display: block;
+      filter: drop-shadow(0 0 8px var(--glow)) drop-shadow(0 0 18px var(--glow2));
+    }
+    .bg-item img {
+      width: var(--fs); height: auto; display: block;
+      filter: drop-shadow(0 0 10px var(--glow)) drop-shadow(0 0 22px var(--glow2));
     }
 
     /* =====================================================
@@ -390,13 +401,17 @@
     'Ngày mới rực rỡ ☀️',
     'Yêu đời yêu người 💖',
   ];
-  const WISH_COLORS = [
-    { col:'#ff9ecd', glow:'#ff3090' },
-    { col:'#fde68a', glow:'#f59e0b' },
-    { col:'#ffffff', glow:'#c084fc' },
-    { col:'#f9a8d4', glow:'#ec4899' },
-    { col:'#d8b4fe', glow:'#9333ea' },
-    { col:'#fbbf24', glow:'#f59e0b' },
+  const BG_EMOJIS = ['❤️','🩷','💕','💗','💖','💝','✨','🌸','🎀','🎊','🎉','⭐','🌟','💫','🍀','🌈'];
+  const BG_COLORS = [
+    { col:'#ff9ecd', glow:'#ff3090', glow2:'rgba(255,48,144,0.22)'  },
+    { col:'#fde68a', glow:'#f59e0b', glow2:'rgba(245,158,11,0.22)'  },
+    { col:'#ffffff', glow:'#c084fc', glow2:'rgba(192,132,252,0.22)' },
+    { col:'#f9a8d4', glow:'#ec4899', glow2:'rgba(236,72,153,0.22)'  },
+    { col:'#d8b4fe', glow:'#9333ea', glow2:'rgba(147,51,234,0.22)'  },
+    { col:'#fbbf24', glow:'#f59e0b', glow2:'rgba(251,191,36,0.22)'  },
+    { col:'#86efac', glow:'#22c55e', glow2:'rgba(34,197,94,0.22)'   },
+    { col:'#67e8f9', glow:'#06b6d4', glow2:'rgba(6,182,212,0.22)'   },
+    { col:'#ff6b9d', glow:'#ff1a6e', glow2:'rgba(255,26,110,0.22)'  },
   ];
 
   // Start float animation
@@ -528,30 +543,60 @@
   });
 
   /* ============================================================
-     BACKGROUND WISH RAIN (thay matrix rain)
+     BACKGROUND MIXED RAIN  (text + flower images + emoji)
      ============================================================ */
-  (function startWishRain() {
+  (function startBgRain() {
     const wrap = document.getElementById('rain-wrap');
-    setInterval(() => {
-      const el  = document.createElement('div');
-      el.className = 'wr-wish';
-      el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
-      const clr = WISH_COLORS[Math.floor(Math.random() * WISH_COLORS.length)];
-      const fs  = 13 + Math.random() * 11;   // 13–24px
-      const lx  = (Math.random() * 105 - 3) + 'vw';
-      const rot = (Math.random() - 0.5) * 14;
-      const dur = 5 + Math.random() * 5;
-      const del = Math.random() * 0.4;
-      el.style.setProperty('--fs',   fs  + 'px');
+
+    function spawnRainItem() {
+      const clr  = BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)];
+      const lx   = (Math.random() * 105 - 3) + 'vw';
+      const dx   = (Math.random() - 0.5) * 100;
+      const rot  = (Math.random() - 0.5) * 30;
+      const sc   = 0.75 + Math.random() * 0.5;
+      const dur  = 5.5 + Math.random() * 5;
+      const del  = Math.random() * 0.5;
+      const rng  = Math.random();
+
+      const el = document.createElement('div');
+      el.className = 'bg-item';
+
+      if (rng < 0.50) {
+        /* ── wish text ── */
+        el.classList.add('bg-text');
+        el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
+        el.style.setProperty('--fs',  (13 + Math.random() * 13) + 'px');
+        el.style.setProperty('--col', clr.col);
+        el.style.setProperty('--op',  '0.80');
+      } else if (rng < 0.78) {
+        /* ── flower image ── */
+        const img = document.createElement('img');
+        img.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
+        img.draggable = false;
+        el.appendChild(img);
+        el.style.setProperty('--fs', (55 + Math.random() * 75) + 'px');
+        el.style.setProperty('--op', '0.85');
+      } else {
+        /* ── emoji ── */
+        el.classList.add('bg-emoji');
+        el.textContent = BG_EMOJIS[Math.floor(Math.random() * BG_EMOJIS.length)];
+        el.style.setProperty('--fs', (18 + Math.random() * 28) + 'px');
+        el.style.setProperty('--op', '0.75');
+      }
+
       el.style.setProperty('--lx',   lx);
+      el.style.setProperty('--dx',   dx  + 'px');
       el.style.setProperty('--rot',  rot + 'deg');
+      el.style.setProperty('--sc',   sc  + '');
       el.style.setProperty('--dur',  dur + 's');
       el.style.setProperty('--del',  del + 's');
-      el.style.setProperty('--col',  clr.col);
-      el.style.setProperty('--glow', clr.glow);
+      el.style.setProperty('--glow',  clr.glow);
+      el.style.setProperty('--glow2', clr.glow2);
       wrap.appendChild(el);
       setTimeout(() => el.remove(), (dur + del + 0.3) * 1000);
-    }, 300);
+    }
+
+    setInterval(spawnRainItem, 180);
   })();
 
   /* ============================================================
