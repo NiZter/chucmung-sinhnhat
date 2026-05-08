@@ -114,23 +114,27 @@
       position: fixed; inset: 0; overflow: hidden;
       pointer-events: none; z-index: 1003;
     }
-    /* Rain flowers (CSS animation) */
+    /* Falling wish text */
     .fl-rain {
       position: fixed;
       pointer-events: none;
       user-select: none;
-      width: var(--fs);
-      height: auto;
       left: var(--lx);
-      top: -70px;
+      top: -60px;
+      font-family: 'Dancing Script', cursive;
+      font-size: var(--fs);
+      font-weight: 700;
+      color: var(--col);
+      white-space: nowrap;
+      text-shadow: 0 0 10px var(--col), 0 0 22px var(--col), 0 0 40px var(--glow);
       will-change: transform, opacity;
       animation: fl-fall var(--dur) linear var(--del) forwards;
     }
     @keyframes fl-fall {
-      0%   { transform: translateY(0)      translateX(0)        rotate(0deg)       scale(1);        opacity: 0; }
+      0%   { transform: translateY(0)     translateX(0)         rotate(0deg);        opacity: 0; }
       6%   { opacity: 1; }
-      88%  { opacity: 0.92; }
-      100% { transform: translateY(118vh)  translateX(var(--dx)) rotate(var(--rot)) scale(var(--sc)); opacity: 0; }
+      88%  { opacity: 0.95; }
+      100% { transform: translateY(118vh) translateX(var(--dx)) rotate(var(--rot));   opacity: 0; }
     }
 
     /* =====================================================
@@ -347,9 +351,30 @@
     'data/hoa1.png','data/hoa3.webp','data/hoa2.png','data/hoa4.png',
     'data/hoa1.png','data/hoa2.png',
   ];
-  const FLOWERS_RAIN = [
-    'data/hoa1.png','data/hoa2.png','data/hoa3.webp','data/hoa4.png',
-    'data/hoa1.png','data/hoa3.webp','data/hoa4.png','data/hoa2.png',
+  const WISHES = [
+    'Chúc mừng sinh nhật 🎂',
+    'Happy Birthday 🎉',
+    'Sinh nhật vui vẻ!',
+    'Tuổi mới bình an 🌸',
+    'Vạn sự như ý ✨',
+    'Hạnh phúc mãi mãi 💕',
+    'Thật nhiều niềm vui',
+    'Sức khỏe dồi dào 🍀',
+    'Ước mơ thành hiện thực',
+    '🎈 Chúc mừng 🎈',
+    'Luôn tươi trẻ 🌺',
+    'Một tuổi mới tuyệt vời',
+    'Happy B-day 🎁',
+    'Ngày mới rực rỡ ☀️',
+    'Yêu đời yêu người 💖',
+  ];
+  const WISH_COLORS = [
+    { col:'#ff9ecd', glow:'#ff3090' },
+    { col:'#fde68a', glow:'#f59e0b' },
+    { col:'#ffffff', glow:'#c084fc' },
+    { col:'#f9a8d4', glow:'#ec4899' },
+    { col:'#d8b4fe', glow:'#9333ea' },
+    { col:'#fbbf24', glow:'#f59e0b' },
   ];
 
   // Start float animation
@@ -403,34 +428,37 @@
   let rainCount    = 0;
 
   function startFlowerRain() {
-    const MAX = 220;
+    const MAX = 120;
     rainInterval = setInterval(() => {
       if (rainCount >= MAX) { clearInterval(rainInterval); return; }
-      const batch = 6 + Math.floor(Math.random() * 5); // 6-10 per tick
+      const batch = 3 + Math.floor(Math.random() * 3); // 3-5 per tick
       for (let i = 0; i < batch; i++) {
-        const el  = document.createElement('img');
+        const el   = document.createElement('div');
         el.className = 'fl-rain';
-        el.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
-        const fs  = 100 + Math.random() * 100;
-        const lx  = (Math.random() * 110 - 5) + 'vw';
-        const dx  = (Math.random() - 0.5) * 120;
-        const rot = (Math.random() - 0.5) * 540;
-        const sc  = 0.65 + Math.random() * 0.8;
-        const dur = 3.2 + Math.random() * 2.4;
-        const del = Math.random() * 0.6;
-        el.style.setProperty('--fs',  fs  + 'px');
-        el.style.setProperty('--lx',  lx);
-        el.style.setProperty('--dx',  dx  + 'px');
-        el.style.setProperty('--rot', rot + 'deg');
-        el.style.setProperty('--sc',  sc  + '');
-        el.style.setProperty('--dur', dur + 's');
-        el.style.setProperty('--del', del + 's');
+        el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
+        const clr  = WISH_COLORS[Math.floor(Math.random() * WISH_COLORS.length)];
+        const fs   = clamp(16, 3.5 + Math.random() * 2.5, 28);   // clamp vmin
+        const lx   = (Math.random() * 105 - 3) + 'vw';
+        const dx   = (Math.random() - 0.5) * 80;
+        const rot  = (Math.random() - 0.5) * 20;   // chữ không xoay nhiều
+        const dur  = 3.5 + Math.random() * 2.5;
+        const del  = Math.random() * 0.5;
+        el.style.setProperty('--fs',   `clamp(14px,${fs}vw,30px)`);
+        el.style.setProperty('--lx',   lx);
+        el.style.setProperty('--dx',   dx  + 'px');
+        el.style.setProperty('--rot',  rot + 'deg');
+        el.style.setProperty('--dur',  dur + 's');
+        el.style.setProperty('--del',  del + 's');
+        el.style.setProperty('--col',  clr.col);
+        el.style.setProperty('--glow', clr.glow);
         flowerLayer.appendChild(el);
         setTimeout(() => el.remove(), (dur + del + 0.2) * 1000);
       }
       rainCount += batch;
-    }, 75);
+    }, 200);
   }
+
+  function clamp(min, val, max) { return Math.min(max, Math.max(min, val)); }
 
   function runGiftSequence() {
     if (boxOpened) return;
