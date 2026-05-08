@@ -114,34 +114,51 @@
       position: fixed; inset: 0; overflow: hidden;
       pointer-events: none; z-index: 1003;
     }
-    /* Falling wish text */
+    /* Flower rain */
     .fl-rain {
       position: fixed;
       pointer-events: none;
       user-select: none;
+      width: var(--fs);
+      height: auto;
       left: var(--lx);
-      top: -60px;
-      font-family: 'Dancing Script', cursive;
-      font-size: var(--fs);
-      font-weight: 700;
-      color: var(--col);
-      white-space: nowrap;
-      text-shadow: 0 0 10px var(--col), 0 0 22px var(--col), 0 0 40px var(--glow);
+      top: -80px;
       will-change: transform, opacity;
       animation: fl-fall var(--dur) linear var(--del) forwards;
     }
     @keyframes fl-fall {
-      0%   { transform: translateY(0)     translateX(0)         rotate(0deg);        opacity: 0; }
+      0%   { transform: translateY(0)     translateX(0)         rotate(0deg)        scale(1);        opacity: 0; }
       6%   { opacity: 1; }
-      88%  { opacity: 0.95; }
-      100% { transform: translateY(118vh) translateX(var(--dx)) rotate(var(--rot));   opacity: 0; }
+      88%  { opacity: 0.92; }
+      100% { transform: translateY(118vh) translateX(var(--dx)) rotate(var(--rot))   scale(var(--sc)); opacity: 0; }
+    }
+
+    /* Background wish text rain (thay matrix rain) */
+    .wr-wish {
+      position: absolute;
+      pointer-events: none; user-select: none;
+      font-family: 'Dancing Script', cursive;
+      font-weight: 700;
+      font-size: var(--fs);
+      color: var(--col);
+      white-space: nowrap;
+      left: var(--lx);
+      top: -50px;
+      text-shadow: 0 0 8px var(--col), 0 0 18px var(--glow);
+      will-change: transform, opacity;
+      animation: wr-fall var(--dur) linear var(--del) forwards;
+    }
+    @keyframes wr-fall {
+      0%   { transform: translateY(0)     rotate(0deg);        opacity: 0; }
+      7%   { opacity: 0.75; }
+      86%  { opacity: 0.75; }
+      100% { transform: translateY(115vh) rotate(var(--rot));  opacity: 0; }
     }
 
     /* =====================================================
        RAIN (matrix chars)
        ===================================================== */
-    #rain-wrap { position: fixed; inset: 0; background: #000; }
-    #rc { display: block; width: 100%; height: 100%; }
+    #rain-wrap { position: fixed; inset: 0; background: #000; overflow: hidden; }
 
     /* =====================================================
        FLASH (KÁ reveal)
@@ -287,7 +304,7 @@
 <div id="flower-layer"></div>
 
 <!-- ===== EXISTING CONTENT ===== -->
-<div id="rain-wrap"><canvas id="rc"></canvas></div>
+<div id="rain-wrap"></div>
 <audio id="bg-music" src="data/music_2.mp3" loop></audio>
 <div id="flash"></div>
 <div id="nav-overlay"></div>
@@ -351,6 +368,11 @@
     'data/hoa1.png','data/hoa3.webp','data/hoa2.png','data/hoa4.png',
     'data/hoa1.png','data/hoa2.png',
   ];
+  const FLOWERS_RAIN = [
+    'data/hoa1.png','data/hoa2.png','data/hoa3.webp','data/hoa4.png',
+    'data/hoa1.png','data/hoa3.webp','data/hoa4.png','data/hoa2.png',
+  ];
+
   const WISHES = [
     'Chúc mừng sinh nhật 🎂',
     'Happy Birthday 🎉',
@@ -428,37 +450,34 @@
   let rainCount    = 0;
 
   function startFlowerRain() {
-    const MAX = 120;
+    const MAX = 220;
     rainInterval = setInterval(() => {
       if (rainCount >= MAX) { clearInterval(rainInterval); return; }
-      const batch = 3 + Math.floor(Math.random() * 3); // 3-5 per tick
+      const batch = 6 + Math.floor(Math.random() * 5);
       for (let i = 0; i < batch; i++) {
-        const el   = document.createElement('div');
+        const el  = document.createElement('img');
         el.className = 'fl-rain';
-        el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
-        const clr  = WISH_COLORS[Math.floor(Math.random() * WISH_COLORS.length)];
-        const fs   = clamp(16, 3.5 + Math.random() * 2.5, 28);   // clamp vmin
-        const lx   = (Math.random() * 105 - 3) + 'vw';
-        const dx   = (Math.random() - 0.5) * 80;
-        const rot  = (Math.random() - 0.5) * 20;   // chữ không xoay nhiều
-        const dur  = 3.5 + Math.random() * 2.5;
-        const del  = Math.random() * 0.5;
-        el.style.setProperty('--fs',   `clamp(14px,${fs}vw,30px)`);
-        el.style.setProperty('--lx',   lx);
-        el.style.setProperty('--dx',   dx  + 'px');
-        el.style.setProperty('--rot',  rot + 'deg');
-        el.style.setProperty('--dur',  dur + 's');
-        el.style.setProperty('--del',  del + 's');
-        el.style.setProperty('--col',  clr.col);
-        el.style.setProperty('--glow', clr.glow);
+        el.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
+        const fs  = 100 + Math.random() * 100;
+        const lx  = (Math.random() * 110 - 5) + 'vw';
+        const dx  = (Math.random() - 0.5) * 120;
+        const rot = (Math.random() - 0.5) * 540;
+        const sc  = 0.65 + Math.random() * 0.8;
+        const dur = 3.2 + Math.random() * 2.4;
+        const del = Math.random() * 0.6;
+        el.style.setProperty('--fs',  fs  + 'px');
+        el.style.setProperty('--lx',  lx);
+        el.style.setProperty('--dx',  dx  + 'px');
+        el.style.setProperty('--rot', rot + 'deg');
+        el.style.setProperty('--sc',  sc  + '');
+        el.style.setProperty('--dur', dur + 's');
+        el.style.setProperty('--del', del + 's');
         flowerLayer.appendChild(el);
         setTimeout(() => el.remove(), (dur + del + 0.2) * 1000);
       }
       rainCount += batch;
-    }, 200);
+    }, 75);
   }
-
-  function clamp(min, val, max) { return Math.min(max, Math.max(min, val)); }
 
   function runGiftSequence() {
     if (boxOpened) return;
@@ -509,71 +528,31 @@
   });
 
   /* ============================================================
-     MATRIX RAIN
+     BACKGROUND WISH RAIN (thay matrix rain)
      ============================================================ */
-  const canvas = document.getElementById('rc');
-  const ctx    = canvas.getContext('2d');
-
-  const FS    = 12;
-  const TRAIL = 38;
-  const CHARS = ['♥', '✦', '❀', '✧'];
-  const RAIN_RGB = [180, 60, 255];
-
-  let cols, drops, speeds, lengths;
-  let resizeTimer;
-
-  function resize() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      const vp = window.visualViewport;
-      canvas.width  = vp ? vp.width  : window.innerWidth;
-      canvas.height = vp ? vp.height : window.innerHeight;
-      init();
-    }, 100);
-  }
-
-  function init() {
-    cols    = Math.floor(canvas.width / FS);
-    drops   = Array.from({ length: cols }, () => -(Math.random() * TRAIL * 2 | 0));
-    speeds  = Array.from({ length: cols }, () => 0.10 + Math.random() * 0.18);
-    lengths = Array.from({ length: cols }, () => Math.floor(TRAIL * 0.5 + Math.random() * TRAIL * 0.7));
-  }
-
-  function randChar() { return CHARS[Math.floor(Math.random() * CHARS.length)]; }
-
-  function draw() {
-    const [r, g, b] = RAIN_RGB;
-    ctx.fillStyle = 'rgba(0,0,0,0.18)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = `${FS}px monospace`;
-    ctx.textBaseline = 'top';
-
-    for (let i = 0; i < cols; i++) {
-      const head = drops[i];
-      const len  = lengths[i];
-      for (let j = 0; j < len; j++) {
-        const row = head - j;
-        const y   = row * FS;
-        if (y < -FS || y > canvas.height) continue;
-        const alpha = Math.pow(1 - j / len, 1.6) * (j === 0 ? 1 : 0.85);
-        if (j === 0)    ctx.fillStyle = `rgba(255,220,235,${alpha})`;
-        else if (j < 3) ctx.fillStyle = `rgba(${Math.min(255,r+30)},${Math.min(255,g+60)},${Math.min(255,b+40)},${alpha})`;
-        else            ctx.fillStyle = `rgba(${r},${g},${b},${alpha * 0.9})`;
-        ctx.fillText(randChar(), i * FS, y);
-      }
-      drops[i] += speeds[i];
-      if (drops[i] * FS > canvas.height + len * FS) {
-        drops[i]   = -(Math.random() * TRAIL | 0);
-        lengths[i] = Math.floor(TRAIL * 0.4 + Math.random() * TRAIL * 0.8);
-      }
-    }
-  }
-
-  function loop() { draw(); requestAnimationFrame(loop); }
-  resize();
-  window.addEventListener('resize', resize);
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
-  loop();
+  (function startWishRain() {
+    const wrap = document.getElementById('rain-wrap');
+    setInterval(() => {
+      const el  = document.createElement('div');
+      el.className = 'wr-wish';
+      el.textContent = WISHES[Math.floor(Math.random() * WISHES.length)];
+      const clr = WISH_COLORS[Math.floor(Math.random() * WISH_COLORS.length)];
+      const fs  = 13 + Math.random() * 11;   // 13–24px
+      const lx  = (Math.random() * 105 - 3) + 'vw';
+      const rot = (Math.random() - 0.5) * 14;
+      const dur = 5 + Math.random() * 5;
+      const del = Math.random() * 0.4;
+      el.style.setProperty('--fs',   fs  + 'px');
+      el.style.setProperty('--lx',   lx);
+      el.style.setProperty('--rot',  rot + 'deg');
+      el.style.setProperty('--dur',  dur + 's');
+      el.style.setProperty('--del',  del + 's');
+      el.style.setProperty('--col',  clr.col);
+      el.style.setProperty('--glow', clr.glow);
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), (dur + del + 0.3) * 1000);
+    }, 300);
+  })();
 
   /* ============================================================
      SHARED HELPERS
