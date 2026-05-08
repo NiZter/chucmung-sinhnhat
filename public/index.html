@@ -118,7 +118,9 @@
     .fl-rain {
       position: fixed;
       pointer-events: none;
-      font-size: var(--fs);
+      user-select: none;
+      width: var(--fs);
+      height: auto;
       left: var(--lx);
       top: -70px;
       will-change: transform, opacity;
@@ -340,8 +342,15 @@
   const flowerLayer= document.getElementById('flower-layer');
   const music      = document.getElementById('bg-music');
 
-  const FLOWERS = ['🌸','🌺','🌹','🌷','🌼','💮','🏵️','🌸','🌺','🌹'];
-  const FLOWERS_RAIN = ['🌸','🌺','🌹','🌷','🌼','💮','🌸','🌺','🌸','🌹'];
+  const FLOWERS = [
+    'data/hoa1.png','data/hoa2.png','data/hoa3.webp','data/hoa4.png',
+    'data/hoa1.png','data/hoa3.webp','data/hoa2.png','data/hoa4.png',
+    'data/hoa1.png','data/hoa2.png',
+  ];
+  const FLOWERS_RAIN = [
+    'data/hoa1.png','data/hoa2.png','data/hoa3.webp','data/hoa4.png',
+    'data/hoa1.png','data/hoa3.webp','data/hoa4.png','data/hoa2.png',
+  ];
 
   // Start float animation
   boxWrap.classList.add('floating');
@@ -356,7 +365,6 @@
 
     const COUNT = 72;
     for (let i = 0; i < COUNT; i++) {
-      const el  = document.createElement('div');
       const ang = (i / COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
       const spd = 0.3 + Math.random() * 0.7;
       const maxR = Math.min(window.innerWidth, window.innerHeight) * (0.38 + spd * 0.3);
@@ -367,10 +375,11 @@
       const dur = 0.9 + Math.random() * 0.9;
       const del = Math.random() * 0.18;
 
+      const el  = document.createElement('img');
+      el.src = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
       el.style.cssText =
-        `position:fixed;left:${cx}px;top:${cy}px;font-size:${fs}px;` +
-        `pointer-events:none;will-change:transform,opacity;`;
-      el.textContent = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
+        `position:fixed;left:${cx}px;top:${cy}px;width:${fs}px;height:auto;` +
+        `pointer-events:none;will-change:transform,opacity;user-select:none;`;
       flowerLayer.appendChild(el);
 
       el.animate([
@@ -398,9 +407,10 @@
       if (rainCount >= MAX) { clearInterval(rainInterval); return; }
       const batch = 4 + Math.floor(Math.random() * 4); // 4-7 per tick
       for (let i = 0; i < batch; i++) {
-        const el  = document.createElement('div');
+        const el  = document.createElement('img');
         el.className = 'fl-rain';
-        const fs  = 16 + Math.random() * 26;
+        el.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
+        const fs  = 32 + Math.random() * 40;
         const lx  = (Math.random() * 110 - 5) + 'vw';
         const dx  = (Math.random() - 0.5) * 120;
         const rot = (Math.random() - 0.5) * 540;
@@ -414,7 +424,6 @@
         el.style.setProperty('--sc',  sc  + '');
         el.style.setProperty('--dur', dur + 's');
         el.style.setProperty('--del', del + 's');
-        el.textContent = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
         flowerLayer.appendChild(el);
         setTimeout(() => el.remove(), (dur + del + 0.2) * 1000);
       }
