@@ -258,207 +258,6 @@
     }
     .cd-anim { animation: cd-flash 1s cubic-bezier(0.4,0,0.2,1) forwards; }
 
-    /* =====================================================
-       LETTER OVERLAY
-       ===================================================== */
-    #letter-overlay {
-      position: fixed; inset: 0;
-      background: radial-gradient(ellipse at 50% 40%, #120828 0%, #070010 65%, #050008 100%);
-      z-index: 10;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-family: Georgia, serif;
-      transition: opacity 1.2s ease;
-    }
-    #letter-overlay::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse at 20% 50%, rgba(120,40,200,0.09) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 30%, rgba(180,60,255,0.07) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    #letter-overlay.fade-out { opacity: 0; pointer-events: none; }
-
-    #hint-click {
-      position: absolute; bottom: 7%; left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Dancing Script', cursive;
-      font-size: clamp(13px,2vw,17px);
-      color: rgba(215,175,255,0.80);
-      opacity: 0; transition: opacity 1.4s ease;
-      pointer-events: none; white-space: nowrap;
-      text-shadow: 0 0 12px rgba(140,60,230,0.35);
-    }
-
-    /* =====================================================
-       ENVELOPE
-       ===================================================== */
-    .scene {
-      perspective: 1200px;
-      width: min(92vw,820px);
-      animation: scene-enter 1.4s cubic-bezier(0.2,0.8,0.2,1) both;
-    }
-    @keyframes scene-enter {
-      0%   { opacity:0; transform:translateY(40px) scale(0.92); }
-      100% { opacity:1; transform:translateY(0)    scale(1); }
-    }
-    .envelope {
-      position: relative; width: 100%;
-      height: min(62vh,500px);
-      animation: float 5s ease-in-out infinite;
-      filter: drop-shadow(0 0 30px rgba(140,40,255,0.35));
-      transition: filter 0.3s;
-    }
-    @keyframes float {
-      0%,100% { transform:translateY(0px); }
-      50%     { transform:translateY(-14px); }
-    }
-    .envelope::before {
-      content: '';
-      position: absolute; inset: -30px;
-      background: radial-gradient(ellipse at center, rgba(160,60,255,0.18) 0%, transparent 70%);
-      z-index: 0; pointer-events: none;
-      animation: aura 4s ease-in-out infinite;
-    }
-    @keyframes aura {
-      0%,100% { opacity:0.6; transform:scale(1); }
-      50%     { opacity:1;   transform:scale(1.08); }
-    }
-    .env-body {
-      position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(-48deg,transparent,transparent 4px,rgba(255,255,255,0.012) 4px,rgba(255,255,255,0.012) 8px),
-        linear-gradient(160deg,#1e1042 0%,#140830 55%,#0c0420 100%);
-      border: 1px solid rgba(190,105,255,0.42);
-      border-radius: 6px; z-index: 2;
-      animation: border-pulse 3.5s ease-in-out infinite;
-    }
-    @keyframes border-pulse {
-      0%,100% { border-color:rgba(165,60,240,0.35);  box-shadow:inset 0 0 35px rgba(70,8,150,0.14); }
-      50%     { border-color:rgba(210,115,255,0.68); box-shadow:inset 0 0 55px rgba(120,28,210,0.24); }
-    }
-    .env-body::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:54%;
-      background:linear-gradient(180deg,rgba(0,0,0,0.28) 0%,transparent 100%);
-      border-radius:6px 6px 0 0; pointer-events:none; z-index:1;
-    }
-    .env-fold-left {
-      position:absolute; inset:0;
-      background:linear-gradient(125deg,rgba(55,8,120,0.55) 0%,rgba(35,4,80,0.25) 100%);
-      clip-path:polygon(0 0,0 100%,50% 52%); z-index:3; border-radius:6px 0 0 6px;
-    }
-    .env-fold-right {
-      position:absolute; inset:0;
-      background:linear-gradient(235deg,rgba(55,8,120,0.55) 0%,rgba(35,4,80,0.25) 100%);
-      clip-path:polygon(100% 0,50% 52%,100% 100%); z-index:3; border-radius:0 6px 6px 0;
-    }
-    .env-fold-bottom {
-      position:absolute; inset:0;
-      background:rgba(70,12,140,0.38);
-      clip-path:polygon(0 100%,50% 52%,100% 100%); z-index:3;
-    }
-    .env-crease {
-      position:absolute; inset:0; z-index:4; pointer-events:none;
-    }
-    .env-crease::before {
-      content:''; position:absolute; top:52%; left:0; right:0; height:1px;
-      background:linear-gradient(90deg,transparent 0%,rgba(170,90,255,0.35) 18%,rgba(210,130,255,0.55) 50%,rgba(170,90,255,0.35) 82%,transparent 100%);
-    }
-    .env-crease::after {
-      content:''; position:absolute; left:50%; top:0; bottom:48%; width:1px;
-      background:linear-gradient(180deg,transparent 0%,rgba(155,75,255,0.2) 25%,rgba(155,75,255,0.25) 90%,transparent 100%);
-    }
-    .env-flap {
-      position:absolute; inset:0;
-      background:linear-gradient(175deg,#221040 0%,#180830 100%);
-      clip-path:polygon(0 0,100% 0,50% 50%);
-      border-radius:6px 6px 0 0; z-index:4;
-      transform-origin:50% 0%;
-    }
-    .env-flap::after {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(165deg,rgba(190,90,255,0.1) 0%,transparent 55%);
-      clip-path:inherit;
-    }
-    .env-flap.open { animation: flap-open 0.48s cubic-bezier(0.4,0,0.6,1) forwards !important; }
-    @keyframes flap-open {
-      0%   { transform:scaleY(1);                       opacity:1; }
-      55%  { transform:scaleY(-0.08) translateY(-6px);  opacity:0.4; }
-      100% { transform:scaleY(-0.35) translateY(-14px); opacity:0; }
-    }
-    .stamp {
-      position:absolute; top:10px; right:13px;
-      width:38px; height:38px;
-      border:2px dotted rgba(185,105,255,0.52); border-radius:3px;
-      display:flex; align-items:center; justify-content:center;
-      z-index:5; background:rgba(55,8,120,0.22);
-    }
-    .stamp-inner { font-size:18px; opacity:0.68; line-height:1; }
-    .env-address {
-      position:absolute; bottom:22%; left:50%;
-      transform:translateX(-50%);
-      text-align:center; z-index:5; pointer-events:none; white-space:nowrap;
-    }
-    .addr-to {
-      font-family:'Dancing Script',cursive;
-      font-size:clamp(14px,2.2vw,22px);
-      color:rgba(210,162,255,0.52);
-      margin-bottom:8px; letter-spacing:0.5px;
-    }
-    .addr-line { height:1px; width:clamp(90px,15vw,155px); background:rgba(180,100,255,0.2); margin:5px auto; border-radius:1px; }
-    .addr-line.short { width:clamp(55px,9vw,96px); }
-    .seal {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      width:86px; height:86px;
-      border-radius:46% 54% 52% 48%/51% 49% 53% 47%;
-      background:
-        radial-gradient(circle at 35% 28%,rgba(255,200,255,0.18) 0%,transparent 36%),
-        radial-gradient(circle at 38% 32%,#a21caf,#6b21a8 40%,#3b0764 75%);
-      border:2px solid rgba(220,150,255,0.48);
-      box-shadow:0 5px 22px rgba(0,0,0,0.70),inset 0 2px 8px rgba(240,175,255,0.24),inset 0 -4px 8px rgba(0,0,0,0.55),0 0 0 3px rgba(167,139,250,0.14);
-      z-index:6; cursor:pointer; outline:none;
-      display:flex; align-items:center; justify-content:center;
-      animation:seal-glow 2.4s ease-in-out infinite;
-      transition:transform 0.4s cubic-bezier(0.4,0,0.2,1),opacity 0.4s ease;
-    }
-    .seal-letter {
-      font-family:'Dancing Script',cursive; font-size:36px; font-weight:700;
-      color:rgba(248,218,255,0.90); line-height:1;
-      text-shadow:0 1px 4px rgba(0,0,0,0.65),0 0 8px rgba(210,130,255,0.28);
-      pointer-events:none; user-select:none;
-    }
-    @keyframes seal-glow {
-      0%,100% { box-shadow:0 5px 22px rgba(0,0,0,0.70),inset 0 2px 8px rgba(240,175,255,0.24),inset 0 -4px 8px rgba(0,0,0,0.55),0 0 14px rgba(162,28,175,0.45); }
-      50%     { box-shadow:0 5px 22px rgba(0,0,0,0.70),inset 0 2px 8px rgba(240,175,255,0.24),inset 0 -4px 8px rgba(0,0,0,0.55),0 0 34px rgba(192,58,210,0.85); }
-    }
-    .seal.break { transform:translate(-50%,-50%) scale(0) rotate(60deg); opacity:0; pointer-events:none; }
-    .wax-drop {
-      position:absolute;
-      background:radial-gradient(circle at 34% 30%,#9e2ec0,#4d0082);
-      border-radius:50%; z-index:5;
-      box-shadow:0 1px 4px rgba(0,0,0,0.55);
-    }
-    @keyframes dissolve {
-      0%   { opacity:1;   transform:scale(1)    translateY(0);    filter:blur(0px)  drop-shadow(0 0 30px rgba(160,60,255,0.4)); }
-      40%  { opacity:0.9; transform:scale(1.05) translateY(-8px); filter:blur(2px)  drop-shadow(0 0 70px rgba(200,80,255,0.9)); }
-      100% { opacity:0;   transform:scale(1.15) translateY(-20px);filter:blur(16px) drop-shadow(0 0 10px rgba(140,40,255,0)); }
-    }
-    .envelope.dissolve { animation:dissolve 0.95s cubic-bezier(0.4,0,0.2,1) forwards !important; }
-    .seal-burst {
-      position:absolute; top:50%; left:50%;
-      width:0; height:0; border-radius:50%;
-      pointer-events:none; z-index:7;
-      transform:translate(-50%,-50%);
-      background:radial-gradient(circle,rgba(255,235,180,0.92) 0%,rgba(245,158,11,0.38) 40%,transparent 70%);
-    }
-    .seal-burst.active { animation:burst 0.75s ease-out forwards; }
-    @keyframes burst {
-      0%   { width:0;     height:0;     opacity:1; }
-      100% { width:420px; height:420px; opacity:0; }
-    }
-    .seal:focus-visible { outline:3px solid rgba(210,140,255,0.85); outline-offset:5px; }
 
     /* =====================================================
        UI BUTTONS
@@ -478,24 +277,6 @@
     @keyframes play-pulse {
       0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,0.35); }
       50%     { box-shadow:0 0 0 10px rgba(245,158,11,0); }
-    }
-    #lp-msg {
-      position:fixed; top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      z-index:300; display:none;
-      background:rgba(55,8,115,0.94);
-      border:1px solid rgba(200,140,255,0.65);
-      border-radius:20px; padding:20px 32px;
-      font-family:'Dancing Script',cursive;
-      font-size:clamp(18px,3vw,24px);
-      color:#f0d0ff; white-space:nowrap;
-      backdrop-filter:blur(14px);
-      box-shadow:0 8px 40px rgba(0,0,0,0.55);
-      animation:lp-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    @keyframes lp-pop {
-      from { opacity:0; transform:translate(-50%,-50%) scale(0.65); }
-      to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
     }
     #nav-overlay {
       position:fixed; inset:0; background:#000;
@@ -522,15 +303,6 @@
     @supports (padding: env(safe-area-inset-top)) {
       #play-btn  { bottom:max(20px,calc(env(safe-area-inset-bottom)+14px)); }
       #skip-hint { bottom:max(16px,calc(env(safe-area-inset-bottom)+10px)); }
-      #hint-click{ bottom:max(7%,calc(env(safe-area-inset-bottom)+48px)); }
-    }
-    @media (max-height:520px) {
-      .envelope { height:min(54vh,380px); }
-      .seal { width:68px; height:68px; }
-      .seal-letter { font-size:28px; }
-    }
-    @media (max-width:480px) {
-      #lp-msg { padding:16px 22px; font-size:clamp(16px,4.2vw,20px); white-space:normal; text-align:center; max-width:85vw; }
     }
   </style>
 </head>
@@ -558,42 +330,10 @@
 <div id="flash"></div>
 <div id="nav-overlay"></div>
 <button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
-<div id="lp-msg">Tớ biết là cậu sẽ thử mà 😏</div>
 <div id="skip-hint">Nhấn Space hoặc chạm 2 lần để bỏ qua</div>
 
 <div id="cd-overlay"><span id="cd-text"></span></div>
 
-<div id="letter-overlay">
-  <div class="scene">
-    <div class="envelope" id="env">
-      <div class="env-body"></div>
-      <div class="env-fold-left"></div>
-      <div class="env-fold-right"></div>
-      <div class="env-fold-bottom"></div>
-      <div class="env-crease"></div>
-
-      <div class="stamp"><div class="stamp-inner">🌸</div></div>
-
-      <div class="env-address">
-        <div class="addr-to">Gửi: Hoàng Ly</div>
-        <div class="addr-line"></div>
-        <div class="addr-line short"></div>
-      </div>
-
-      <div class="env-flap" id="flap"></div>
-
-      <div class="wax-drop" style="width:7px;height:6px;top:calc(50% - 54px);left:calc(50% + 50px)"></div>
-      <div class="wax-drop" style="width:5px;height:5px;top:calc(50% + 46px);left:calc(50% - 52px)"></div>
-      <div class="wax-drop" style="width:4px;height:4px;top:calc(50% - 46px);left:calc(50% - 44px)"></div>
-
-      <button class="seal" id="seal" aria-label="Mở phong bì">
-        <span class="seal-letter">CÁ</span>
-      </button>
-      <div class="seal-burst" id="burst"></div>
-    </div>
-  </div>
-  <div id="hint-click">nhấn vào dấu sáp để mở</div>
-</div>
 
 <script>
   /* ============================================================
@@ -758,15 +498,16 @@
       // Phase 4 — rain starts (1300ms after click)
       setTimeout(startFlowerRain, 860);
 
-      // Phase 5 — begin fade-out (4600ms after click)
+      // Phase 5 — begin fade-out (4200ms after click)
       setTimeout(() => {
         giftIntro.classList.add('gi-hide');
-        // After fade completes, remove DOM + stop stars
+        // After fade completes, remove DOM + stop stars, then start countdown
         setTimeout(() => {
           giftIntro.remove();
           flowerLayer.remove();
           window._stopGiStars && window._stopGiStars();
-        }, 1200);
+          startCountdown();
+        }, 1100);
       }, 4200);
 
     }, 440);
@@ -846,19 +587,13 @@
   loop();
 
   /* ============================================================
-     ENVELOPE / SEAL
+     SHARED HELPERS
      ============================================================ */
-  const env      = document.getElementById('env');
-  const flap     = document.getElementById('flap');
-  const seal     = document.getElementById('seal');
-  const overlay  = document.getElementById('letter-overlay');
-  const hintEl   = document.getElementById('hint-click');
   const navOvl   = document.getElementById('nav-overlay');
   const playBtn  = document.getElementById('play-btn');
-  const lpMsg    = document.getElementById('lp-msg');
   const skipHint = document.getElementById('skip-hint');
 
-  // Music play button (fallback if autoplay from gift intro also blocked)
+  // Music play button (fallback)
   playBtn.addEventListener('click', () => {
     music.play().catch(() => {});
     playBtn.style.display = 'none';
@@ -881,45 +616,6 @@
       }
     }, 20);
   }
-
-  // Long-press easter egg
-  let lpTimer = null, lpFired = false;
-  seal.addEventListener('pointerdown', () => {
-    lpFired = false;
-    lpTimer = setTimeout(() => {
-      lpFired = true;
-      lpMsg.style.display = 'block';
-      setTimeout(() => { lpMsg.style.display = 'none'; }, 2800);
-    }, 2000);
-  });
-  ['pointerup','pointermove','pointercancel'].forEach(ev =>
-    seal.addEventListener(ev, () => clearTimeout(lpTimer)));
-
-  const hintTimer = setTimeout(() => { hintEl.style.opacity = '1'; }, 3000);
-
-  let sealOpened = false;
-  seal.addEventListener('click', () => {
-    if (lpFired || sealOpened) return;
-    sealOpened = true;
-    clearTimeout(hintTimer);
-    hintEl.style.opacity = '0';
-    localStorage.setItem('visited', '1');
-
-    seal.classList.add('break');
-    document.getElementById('burst').classList.add('active');
-    music.play().catch(() => {});
-    playBtn.style.display = 'none';
-
-    setTimeout(() => { flap.classList.add('open'); }, 220);
-    setTimeout(() => { env.classList.add('dissolve'); }, 640);
-    setTimeout(() => {
-      overlay.classList.add('fade-out');
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        startCountdown();
-      }, 1200);
-    }, 1060);
-  });
 
   /* ============================================================
      SPARKLES
