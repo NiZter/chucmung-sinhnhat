@@ -358,18 +358,19 @@
   let boxOpened = false;
 
   function spawnBurstFlowers() {
-    // Get approximate box center in viewport
+    // Origin = nắp hộp (top ~20% of box image)
     const rect = boxWrap.getBoundingClientRect();
     const cx   = rect.left + rect.width  / 2;
-    const cy   = rect.top  + rect.height / 2 - 20;
+    const cy   = rect.top  + rect.height * 0.22;
 
     const COUNT = 72;
     for (let i = 0; i < COUNT; i++) {
-      const ang = (i / COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-      const spd = 0.3 + Math.random() * 0.7;
-      const maxR = Math.min(window.innerWidth, window.innerHeight) * (0.38 + spd * 0.3);
+      // Fountain: phun lên như đài phun nước, góc từ ~-160° đến ~-20° (quạt hướng lên)
+      const ang = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.9;
+      const spd = 0.35 + Math.random() * 0.65;
+      const maxR = Math.min(window.innerWidth, window.innerHeight) * (0.45 + spd * 0.45);
       const dx  = Math.cos(ang) * maxR;
-      const dy  = Math.sin(ang) * maxR - maxR * 0.25; // slight upward bias
+      const dy  = Math.sin(ang) * maxR;
       const fs  = 60 + Math.random() * 80;
       const rot = (Math.random() - 0.5) * 720;
       const dur = 0.9 + Math.random() * 0.9;
