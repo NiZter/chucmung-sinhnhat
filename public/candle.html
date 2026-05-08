@@ -494,7 +494,7 @@
   }
 
   let shooters = [];
-  setInterval(() => {
+  const shooterIv = setInterval(() => {
     shooters.push({
       x: Math.random()*canvas.width*0.8, y: Math.random()*canvas.height*0.4,
       len: Math.random()*120+60, spd: Math.random()*10+8, alpha: 1, tail: 0,
@@ -546,6 +546,9 @@
   // ── Navigate with fade + volume fade ────────────────────
   const navOverlay = document.getElementById('nav-overlay');
   function navigateTo(href) {
+    /* stop background spawners so they don't run past navigation */
+    clearInterval(shooterIv);
+
     navOverlay.style.pointerEvents = 'all';
     navOverlay.style.opacity = '1';
     const origVol = music.volume;

@@ -522,12 +522,13 @@ function initStars() {
 }
 
 let shooters = [];
-setInterval(() => {
+const shooterIv = setInterval(() => {
   shooters.push({
     x: Math.random()*canvas.width*0.8, y: Math.random()*canvas.height*0.4,
     len: Math.random()*120+60, spd: Math.random()*10+8, alpha: 1, tail: 0,
   });
 }, 3200);
+window._stopShooters = () => clearInterval(shooterIv);
 
 function drawStars() {
   ctx.fillStyle = gradient;
@@ -1064,7 +1065,7 @@ muteBtn.addEventListener('click', () => {
 });
 
 // ─── Typewriter ───────────────────────────────────────────────────────────────
-function typewriter(el, speed, onDone) {
+function typewriter(el, speed, onDone, getSkipped) {
   const html = el.innerHTML.trim();
   el.innerHTML = '';
   el.style.opacity = '1';
@@ -1092,6 +1093,15 @@ function typewriter(el, speed, onDone) {
   const frame = document.getElementById('letter-frame');
 
   function type() {
+    /* Skip requested → flush all remaining tokens at once and finish */
+    if (getSkipped && getSkipped()) {
+      while (ti < tokens.length) {
+        cursor.insertAdjacentHTML('beforebegin', tokens[ti++].v);
+      }
+      cursor.remove();
+      if (onDone) onDone();
+      return;
+    }
     if (ti >= tokens.length) { cursor.remove(); if (onDone) onDone(); return; }
     const tok = tokens[ti++];
     cursor.insertAdjacentHTML('beforebegin', tok.v);
@@ -1124,24 +1134,29 @@ function startTypewriter() {
     setTimeout(() => { twSkipHint.style.opacity = '0'; }, 4000);
   }
 
+  let skipped   = false;
+  let nextTimer = null;
+
   function next() {
     if (idx >= els.length) { twSkipHint.style.opacity = '0'; return; }
     const el  = els[idx++];
     const spd = parseInt(el.dataset.speed || '35');
-    typewriter(el, spd, () => setTimeout(next, 320));
+    typewriter(el, spd, () => {
+      /* if we're skipping, jump straight to next without the 320ms gap */
+      nextTimer = setTimeout(next, skipped ? 0 : 320);
+    }, () => skipped);
   }
   next();
 
   // Space key / double-tap → finish all remaining typewriters instantly
   let lastTap2 = 0;
   const skipAll = () => {
-    els.forEach(el => {
-      if (!el.style.opacity || el.style.opacity === '0') {
-        el.innerHTML = el.innerHTML; // trigger in case cursor is there
-        el.style.opacity = '1';
-      }
-    });
+    if (skipped) return;
+    skipped = true;                     /* current typewriter flushes on next tick */
+    clearTimeout(nextTimer);
     twSkipHint.style.opacity = '0';
+    /* fast-forward through any not-yet-started elements */
+    nextTimer = setTimeout(next, 0);
   };
   const onKey2 = (e) => { if (e.code === 'Space') { e.preventDefault(); skipAll(); } };
   const onTap2 = () => { const now = Date.now(); if (now - lastTap2 < 350) skipAll(); lastTap2 = now; };
@@ -1312,7 +1327,6 @@ document.addEventListener('visibilitychange', () => {
   let clickCount = 0;
   const eggOverlay = document.getElementById('egg-overlay');
   const eggClose   = document.getElementById('egg-close');
-  const origClick  = avatarFrame.onclick;
 
   avatarFrame.addEventListener('click', () => {
     clickCount++;
