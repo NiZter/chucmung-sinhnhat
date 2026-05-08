@@ -370,7 +370,7 @@
       const maxR = Math.min(window.innerWidth, window.innerHeight) * (0.38 + spd * 0.3);
       const dx  = Math.cos(ang) * maxR;
       const dy  = Math.sin(ang) * maxR - maxR * 0.25; // slight upward bias
-      const fs  = 18 + Math.random() * 24;
+      const fs  = 36 + Math.random() * 44;
       const rot = (Math.random() - 0.5) * 720;
       const dur = 0.9 + Math.random() * 0.9;
       const del = Math.random() * 0.18;
@@ -410,7 +410,7 @@
         const el  = document.createElement('img');
         el.className = 'fl-rain';
         el.src = FLOWERS_RAIN[Math.floor(Math.random() * FLOWERS_RAIN.length)];
-        const fs  = 32 + Math.random() * 40;
+        const fs  = 55 + Math.random() * 60;
         const lx  = (Math.random() * 110 - 5) + 'vw';
         const dx  = (Math.random() - 0.5) * 120;
         const rot = (Math.random() - 0.5) * 540;
