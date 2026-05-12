@@ -37,6 +37,57 @@
       position: absolute; inset: 0; pointer-events: none;
     }
 
+    /* Spotlight cone shining down on the gift box */
+    #gi-spotlight {
+      position: absolute;
+      top: -10%; left: 50%;
+      transform: translateX(-50%);
+      width: 100%; max-width: 720px; height: 95%;
+      background: linear-gradient(180deg,
+        rgba(255,220,140,0.20) 0%,
+        rgba(245,180,80,0.13)  25%,
+        rgba(220,120,200,0.07) 55%,
+        transparent 88%);
+      clip-path: polygon(42% 0%, 58% 0%, 90% 100%, 10% 100%);
+      filter: blur(3px);
+      pointer-events: none;
+      z-index: 1;
+      animation: spotlight-sway 7s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+    @keyframes spotlight-sway {
+      0%, 100% { transform: translateX(-50%) skewX(0deg); }
+      50%       { transform: translateX(-50%) skewX(-2.5deg); }
+    }
+
+    /* Orbiting aura sparkles around the gift box */
+    #gi-aura {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      pointer-events: none;
+      z-index: 0; /* behind the gift image (which has higher stacking) */
+    }
+    .aura-sparkle {
+      position: absolute;
+      left: 0; top: 0;
+      width: 7px; height: 7px;
+      margin-left: -3.5px; margin-top: -3.5px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff8c0 10%, #ffb060 50%, transparent 80%);
+      box-shadow: 0 0 10px rgba(255,200,100,0.9);
+      animation: aura-orbit 7s linear infinite, aura-pulse 1.7s ease-in-out infinite;
+      animation-delay: var(--del, 0s), var(--del, 0s);
+    }
+    @keyframes aura-orbit {
+      from { transform: rotate(0deg)   translateX(var(--r, 170px)); }
+      to   { transform: rotate(360deg) translateX(var(--r, 170px)); }
+    }
+    @keyframes aura-pulse {
+      0%, 100% { opacity: 0.45; }
+      50%       { opacity: 1; }
+    }
+
     /* Box outer wrapper — handles float + shake */
     #box-wrap {
       position: relative; z-index: 2;
@@ -239,13 +290,30 @@
       font-size: clamp(52px,14vw,150px); letter-spacing: 16px;
     }
     #cd-text.ka {
-      background: linear-gradient(135deg, #fde68a 0%, #ffffff 48%, #f59e0b 100%);
+      background: linear-gradient(110deg,
+        #fde68a 0%, #ffffff 22%, #fff7d0 38%,
+        #ffffff 50%, #fff7d0 62%, #f59e0b 80%, #fde68a 100%);
+      background-size: 300% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent; text-shadow: none;
       filter: drop-shadow(0 0 22px rgba(245,158,11,0.62));
     }
     #cd-text.ka.cd-anim {
-      animation: ka-reveal 2.2s cubic-bezier(0.4,0,0.2,1) forwards !important;
+      animation:
+        ka-reveal 2.2s cubic-bezier(0.4,0,0.2,1) forwards,
+        ka-shimmer 2.2s linear infinite !important;
+    }
+    @keyframes ka-shimmer {
+      0%   { background-position: 200% 50%; }
+      100% { background-position: -100% 50%; }
+    }
+
+    /* Firework canvas — fullscreen, transparent, sits between flash & cd-overlay */
+    #firework-canvas {
+      position: fixed; inset: 0;
+      z-index: 7;
+      pointer-events: none;
+      mix-blend-mode: screen;
     }
     @keyframes ka-reveal {
       0%   { opacity:0; letter-spacing:52px; transform:scale(1.7);  filter:blur(10px) drop-shadow(0 0 8px rgba(245,158,11,0.25)); }
@@ -314,7 +382,9 @@
 <!-- ===== GIFT INTRO OVERLAY ===== -->
 <div id="gift-intro">
   <canvas id="gi-stars"></canvas>
+  <div id="gi-spotlight"></div>
   <div id="box-wrap">
+    <div id="gi-aura"></div>
     <div id="gift-img-wrap">
       <img id="gift-closed" src="data/model_gift.png"      alt="Hộp quà" draggable="false">
       <img id="gift-open"   src="data/model_gift_open.png" alt=""        draggable="false">
@@ -330,6 +400,7 @@
 <div id="rain-wrap"><div id="rain-scene"></div></div>
 <audio id="bg-music" src="data/music_2.mp3" loop></audio>
 <div id="flash"></div>
+<canvas id="firework-canvas"></canvas>
 <div id="nav-overlay"></div>
 <button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
 <div id="skip-hint">Nhấn Space hoặc chạm 2 lần để bỏ qua</div>
@@ -427,6 +498,31 @@
 
   // Start float animation
   boxWrap.classList.add('floating');
+
+  // Spawn orbiting aura sparkles around the gift box
+  (function spawnAura() {
+    const aura = document.getElementById('gi-aura');
+    if (!aura) return;
+    const COUNT = 10;
+    const DUR   = 7; // matches CSS aura-orbit duration
+    for (let i = 0; i < COUNT; i++) {
+      const sp = document.createElement('div');
+      sp.className = 'aura-sparkle';
+      // Negative delay distributes them evenly around the orbit
+      const del = -(i / COUNT) * DUR;
+      sp.style.setProperty('--del', del.toFixed(2) + 's');
+      // Slight radius variation for organic feel
+      const r = 150 + (i % 3) * 18 + Math.random() * 10;
+      sp.style.setProperty('--r', r.toFixed(0) + 'px');
+      // Vary size a touch
+      const sz = 5 + Math.random() * 4;
+      sp.style.width  = sz + 'px';
+      sp.style.height = sz + 'px';
+      sp.style.marginLeft = (-sz/2) + 'px';
+      sp.style.marginTop  = (-sz/2) + 'px';
+      aura.appendChild(sp);
+    }
+  })();
 
   let boxOpened = false;
 
@@ -713,6 +809,93 @@
   }
 
   /* ============================================================
+     FIREWORKS — canvas particles, explode + gravity + fade
+     ============================================================ */
+  const fwCanvas = document.getElementById('firework-canvas');
+  const fwCtx    = fwCanvas.getContext('2d');
+  let fwParticles = [];
+  let fwRaf = null;
+
+  function fwResize() {
+    fwCanvas.width  = window.innerWidth;
+    fwCanvas.height = window.innerHeight;
+  }
+  fwResize();
+  window.addEventListener('resize', fwResize);
+
+  const FW_PALETTE = [
+    [255, 200, 80],   [255, 150, 200], [180, 120, 255],
+    [120, 200, 255], [255, 220, 140], [255, 110, 160],
+    [140, 240, 200], [255, 240, 200],
+  ];
+
+  function spawnFirework(x, y, color, count = 70) {
+    const [r, g, b] = color || FW_PALETTE[Math.floor(Math.random() * FW_PALETTE.length)];
+    for (let i = 0; i < count; i++) {
+      const ang = (i / count) * Math.PI * 2 + Math.random() * 0.18;
+      const v   = 2.4 + Math.random() * 4.2;
+      fwParticles.push({
+        x, y,
+        vx: Math.cos(ang) * v,
+        vy: Math.sin(ang) * v,
+        life: 1,
+        size: 1.8 + Math.random() * 1.6,
+        r, g, b,
+      });
+    }
+    if (!fwRaf) fwRaf = requestAnimationFrame(fwAnimate);
+  }
+
+  function fwAnimate() {
+    // Trail effect — partial clear
+    fwCtx.fillStyle = 'rgba(0,0,0,0.18)';
+    fwCtx.globalCompositeOperation = 'destination-out';
+    fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
+    fwCtx.globalCompositeOperation = 'source-over';
+
+    fwParticles = fwParticles.filter(p => p.life > 0.04);
+    for (const p of fwParticles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.045;     // gravity
+      p.vx *= 0.985;     // air drag
+      p.vy *= 0.985;
+      p.life -= 0.013;
+
+      const a = Math.max(0, p.life);
+      fwCtx.beginPath();
+      fwCtx.arc(p.x, p.y, p.size * (0.4 + p.life * 0.6), 0, Math.PI * 2);
+      fwCtx.fillStyle = `rgba(${p.r},${p.g},${p.b},${a})`;
+      fwCtx.shadowColor = `rgba(${p.r},${p.g},${p.b},${a})`;
+      fwCtx.shadowBlur = 10;
+      fwCtx.fill();
+    }
+    fwCtx.shadowBlur = 0;
+
+    if (fwParticles.length > 0) {
+      fwRaf = requestAnimationFrame(fwAnimate);
+    } else {
+      fwRaf = null;
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+    }
+  }
+
+  function celebrationFireworks() {
+    const W = window.innerWidth, H = window.innerHeight;
+    const launches = [
+      [W * 0.30, H * 0.42, 0],
+      [W * 0.72, H * 0.38, 220],
+      [W * 0.50, H * 0.28, 480],
+      [W * 0.20, H * 0.55, 760],
+      [W * 0.82, H * 0.58, 1020],
+      [W * 0.50, H * 0.50, 1300],
+    ];
+    for (const [x, y, delay] of launches) {
+      setTimeout(() => spawnFirework(x, y, null, 70 + Math.floor(Math.random() * 30)), delay);
+    }
+  }
+
+  /* ============================================================
      SPARKLES
      ============================================================ */
   function spawnSparkles() {
@@ -785,6 +968,7 @@
         void flashEl.offsetWidth;
         flashEl.classList.add('burst');
         setTimeout(spawnSparkles, 50);
+        setTimeout(celebrationFireworks, 80);
       }
       setTimeout(next, dur);
     }

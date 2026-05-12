@@ -20,6 +20,101 @@
 
     canvas { position: fixed; inset: 0; display: block; }
 
+    /* ===== AURORA NEBULA ===== */
+    #aurora {
+      position: fixed; inset: -12%;
+      z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 45% at 22% 28%, rgba(180,80,255,0.22), transparent 62%),
+        radial-gradient(ellipse 50% 55% at 78% 68%, rgba(255,100,180,0.18), transparent 65%),
+        radial-gradient(ellipse 65% 40% at 50% 92%, rgba(90,30,150,0.20), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 12% 80%, rgba(70,20,140,0.16), transparent 60%);
+      filter: blur(60px);
+      animation: aurora-drift 22s ease-in-out infinite;
+    }
+    @keyframes aurora-drift {
+      0%, 100% { transform: translate(0,0)        scale(1); }
+      33%      { transform: translate(-1%, 1.4%)   scale(1.04); }
+      66%      { transform: translate(1.5%, -1%)   scale(0.97); }
+    }
+
+    /* ===== EMBER PARTICLES ===== */
+    .ember {
+      position: fixed;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 4;
+      background: radial-gradient(circle, #fff8c0 10%, #ffb060 55%, transparent 85%);
+      box-shadow: 0 0 6px rgba(255,180,80,0.7);
+      animation: ember-rise var(--dur, 2.6s) ease-out forwards;
+    }
+    @keyframes ember-rise {
+      0%   { opacity: 0; transform: translate(0, 0) scale(0.5); }
+      18%  { opacity: 1; transform: translate(var(--mid-x, 4px), -28px) scale(1.1); }
+      100% { opacity: 0; transform: translate(var(--end-x, 16px), -130px) scale(0.25); }
+    }
+
+    /* ===== SPRINKLES on layers ===== */
+    .sprinkles {
+      position: absolute; inset: 0;
+      pointer-events: none; overflow: hidden;
+      border-radius: inherit;
+    }
+    .sprinkle {
+      position: absolute;
+      left: var(--sx, 50%); top: var(--sy, 50%);
+      width: var(--sw, 2.5px); height: var(--sh, 6px);
+      background: var(--sc, #fde68a);
+      border-radius: 1.5px;
+      transform: rotate(var(--sr, 0deg));
+      box-shadow: 0 0 3px var(--sc, #fde68a);
+      opacity: 0.92;
+    }
+
+    /* ===== WISH MESSAGE RAY BURST ===== */
+    .wish-rays {
+      position: absolute; left: 50%; top: 50%;
+      width: 600px; height: 600px;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      background:
+        conic-gradient(from 0deg,
+          rgba(255,210,80,0)   0deg,
+          rgba(255,235,140,0.28) 18deg,
+          rgba(255,210,80,0)   36deg,
+          rgba(255,235,140,0.28) 54deg,
+          rgba(255,210,80,0)   72deg,
+          rgba(255,235,140,0.28) 90deg,
+          rgba(255,210,80,0)   108deg,
+          rgba(255,235,140,0.28) 126deg,
+          rgba(255,210,80,0)   144deg,
+          rgba(255,235,140,0.28) 162deg,
+          rgba(255,210,80,0)   180deg,
+          rgba(255,235,140,0.28) 198deg,
+          rgba(255,210,80,0)   216deg,
+          rgba(255,235,140,0.28) 234deg,
+          rgba(255,210,80,0)   252deg,
+          rgba(255,235,140,0.28) 270deg,
+          rgba(255,210,80,0)   288deg,
+          rgba(255,235,140,0.28) 306deg,
+          rgba(255,210,80,0)   324deg,
+          rgba(255,235,140,0.28) 342deg,
+          rgba(255,210,80,0)   360deg);
+      mask-image: radial-gradient(circle, #000 18%, transparent 70%);
+      -webkit-mask-image: radial-gradient(circle, #000 18%, transparent 70%);
+      filter: blur(0.5px);
+    }
+    #wish-msg.show .wish-rays {
+      animation: ray-burst 2.6s ease-out forwards;
+    }
+    @keyframes ray-burst {
+      0%   { transform: translate(-50%,-50%) scale(0)   rotate(0deg);   opacity: 0; }
+      28%  { transform: translate(-50%,-50%) scale(1)   rotate(40deg);  opacity: 1; }
+      75%  { transform: translate(-50%,-50%) scale(1.05) rotate(110deg); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(1.2)  rotate(140deg); opacity: 0; }
+    }
+
     /* ===== SCENE ===== */
     #scene {
       position: fixed;
@@ -50,20 +145,22 @@
     /* ===== HALO GLOW (warm candlelight under cake) ===== */
     #cake-glow {
       position: fixed;
-      bottom: 26%;
+      bottom: 24%;
       left: 50%;
       transform: translateX(-50%);
-      width: clamp(300px, 55vw, 540px);
-      height: 110px;
+      width: clamp(340px, 62vw, 620px);
+      height: 140px;
       background: radial-gradient(ellipse at center,
-        rgba(255,210,100,0.34) 0%,
-        rgba(255,160,40,0.18)  38%,
-        rgba(255,100,20,0.07)  62%,
-        transparent 82%);
+        rgba(255,225,140,0.45) 0%,
+        rgba(255,170,60,0.26)  32%,
+        rgba(255,110,30,0.12)  58%,
+        rgba(180,40,140,0.06)  76%,
+        transparent 90%);
       pointer-events: none;
       z-index: 1;
       transition: opacity 1.8s ease;
       animation: glow-flicker 3s ease-in-out infinite;
+      filter: blur(1.5px);
     }
     @keyframes glow-flicker {
       0%,100% { opacity: 0.85; transform: translateX(-50%) scaleX(1);   }
@@ -72,7 +169,15 @@
     #cake-glow.out { opacity: 0; animation: none; }
 
     /* ===== CAKE ===== */
-    .cake { display: flex; flex-direction: column; align-items: center; }
+    .cake {
+      display: flex; flex-direction: column; align-items: center;
+      animation: cake-float 4.8s ease-in-out infinite;
+      filter: drop-shadow(0 14px 32px rgba(70,10,140,0.55));
+    }
+    @keyframes cake-float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
 
     .candles-row {
       display: flex;
@@ -192,82 +297,140 @@
       100% { transform: translateX(0);   }
     }
 
-    /* Cake layers */
-    .layer { border-radius: 6px; position: relative; overflow: hidden; }
-    /* Frosting top highlight on each layer */
+    /* Cake layers — 3D cylinder feel with ellipse top face */
+    .layer { border-radius: 4px; position: relative; }
+    /* Top face — ellipse simulating the cylinder top */
     .layer::after {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg,
-        transparent 5%, rgba(255,230,180,0.22) 30%,
-        rgba(255,240,210,0.30) 50%, rgba(255,230,180,0.22) 70%, transparent 95%);
+      top: -8px; left: -2px; right: -2px;
+      height: 16px;
+      background: var(--top-bg, radial-gradient(ellipse at 50% 50%, #5a14a0 0%, #36005c 75%));
+      border-radius: 50%;
+      border: 1px solid var(--top-border, rgba(220,170,255,0.45));
+      box-shadow:
+        inset 0 -3px 6px rgba(0,0,0,0.42),
+        inset 0 2px 4px rgba(255,255,255,0.18),
+        0 1px 0 rgba(255,255,255,0.06);
+      z-index: 2;
     }
 
     .layer-top {
       width: clamp(130px, 22vw, 200px);
       height: clamp(34px, 5.5vw, 52px);
-      background: linear-gradient(175deg, #4a0080 0%, #2e0054 55%, #1e0038 100%);
-      border: 1px solid rgba(210,165,255,0.28);
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.30) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.30) 100%),
+        linear-gradient(175deg, #4a0080 0%, #2e0054 55%, #1e0038 100%);
+      border-left: 1px solid rgba(80,10,150,0.55);
+      border-right: 1px solid rgba(80,10,150,0.55);
       box-shadow:
-        inset 0 1px 0 rgba(255,225,160,0.14),
-        0 -2px 0 rgba(255,220,150,0.10),
+        inset 0 -4px 8px rgba(0,0,0,0.32),
         0 6px 24px rgba(80,10,160,0.4);
+      --top-bg: radial-gradient(ellipse at 50% 50%, #6a18b8 0%, #44007e 70%, #2a0050 100%);
+      --top-border: rgba(220,170,255,0.55);
     }
-    .layer-top::before {
-      content: '· · · · ·';
+    .layer-top > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(220,175,255,0.28);
+      color: rgba(220,175,255,0.32);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
+      z-index: 1;
     }
 
     .layer-mid {
       width: clamp(185px, 31vw, 285px);
       height: clamp(42px, 7vw, 64px);
-      background: linear-gradient(180deg, #38005e 0%, #240048 50%, #160030 100%);
-      border: 1px solid rgba(180,100,240,0.22);
-      box-shadow: 0 0 20px rgba(100,20,180,0.3), inset 0 1px 0 rgba(220,170,255,0.06);
-      margin-top: -1px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.32) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.32) 100%),
+        linear-gradient(180deg, #38005e 0%, #240048 50%, #160030 100%);
+      border-left: 1px solid rgba(60,5,120,0.55);
+      border-right: 1px solid rgba(60,5,120,0.55);
+      box-shadow:
+        inset 0 -4px 8px rgba(0,0,0,0.4),
+        0 0 20px rgba(100,20,180,0.3);
+      margin-top: -3px;
+      --top-bg: radial-gradient(ellipse at 50% 50%, #4f1190 0%, #2c005a 70%, #1a003a 100%);
+      --top-border: rgba(190,120,240,0.45);
     }
     /* "22" — warm gold, pulses with candle rhythm */
-    .layer-mid::before {
-      content: '22';
+    .layer-mid > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(18px, 3vw, 26px);
-      color: rgba(253,230,138,0.45);
+      font-size: clamp(20px, 3.2vw, 28px);
+      color: rgba(253,230,138,0.55);
       letter-spacing: 4px;
       animation: num-pulse 2.2s ease-in-out infinite;
+      z-index: 1;
     }
     @keyframes num-pulse {
-      0%, 100% { color: rgba(253,230,138,0.38); text-shadow: none; }
-      50%       { color: rgba(253,230,138,0.78); text-shadow: 0 0 12px rgba(245,158,11,0.55); }
+      0%, 100% { color: rgba(253,230,138,0.45); text-shadow: 0 0 6px rgba(245,158,11,0.25); }
+      50%       { color: rgba(253,230,138,0.92); text-shadow: 0 0 18px rgba(245,158,11,0.7); }
     }
 
     .layer-bot {
       width: clamp(240px, 40vw, 375px);
       height: clamp(50px, 8.5vw, 78px);
-      background: linear-gradient(180deg, #2c0048 0%, #1a0034 55%, #0e001e 100%);
-      border: 1px solid rgba(155,65,215,0.20);
-      box-shadow: 0 0 30px rgba(90,10,170,0.32), 0 8px 20px rgba(0,0,0,0.45);
-      margin-top: -1px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.34) 0%, transparent 14%, transparent 86%, rgba(0,0,0,0.34) 100%),
+        linear-gradient(180deg, #2c0048 0%, #1a0034 55%, #0e001e 100%);
+      border-left: 1px solid rgba(50,5,100,0.55);
+      border-right: 1px solid rgba(50,5,100,0.55);
+      box-shadow:
+        inset 0 -4px 10px rgba(0,0,0,0.45),
+        0 0 30px rgba(90,10,170,0.32),
+        0 8px 20px rgba(0,0,0,0.45);
+      margin-top: -3px;
+      --top-bg: radial-gradient(ellipse at 50% 50%, #420a78 0%, #200042 70%, #100024 100%);
+      --top-border: rgba(165,90,225,0.40);
     }
-    .layer-bot::before {
-      content: '· · · · ·';
+    .layer-bot > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(200,140,255,0.22);
+      color: rgba(200,140,255,0.28);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
+      z-index: 1;
+    }
+
+    /* ===== CREAM DRIPS BETWEEN TIERS ===== */
+    .tier-cream {
+      width: 100%;
+      height: 14px;
+      position: relative;
+      margin-top: -2px;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .tier-cream .cd {
+      position: absolute;
+      top: 0;
+      width: var(--w, 12px);
+      height: var(--h, 12px);
+      background: linear-gradient(180deg,
+        rgba(255,242,220,0.92) 0%,
+        rgba(255,228,190,0.85) 55%,
+        rgba(255,210,160,0.75) 100%);
+      border-radius: 0 0 50% 50%;
+      box-shadow:
+        inset 0 -2px 3px rgba(180,100,40,0.18),
+        inset 0 2px 2px rgba(255,255,255,0.45),
+        0 2px 4px rgba(0,0,0,0.18);
+    }
+    .tier-cream .cd::after {
+      content: '';
+      position: absolute;
+      top: 18%; left: 22%;
+      width: 28%; height: 35%;
+      background: rgba(255,255,255,0.55);
+      border-radius: 50%;
+      filter: blur(1px);
     }
 
     /* Frosting drips — ivory cream */
@@ -289,12 +452,32 @@
     }
 
     .plate {
-      width: clamp(265px, 44vw, 415px);
-      height: clamp(8px, 1.4vw, 12px);
-      background: linear-gradient(180deg, rgba(220,160,80,0.12), rgba(160,80,255,0.06) 60%, transparent);
+      width: clamp(285px, 48vw, 445px);
+      height: clamp(14px, 2.2vw, 22px);
+      background:
+        radial-gradient(ellipse at 50% 30%,
+          rgba(245,200,120,0.38) 0%,
+          rgba(195,135,70,0.25) 45%,
+          rgba(120,55,40,0.12) 80%,
+          transparent 100%);
       border-radius: 50%;
-      border: 1px solid rgba(200,140,60,0.16);
-      margin-top: 3px;
+      border-top: 1px solid rgba(255,210,140,0.42);
+      box-shadow:
+        inset 0 -3px 6px rgba(80,30,10,0.45),
+        inset 0 2px 3px rgba(255,225,180,0.35),
+        0 8px 22px rgba(0,0,0,0.5);
+      margin-top: 2px;
+      position: relative;
+    }
+    .plate::after {
+      content: '';
+      position: absolute;
+      left: 22%; right: 22%;
+      top: 14%;
+      height: 22%;
+      background: linear-gradient(90deg, transparent, rgba(255,240,210,0.28), transparent);
+      border-radius: 50%;
+      filter: blur(1px);
     }
 
     /* ===== WISH MESSAGE ===== */
@@ -438,21 +621,27 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="aurora"></div>
 <div id="cake-glow"></div>
 
 <div id="scene">
-  <div id="hint">Ước một điều thật to nha</div>
+  <div id="hint">✦ Ước một điều thật to nha ✦</div>
   <div class="cake" id="cake">
     <div class="candles-row" id="candles-row"></div>
     <div class="drips" id="drips"></div>
-    <div class="layer layer-top"></div>
-    <div class="layer layer-mid"></div>
-    <div class="layer layer-bot"></div>
+    <div class="layer layer-top"><span class="label">· · · · ·</span></div>
+    <div class="tier-cream" id="cream-mid"></div>
+    <div class="layer layer-mid"><span class="label">22</span></div>
+    <div class="tier-cream" id="cream-bot"></div>
+    <div class="layer layer-bot"><span class="label">· · · · ·</span></div>
     <div class="plate"></div>
   </div>
 </div>
 
-<div id="wish-msg"><span>✨ Hép pi bớt đâyyyy!</span></div>
+<div id="wish-msg">
+  <div class="wish-rays"></div>
+  <span>✨ Hép pi bớt đâyyyy!</span>
+</div>
 <div id="sticker-wrap"></div>
 <button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
 <div id="nav-overlay"></div>
@@ -615,6 +804,98 @@
     smokes.push(document.getElementById(`sm-${i}`));
     flameWraps.push(c.querySelector('.flame-wrap'));
   }
+
+  // ── Sprinkles on cake layers ─────────────────────────────
+  (function spawnSprinkles() {
+    const SPRINKLE_COLORS = ['#fde68a','#f9a8d4','#a5f3fc','#86efac','#fdba74','#f0abfc','#c084fc','#fef08a','#fca5a5'];
+    const tiers = [
+      { sel: '.layer-top', count: 8 },
+      { sel: '.layer-mid', count: 14 },
+      { sel: '.layer-bot', count: 20 },
+    ];
+    tiers.forEach(({ sel, count }) => {
+      const layer = document.querySelector(sel);
+      if (!layer) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'sprinkles';
+      for (let i = 0; i < count; i++) {
+        const sp = document.createElement('div');
+        sp.className = 'sprinkle';
+        sp.style.setProperty('--sx', (8 + Math.random() * 84) + '%');
+        sp.style.setProperty('--sy', (18 + Math.random() * 70) + '%');
+        sp.style.setProperty('--sw', (2 + Math.random() * 1.2).toFixed(1) + 'px');
+        sp.style.setProperty('--sh', (4.5 + Math.random() * 3).toFixed(1) + 'px');
+        sp.style.setProperty('--sr', (Math.random() * 180 - 90).toFixed(0) + 'deg');
+        sp.style.setProperty('--sc', SPRINKLE_COLORS[Math.floor(Math.random() * SPRINKLE_COLORS.length)]);
+        wrap.appendChild(sp);
+      }
+      layer.appendChild(wrap);
+    });
+  })();
+
+  // ── Cream drips between tiers ─────────────────────────────
+  (function spawnTierCream() {
+    // Mid tier cream (sits at top edge of layer-mid; spans layer-mid width)
+    function makeDrips(parent, baseLeft, baseRight, count, sizeRange) {
+      // baseLeft/baseRight = % offsets from container edges
+      for (let i = 0; i < count; i++) {
+        const d = document.createElement('div');
+        d.className = 'cd';
+        const t = i / Math.max(1, count - 1);
+        // Distribute across width with slight randomness
+        const pct = baseLeft + t * (100 - baseLeft - baseRight) + (Math.random() - 0.5) * 4;
+        const w = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+        const h = w * (0.85 + Math.random() * 0.55);
+        d.style.left = `calc(${pct}% - ${w/2}px)`;
+        d.style.setProperty('--w', w + 'px');
+        d.style.setProperty('--h', h + 'px');
+        d.style.width  = w + 'px';
+        d.style.height = h + 'px';
+        parent.appendChild(d);
+      }
+    }
+    // Mid: cream drips from top-layer edge onto mid layer (top ~55% of bot width)
+    const cMid = document.getElementById('cream-mid');
+    if (cMid) makeDrips(cMid, 22.5, 22.5, 7, [10, 15]);
+    // Bot: cream drips from mid-layer edge onto bot layer (mid ~77% of bot width)
+    const cBot = document.getElementById('cream-bot');
+    if (cBot) makeDrips(cBot, 11.5, 11.5, 9, [12, 19]);
+  })();
+
+  // ── Ember particles drifting up from each candle ──────────
+  let emberInterval = null;
+  function startEmbers() {
+    emberInterval = setInterval(() => {
+      // Pick a random still-burning candle
+      const burning = flameWraps.filter((_, i) => !flames[i].classList.contains('out'));
+      if (burning.length === 0) { clearInterval(emberInterval); emberInterval = null; return; }
+      const wrap = burning[Math.floor(Math.random() * burning.length)];
+      const r = wrap.getBoundingClientRect();
+      const ex = r.left + r.width / 2 + (Math.random() - 0.5) * 6;
+      const ey = r.top + 4;
+      const em = document.createElement('div');
+      em.className = 'ember';
+      em.style.left = ex + 'px';
+      em.style.top  = ey + 'px';
+      em.style.setProperty('--mid-x', ((Math.random() - 0.5) * 14).toFixed(0) + 'px');
+      em.style.setProperty('--end-x', ((Math.random() - 0.5) * 30).toFixed(0) + 'px');
+      em.style.setProperty('--dur', (2.2 + Math.random() * 1.6).toFixed(1) + 's');
+      const sz = 3 + Math.random() * 2.5;
+      em.style.width  = sz + 'px';
+      em.style.height = sz + 'px';
+      document.body.appendChild(em);
+      setTimeout(() => em.remove(), 4200);
+    }, 320);
+  }
+  // Pause embers when tab hidden, resume when visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && emberInterval) {
+      clearInterval(emberInterval); emberInterval = null;
+    } else if (!document.hidden && !emberInterval) {
+      startEmbers(); // self-exits if all candles already blown
+    }
+  });
+  startEmbers();
 
   // ── Confetti ─────────────────────────────────────────────
   function spawnConfetti() {
