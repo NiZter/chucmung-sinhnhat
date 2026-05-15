@@ -708,6 +708,7 @@
       #skip-hint { font-size: 15px; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
     }
   </style>
+  <link rel="stylesheet" href="design.css">
 </head>
 <body>
 
@@ -725,6 +726,17 @@
       </span>
       <span>Bỏ qua</span>
     </button>
+  </div>
+  <div id="music-switcher" aria-label="Chọn nhạc nền">
+    <button id="music-next" type="button" aria-label="Đổi sang bài nhạc tiếp theo">
+      <span class="ui-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M5 6.2v11.6L14 12 5 6.2Z" fill="currentColor"/>
+          <path d="M16.5 6v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+    </button>
+    <span id="music-track-name" aria-live="polite">mặc định</span>
   </div>
   <div id="intro-copy">
     <h1 id="intro-title">Chúc mừng sinh nhật</h1>
@@ -810,6 +822,33 @@
   const introSkip  = document.getElementById('intro-skip');
   const flowerLayer= document.getElementById('flower-layer');
   const music      = document.getElementById('bg-music');
+  const musicNext  = document.getElementById('music-next');
+  const musicName  = document.getElementById('music-track-name');
+
+  const MUSIC_TRACKS = [
+    { key: 'music',   src: 'data/music.mp3',   label: 'mặc định' },
+    { key: 'music_2', src: 'data/music_2.mp3', label: 'yêu em như chó' },
+    { key: 'music_3', src: 'data/music_3.mp3', label: 'thế giới này là của anh' },
+  ];
+  let currentTrackIndex = Math.max(0, MUSIC_TRACKS.findIndex(track => track.key === sessionStorage.getItem('selectedMusicTrack')));
+
+  function applyMusicTrack(shouldRestart = false) {
+    const track = MUSIC_TRACKS[currentTrackIndex] || MUSIC_TRACKS[0];
+    const wasPlaying = !music.paused && !music.ended;
+    music.src = track.src;
+    if (shouldRestart || wasPlaying) {
+      try { music.currentTime = 0; } catch (_) {}
+    }
+    musicName.textContent = track.label;
+    musicNext.setAttribute('aria-label', `Đổi bài nhạc tiếp theo. Đang chọn: ${track.label}`);
+    sessionStorage.setItem('selectedMusicTrack', track.key);
+    if (wasPlaying) {
+      music.play().catch(() => {
+        document.getElementById('play-btn').style.display = 'flex';
+      });
+    }
+  }
+  applyMusicTrack();
 
   const FLOWERS = [
     'data/hoa1.png','data/hoa2.png','data/hoa3.webp','data/hoa4.png',
@@ -1018,6 +1057,12 @@
   giftHint.addEventListener('click', (e) => {
     e.preventDefault();
     runGiftSequence();
+  });
+  musicNext.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS.length;
+    applyMusicTrack(true);
   });
   introSkip.addEventListener('click', (e) => {
     e.preventDefault();
