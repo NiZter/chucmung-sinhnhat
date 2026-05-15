@@ -1083,6 +1083,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="design.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -1227,7 +1228,13 @@
   drawFrame();
 
   // ── Music ────────────────────────────────────────────────
-  const music = new Audio('data/music.mp3');
+  const MUSIC_TRACKS = {
+    music: 'data/music.mp3',
+    music_2: 'data/music_2.mp3',
+    music_3: 'data/music_3.mp3',
+  };
+  const selectedMusicTrack = sessionStorage.getItem('selectedMusicTrack') || 'music';
+  const music = new Audio(MUSIC_TRACKS[selectedMusicTrack] || MUSIC_TRACKS.music);
   music.loop = true;
   music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
   const playBtn = document.getElementById('play-btn');
