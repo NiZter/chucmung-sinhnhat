@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
   <title>Falling Rain ♥</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Montserrat:wght@900&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" href="data/sticker.gif" as="image">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +25,7 @@
        ===================================================== */
     #gift-intro {
       position: fixed; inset: 0; z-index: 1001;
-      background: radial-gradient(ellipse at 50% 42%, #1c0a2e 0%, #0e0018 58%, #060008 100%);
+      background: radial-gradient(ellipse at 50% 42%, #2e0a18 0%, #1a0410 58%, #0a0008 100%);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       transition: opacity 1.1s ease;
@@ -145,16 +145,16 @@
     #gift-hint {
       position: relative; z-index: 2;
       margin-top: 38px;
-      font-family: 'Dancing Script', cursive;
+      font-family: 'Great Vibes', cursive;
       font-weight: 700;
-      font-size: clamp(15px,3.8vw,21px);
+      font-size: clamp(18px,4.6vw,26px);
       letter-spacing: 0.4px;
       background: linear-gradient(110deg,
-        #fde68a 0%, #ffc1e3 28%, #d8b4fe 55%, #ffc1e3 78%, #fde68a 100%);
+        #fde68a 0%, #ffc1e3 28%, #ec4899 55%, #ffc1e3 78%, #fde68a 100%);
       background-size: 220% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 10px rgba(245,158,11,0.45)) drop-shadow(0 0 22px rgba(216,180,254,0.32));
+      filter: drop-shadow(0 0 10px rgba(245,158,11,0.45)) drop-shadow(0 0 22px rgba(251,207,232,0.34));
       animation: hint-pulse 2.3s ease-in-out infinite, hint-shimmer 4.5s linear infinite;
       pointer-events: none; user-select: none;
     }
@@ -232,7 +232,7 @@
       100% { transform: translateZ(var(--z)) translateY(120vh) translateX(var(--dx)) rotate(var(--rot)) scale(var(--sc)); opacity: 0; }
     }
     .bg-text {
-      font-family: 'Dancing Script', cursive;
+      font-family: 'Great Vibes', cursive;
       font-weight: 700;
       font-size: var(--fs);
       color: var(--col);
@@ -267,7 +267,7 @@
     }
 
     /* =====================================================
-       FLASH (KÁ reveal)
+       FLASH (final word reveal)
        ===================================================== */
     #flash {
       position: fixed; inset: 0;
@@ -285,7 +285,7 @@
        ===================================================== */
     .sparkle {
       position: fixed; border-radius: 50%;
-      pointer-events: none; z-index: 7;          /* below #cd-overlay so KÁ stays on top */
+      pointer-events: none; z-index: 7;          /* below #cd-overlay so countdown text stays on top */
       transform: translate(-50%, -50%);
       animation: sparkle-fly 1.1s ease-out forwards;
     }
@@ -304,7 +304,7 @@
     }
     #cd-text {
       color: #fff; text-align: center; line-height: 1.15;
-      text-shadow: 0 2px 60px rgba(0,0,0,0.8), 0 0 18px rgba(180,100,255,0.18);
+      text-shadow: 0 2px 60px rgba(0,0,0,0.8), 0 0 18px rgba(255,100,180,0.20);
       white-space: pre-line;
     }
     #cd-text.num {
@@ -314,17 +314,17 @@
         #ffffff 0%, #fde68a 45%, #f9a8d4 90%);
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 30px rgba(245,158,11,0.55)) drop-shadow(0 4px 20px rgba(216,180,254,0.45));
+      filter: drop-shadow(0 0 30px rgba(245,158,11,0.55)) drop-shadow(0 4px 20px rgba(251,207,232,0.50));
     }
     #cd-text.word {
       font-family: 'Montserrat', sans-serif; font-weight: 900;
       font-size: clamp(26px,7vw,82px); letter-spacing: clamp(8px,2vw,18px);
       background: linear-gradient(110deg,
-        #fde68a 0%, #ffffff 30%, #f9a8d4 55%, #c084fc 80%, #fde68a 100%);
+        #fde68a 0%, #fff5f8 28%, #f9a8d4 52%, #db2777 78%, #fde68a 100%);
       background-size: 220% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 24px rgba(216,180,254,0.55));
+      filter: drop-shadow(0 0 24px rgba(244,114,182,0.55)) drop-shadow(0 0 40px rgba(245,158,11,0.28));
       animation: word-shimmer 2.2s linear infinite;
     }
     @keyframes word-shimmer {
@@ -337,12 +337,12 @@
     }
     #cd-text.ka {
       background: linear-gradient(110deg,
-        #fde68a 0%, #ffffff 22%, #fff7d0 38%,
-        #ffffff 50%, #fff7d0 62%, #f59e0b 80%, #fde68a 100%);
+        #fff5f8 0%, #fde68a 18%, #ffffff 36%,
+        #f9a8d4 52%, #ffffff 68%, #f472b6 86%, #fff5f8 100%);
       background-size: 300% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent; text-shadow: none;
-      filter: drop-shadow(0 0 22px rgba(245,158,11,0.62));
+      filter: drop-shadow(0 0 22px rgba(236,72,153,0.52)) drop-shadow(0 0 38px rgba(245,158,11,0.28));
     }
     #cd-text.ka.cd-anim {
       animation:
@@ -387,7 +387,7 @@
       background:linear-gradient(120deg,
         rgba(245,158,11,0.28) 0%,
         rgba(236,72,153,0.22) 50%,
-        rgba(192,132,252,0.26) 100%);
+        rgba(236,72,153,0.28) 100%);
       border:1px solid rgba(253,230,138,0.55);
       border-radius:22px; padding:9px 22px;
       color:#fff4d0; font-size:13px; font-weight:600; cursor:pointer;
@@ -411,10 +411,10 @@
     #skip-hint {
       position:fixed; bottom:18px; left:50%;
       transform:translateX(-50%);
-      font-family:'Dancing Script', cursive;
-      font-size:14px; letter-spacing:0.6px;
-      color:rgba(240,220,255,0.72);
-      text-shadow:0 0 12px rgba(192,132,252,0.35);
+      font-family:'Great Vibes', cursive;
+      font-size:17px; letter-spacing:0.4px;
+      color:rgba(255,220,238,0.78);
+      text-shadow:0 0 12px rgba(236,72,153,0.38);
       z-index:10; pointer-events:none;
       opacity:0; transition:opacity 0.5s;
       white-space:nowrap;
@@ -431,6 +431,282 @@
       #play-btn  { bottom:max(20px,calc(env(safe-area-inset-bottom)+14px)); }
       #skip-hint { bottom:max(16px,calc(env(safe-area-inset-bottom)+10px)); }
     }
+
+    /* ===== DESIGN POLISH OVERRIDES ===== */
+    :root {
+      --ui-gold: #fde68a;
+      --ui-pink: #f472b6;
+      --ui-rose: #ec4899;
+      --ui-ink: #110008;
+      --ui-glass: rgba(255, 245, 250, 0.10);
+      --ui-line: rgba(253, 230, 138, 0.46);
+      --ui-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+      --ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0);
+      white-space: nowrap; border: 0;
+    }
+
+    #gift-intro {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), transparent 38%),
+        radial-gradient(ellipse at 50% 38%, rgba(126, 18, 74, 0.64) 0%, rgba(46, 6, 28, 0.92) 52%, #070005 100%);
+      isolation: isolate;
+    }
+    #gift-intro::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.34), transparent 18%, transparent 82%, rgba(0,0,0,0.34)),
+        linear-gradient(180deg, rgba(255,230,160,0.10), transparent 30%, rgba(0,0,0,0.32));
+      mix-blend-mode: screen;
+      opacity: 0.74;
+    }
+    #gi-stars,
+    #gi-spotlight,
+    #box-wrap,
+    #gift-hint,
+    #intro-copy,
+    #intro-actions {
+      z-index: 2;
+    }
+    #intro-copy {
+      max-width: min(90vw, 760px);
+      margin: 0 auto clamp(14px, 3.4vmin, 28px);
+      padding: 0 22px;
+      text-align: center;
+      pointer-events: none;
+      transform: translateY(clamp(-8px, -1.6vh, -2px));
+    }
+    #intro-copy h1 {
+      margin: 0;
+      font-family: 'Caveat', 'Great Vibes', cursive;
+      font-weight: 700;
+      font-size: clamp(48px, 10vw, 104px);
+      line-height: 0.9;
+      color: #fff7df;
+      text-shadow:
+        0 0 22px rgba(253,230,138,0.34),
+        0 16px 52px rgba(0,0,0,0.58);
+      text-wrap: balance;
+    }
+    #intro-actions {
+      position: fixed;
+      top: max(16px, calc(env(safe-area-inset-top) + 12px));
+      right: max(16px, calc(env(safe-area-inset-right) + 12px));
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #intro-skip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 9px 16px;
+      border: 1px solid rgba(253,230,138,0.34);
+      border-radius: 999px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(244,114,182,0.14)),
+        rgba(32, 0, 18, 0.44);
+      color: #fff7df;
+      font-family: 'Quicksand', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      cursor: pointer;
+      backdrop-filter: blur(14px) saturate(1.12);
+      box-shadow: 0 14px 38px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.16);
+      transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+    }
+    #intro-skip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(253,230,138,0.58);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(244,114,182,0.20)),
+        rgba(44, 2, 24, 0.58);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.32), 0 0 28px rgba(244,114,182,0.18), inset 0 1px 0 rgba(255,255,255,0.20);
+    }
+    #intro-skip:focus-visible {
+      outline: 3px solid rgba(253,230,138,0.82);
+      outline-offset: 4px;
+    }
+    .ui-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .ui-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #gi-spotlight {
+      max-width: 780px;
+      opacity: 0.92;
+      filter: blur(4px) saturate(1.14);
+    }
+    #gift-img-wrap {
+      filter:
+        drop-shadow(0 32px 70px rgba(0,0,0,0.60))
+        drop-shadow(0 0 32px rgba(253,230,138,0.22));
+      transition: transform 0.28s var(--ui-ease), filter 0.28s var(--ui-ease);
+    }
+    #box-wrap:hover #gift-img-wrap {
+      transform: translateY(-4px) scale(1.018);
+      filter:
+        drop-shadow(0 38px 80px rgba(0,0,0,0.64))
+        drop-shadow(0 0 42px rgba(253,230,138,0.34));
+    }
+    #box-wrap:focus-visible {
+      outline: 3px solid rgba(253,230,138,0.82);
+      outline-offset: 14px;
+      border-radius: 16px;
+    }
+    #box-wrap::before {
+      background:
+        radial-gradient(circle, rgba(253,230,138,0.30) 0%, rgba(244,114,182,0.18) 34%, transparent 71%);
+      filter: blur(10px);
+    }
+    #box-wrap::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -28px;
+      width: clamp(180px, 38vmin, 280px);
+      height: 22px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.48), transparent 72%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    #gift-hint {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 11px 28px;
+      border: 1px solid rgba(253,230,138,0.46);
+      border-radius: 999px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(244,114,182,0.24)),
+        rgba(58, 4, 32, 0.52);
+      color: #fff7df;
+      font-family: 'Quicksand', system-ui, sans-serif;
+      font-size: clamp(14px, 2.2vw, 18px);
+      font-weight: 700;
+      letter-spacing: 0;
+      cursor: pointer;
+      -webkit-text-fill-color: currentColor;
+      backdrop-filter: blur(14px) saturate(1.12);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.32), 0 0 30px rgba(244,114,182,0.20), inset 0 1px 0 rgba(255,255,255,0.18);
+      text-shadow: 0 0 22px rgba(244,114,182,0.46), 0 8px 28px rgba(0,0,0,0.45);
+      transition: transform 0.22s var(--ui-ease), border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+    #gift-hint:hover {
+      transform: translateY(-2px);
+      border-color: rgba(253,230,138,0.72);
+      box-shadow: 0 24px 58px rgba(0,0,0,0.38), 0 0 42px rgba(244,114,182,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    #gift-hint:focus-visible {
+      outline: 3px solid rgba(253,230,138,0.82);
+      outline-offset: 4px;
+    }
+    #rain-wrap {
+      background:
+        linear-gradient(180deg, #070005 0%, #10000a 42%, #030001 100%);
+    }
+    #rain-wrap::before,
+    #rain-wrap::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #rain-wrap::before {
+      background:
+        linear-gradient(90deg, rgba(253,230,138,0.055) 0 1px, transparent 1px 120px),
+        linear-gradient(180deg, transparent 0%, rgba(236,72,153,0.075) 48%, transparent 100%);
+      opacity: 0.38;
+    }
+    #rain-wrap::after {
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.42), transparent 18%, transparent 82%, rgba(0,0,0,0.42)),
+        linear-gradient(180deg, rgba(0,0,0,0.12), transparent 45%, rgba(0,0,0,0.40));
+    }
+    #flash,
+    #firework-canvas,
+    #cd-overlay,
+    #skip-hint,
+    #play-btn,
+    #nav-overlay {
+      position: fixed;
+    }
+    #rain-scene {
+      position: relative;
+      z-index: 0;
+    }
+    #cd-text.num,
+    #cd-text.word,
+    #cd-text.name {
+      text-wrap: balance;
+      text-shadow: 0 12px 56px rgba(0,0,0,0.68);
+    }
+    #play-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-family: 'Quicksand', system-ui, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(244,114,182,0.18)),
+        rgba(45, 4, 25, 0.62);
+      border-color: var(--ui-line);
+      box-shadow: var(--ui-shadow), inset 0 1px 0 rgba(255,255,255,0.20);
+    }
+    #play-btn:focus-visible {
+      outline: 3px solid rgba(253,230,138,0.82);
+      outline-offset: 4px;
+    }
+    #skip-hint {
+      padding: 6px 14px;
+      border: 1px solid rgba(251,207,232,0.20);
+      border-radius: 999px;
+      background: rgba(30,0,16,0.28);
+      backdrop-filter: blur(10px);
+      font-family: 'Quicksand', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    @media (max-width: 520px) {
+      #gift-img-wrap { width: clamp(188px, 58vw, 250px); }
+      #intro-copy h1 { font-size: clamp(42px, 13vw, 64px); }
+      #intro-actions { top: 12px; left: 12px; right: auto; }
+      #intro-skip { min-height: 38px; padding: 8px 12px; font-size: 12px; }
+      #gift-hint { margin-top: 30px; }
+      #cd-text.word { letter-spacing: clamp(5px, 1.5vw, 10px); }
+      #skip-hint { font-size: 15px; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
+    }
   </style>
 </head>
 <body>
@@ -439,14 +715,28 @@
 <div id="gift-intro">
   <canvas id="gi-stars"></canvas>
   <div id="gi-spotlight"></div>
-  <div id="box-wrap">
+  <div id="intro-actions">
+    <button id="intro-skip" type="button" aria-label="Bỏ qua phần mở quà">
+      <span class="ui-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M5.5 5.75v12.5L14 12 5.5 5.75Z" fill="currentColor"/>
+          <path d="M18 6v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span>Bỏ qua</span>
+    </button>
+  </div>
+  <div id="intro-copy">
+    <h1 id="intro-title">Chúc mừng sinh nhật</h1>
+  </div>
+  <div id="box-wrap" role="button" tabindex="0" aria-labelledby="intro-title gift-hint">
     <div id="gi-aura"></div>
     <div id="gift-img-wrap">
       <img id="gift-closed" src="data/model_gift.png"      alt="Hộp quà" draggable="false">
       <img id="gift-open"   src="data/model_gift_open.png" alt=""        draggable="false">
     </div>
   </div>
-  <p id="gift-hint">Chạm để mở quà 🎁</p>
+  <button id="gift-hint" type="button">Chạm để mở quà</button>
 </div>
 
 <!-- ===== FLOWER LAYER ===== -->
@@ -454,11 +744,18 @@
 
 <!-- ===== EXISTING CONTENT ===== -->
 <div id="rain-wrap"><div id="rain-scene"></div></div>
-<audio id="bg-music" src="data/music_2.mp3" loop></audio>
+<audio id="bg-music" src="data/music.mp3" loop></audio>
 <div id="flash"></div>
 <canvas id="firework-canvas"></canvas>
 <div id="nav-overlay"></div>
-<button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
+<button id="play-btn" type="button" aria-label="Bật nhạc">
+  <span class="ui-icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M8 5.5v13L18.5 12 8 5.5Z" fill="currentColor"/>
+    </svg>
+  </span>
+  <span>Bật nhạc</span>
+</button>
 <div id="skip-hint">Nhấn Space hoặc chạm 2 lần để bỏ qua</div>
 
 <div id="cd-overlay"><span id="cd-text"></span></div>
@@ -510,6 +807,7 @@
   const giftImgWrap  = document.getElementById('gift-img-wrap');
   const giftHint     = document.getElementById('gift-hint');
   const giftIntro  = document.getElementById('gift-intro');
+  const introSkip  = document.getElementById('intro-skip');
   const flowerLayer= document.getElementById('flower-layer');
   const music      = document.getElementById('bg-music');
 
@@ -534,21 +832,20 @@
     'Sức khỏe dồi dào 🍀',
     'Ước mơ thành hiện thực',
     '🎈 Chúc mừng 🎈',
-    'Luôn tươi trẻ 🌺',
+    'Phát tài phát lộc 🌺',
     'Một tuổi mới tuyệt vời',
-    'Ngày mới rực rỡ ☀️',
-    'Yêu đời yêu người 💖',
+    'Yêu đời nhiều hơn 💖',
   ];
   const BG_EMOJIS = ['❤️','🩷','💕','💗','💖','💝','✨','🌸','🎀','🎊','🎉','⭐','🌟','💫','🍀','🌈'];
   const BG_COLORS = [
     { col:'#ff9ecd', glow:'#ff3090', glow2:'rgba(255,48,144,0.22)'  },
     { col:'#fde68a', glow:'#f59e0b', glow2:'rgba(245,158,11,0.22)'  },
-    { col:'#ffffff', glow:'#c084fc', glow2:'rgba(192,132,252,0.22)' },
+    { col:'#ffffff', glow:'#ec4899', glow2:'rgba(236,72,153,0.22)'  },
     { col:'#f9a8d4', glow:'#ec4899', glow2:'rgba(236,72,153,0.22)'  },
-    { col:'#d8b4fe', glow:'#9333ea', glow2:'rgba(147,51,234,0.22)'  },
+    { col:'#fbcfe8', glow:'#be185d', glow2:'rgba(190,24,93,0.22)'   },
     { col:'#fbbf24', glow:'#f59e0b', glow2:'rgba(251,191,36,0.22)'  },
-    { col:'#86efac', glow:'#22c55e', glow2:'rgba(34,197,94,0.22)'   },
-    { col:'#67e8f9', glow:'#06b6d4', glow2:'rgba(6,182,212,0.22)'   },
+    { col:'#fda4af', glow:'#fb7185', glow2:'rgba(251,113,133,0.22)' },
+    { col:'#ffc1e3', glow:'#ec4899', glow2:'rgba(236,72,153,0.22)'  },
     { col:'#ff6b9d', glow:'#ff1a6e', glow2:'rgba(255,26,110,0.22)'  },
   ];
 
@@ -581,8 +878,23 @@
   })();
 
   let boxOpened = false;
+  let introFinished = false;
+
+  function finishGiftIntro() {
+    if (introFinished) return;
+    introFinished = true;
+    if (rainInterval) clearInterval(rainInterval);
+    giftIntro.classList.add('gi-hide');
+    setTimeout(() => {
+      giftIntro.remove();
+      flowerLayer.remove();
+      window._stopGiStars && window._stopGiStars();
+      startCountdown();
+    }, 1100);
+  }
 
   function spawnBurstFlowers() {
+    if (introFinished || !flowerLayer.isConnected) return;
     // Origin = nắp hộp (top ~20% of box image)
     const rect = boxWrap.getBoundingClientRect();
     const cx   = rect.left + rect.width  / 2;
@@ -628,8 +940,10 @@
   let rainCount    = 0;
 
   function startFlowerRain() {
+    if (introFinished || !flowerLayer.isConnected) return;
     const MAX = 220;
     rainInterval = setInterval(() => {
+      if (introFinished || !flowerLayer.isConnected) { clearInterval(rainInterval); return; }
       if (rainCount >= MAX) { clearInterval(rainInterval); return; }
       const batch = 6 + Math.floor(Math.random() * 5);
       for (let i = 0; i < batch; i++) {
@@ -685,16 +999,7 @@
       setTimeout(startFlowerRain, 860);
 
       // Phase 5 — begin fade-out (4200ms after click)
-      setTimeout(() => {
-        giftIntro.classList.add('gi-hide');
-        // After fade completes, remove DOM + stop stars, then start countdown
-        setTimeout(() => {
-          giftIntro.remove();
-          flowerLayer.remove();
-          window._stopGiStars && window._stopGiStars();
-          startCountdown();
-        }, 1100);
-      }, 4200);
+      setTimeout(finishGiftIntro, 4200);
 
     }, 440);
   }
@@ -703,6 +1008,25 @@
   boxWrap.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     runGiftSequence();
+  });
+  boxWrap.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter' || e.code === 'Space') {
+      e.preventDefault();
+      runGiftSequence();
+    }
+  });
+  giftHint.addEventListener('click', (e) => {
+    e.preventDefault();
+    runGiftSequence();
+  });
+  introSkip.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    music.volume = 0.65;
+    music.play().catch(() => {
+      document.getElementById('play-btn').style.display = 'flex';
+    });
+    finishGiftIntro();
   });
 
   /* ============================================================
@@ -960,7 +1284,7 @@
   function spawnSparkles() {
     const cx = window.innerWidth  / 2;
     const cy = window.innerHeight / 2;
-    const palette = ['#fde68a','#ffffff','#f9a8d4','#fff3c4','#c084fc','#fbbf24'];
+    const palette = ['#fde68a','#ffffff','#f9a8d4','#fff3c4','#ec4899','#fbbf24'];
     for (let i = 0; i < 24; i++) {
       const p = document.createElement('div');
       p.className = 'sparkle';
@@ -995,7 +1319,7 @@
       { text:'HAPPY',    cls:'word',    dur:1100 },
       { text:'BIRTHDAY', cls:'word',    dur:1100 },
       { text:'TO',       cls:'word',    dur:1100 },
-      { text:'KÁ',       cls:'name ka', dur:2200 },
+      { text:'YOU',      cls:'name ka', dur:2200 },
     ];
 
     cdOverlay.style.opacity = '1';

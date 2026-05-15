@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Make a Wish ✨</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       width: 100%; height: 100vh; height: 100dvh;
       overflow: hidden;
-      background: #060008;
-      cursor: pointer;
+      background: #0a0008;
+      cursor: default;
     }
 
     body { animation: fadein 1s ease forwards; }
@@ -25,10 +25,10 @@
       position: fixed; inset: -12%;
       z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 55% 45% at 22% 28%, rgba(180,80,255,0.22), transparent 62%),
+        radial-gradient(ellipse 55% 45% at 22% 28%, rgba(255,80,170,0.22), transparent 62%),
         radial-gradient(ellipse 50% 55% at 78% 68%, rgba(255,100,180,0.18), transparent 65%),
-        radial-gradient(ellipse 65% 40% at 50% 92%, rgba(90,30,150,0.20), transparent 55%),
-        radial-gradient(ellipse 40% 30% at 12% 80%, rgba(70,20,140,0.16), transparent 60%);
+        radial-gradient(ellipse 65% 40% at 50% 92%, rgba(180,30,90,0.22), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 12% 80%, rgba(140,20,70,0.18), transparent 60%);
       filter: blur(60px);
       animation: aurora-drift 22s ease-in-out infinite;
     }
@@ -124,21 +124,21 @@
       align-items: center;
       justify-content: center;
       gap: clamp(16px, 3vh, 28px);
-      z-index: 2;
+      z-index: 3;
       pointer-events: none;
     }
 
     #hint {
-      font-family: 'Dancing Script', cursive;
+      font-family: 'Great Vibes', cursive;
       font-weight: 700;
-      font-size: clamp(20px, 4.5vw, 34px);
+      font-size: clamp(26px, 5.5vw, 42px);
       letter-spacing: 0.5px;
       background: linear-gradient(110deg,
-        #fde68a 0%, #ffc1e3 28%, #d8b4fe 52%, #ffc1e3 76%, #fde68a 100%);
+        #fde68a 0%, #ffc1e3 28%, #ec4899 52%, #ffc1e3 76%, #fde68a 100%);
       background-size: 220% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 14px rgba(251,146,60,0.45)) drop-shadow(0 0 26px rgba(216,180,254,0.32));
+      filter: drop-shadow(0 0 14px rgba(251,146,60,0.45)) drop-shadow(0 0 26px rgba(251,207,232,0.34));
       animation: pulse-text 2.2s ease-in-out infinite, hint-shimmer 4.2s linear infinite;
       transition: opacity 0.8s ease;
     }
@@ -177,11 +177,207 @@
     }
     #cake-glow.out { opacity: 0; animation: none; }
 
+    /* ===== BIRTHDAY GIF FRAMES ===== */
+    #gif-gallery {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #gif-gallery.sticker-centered {
+      z-index: 12;
+    }
+    .memory-gif {
+      position: absolute;
+      width: clamp(88px, 11vw, 158px);
+      aspect-ratio: 9 / 16;
+      padding: 4px;
+      border: 1px solid rgba(251,207,232,0.45);
+      border-radius: 8px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.18), rgba(236,72,153,0.10)),
+        rgba(30,0,18,0.42);
+      box-shadow:
+        0 18px 42px rgba(0,0,0,0.36),
+        0 0 26px rgba(236,72,153,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+      opacity: 0;
+      transform: rotate(var(--rot, 0deg)) scale(0.96);
+    }
+    .memory-gif.is-ready {
+      animation: gif-frame-in 0.9s ease var(--delay, 0s) forwards;
+    }
+    .memory-gif.is-highlighted {
+      opacity: 0.92;
+      border-color: rgba(253,230,138,0.58);
+      box-shadow:
+        0 18px 44px rgba(0,0,0,0.38),
+        0 0 30px rgba(253,230,138,0.22),
+        0 0 46px rgba(236,72,153,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.26);
+    }
+    .memory-gif.is-ready.is-highlighted:not(.is-active) {
+      animation: none;
+      transform: rotate(var(--rot, 0deg)) scale(1);
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), box-shadow 0.55s ease, border-color 0.55s ease;
+    }
+    .memory-gif-5.is-ready.is-highlighted:not(.is-active) {
+      transform: translateX(-50%) rotate(var(--rot, 0deg)) scale(1);
+    }
+    .memory-gif.is-active {
+      z-index: 4;
+      opacity: 1;
+      border-color: rgba(253,230,138,0.92);
+      transform: rotate(var(--rot, 0deg)) scale(1.13);
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.48),
+        0 0 0 1px rgba(255,255,255,0.18),
+        0 0 34px rgba(253,230,138,0.62),
+        0 0 76px rgba(236,72,153,0.48),
+        inset 0 1px 0 rgba(255,255,255,0.34);
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), box-shadow 0.55s ease, border-color 0.55s ease;
+    }
+    .memory-gif.is-active::before {
+      background: radial-gradient(circle, rgba(253,230,138,0.40), rgba(236,72,153,0.22) 46%, transparent 74%);
+      filter: blur(12px);
+    }
+    .memory-gif.is-active img {
+      filter: saturate(1.2) brightness(1.08);
+      animation: gif-highlight-float 1.7s ease-in-out infinite;
+    }
+    .memory-gif::before {
+      content: '';
+      position: absolute;
+      inset: -16px;
+      z-index: -1;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(253,230,138,0.18), rgba(236,72,153,0.10) 46%, transparent 72%);
+      filter: blur(8px);
+    }
+    .memory-gif img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: saturate(1.06) brightness(1.02);
+      animation: gif-soft-float var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+    }
+    .memory-gif-1 {
+      left: clamp(16px, 5vw, 76px);
+      top: clamp(74px, 15vh, 128px);
+      --rot: -7deg;
+      --delay: 0.12s;
+      --dur: 6.4s;
+    }
+    .memory-gif-2 {
+      right: clamp(18px, 5.6vw, 86px);
+      top: clamp(88px, 16vh, 142px);
+      width: clamp(92px, 11.8vw, 168px);
+      --rot: 6deg;
+      --delay: 0.28s;
+      --dur: 7s;
+    }
+    .memory-gif-3 {
+      left: clamp(34px, 8.5vw, 132px);
+      bottom: clamp(36px, 10vh, 92px);
+      --rot: 5deg;
+      --delay: 0.44s;
+      --dur: 6.8s;
+    }
+    .memory-gif-4 {
+      right: clamp(30px, 8vw, 124px);
+      bottom: clamp(34px, 11vh, 98px);
+      width: clamp(82px, 10vw, 148px);
+      --rot: -5deg;
+      --delay: 0.6s;
+      --dur: 6.1s;
+    }
+    .memory-gif-5 {
+      left: 50%;
+      top: clamp(24px, 5vh, 48px);
+      width: clamp(82px, 9vw, 132px);
+      aspect-ratio: 1 / 1;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      --rot: 0deg;
+      --delay: 0.76s;
+      --dur: 5.8s;
+      transform: translateX(-50%) rotate(var(--rot, 0deg)) scale(0.96);
+    }
+    .memory-gif-5::before {
+      display: none;
+    }
+    .memory-gif-5 img {
+      border-radius: 0;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(255,120,200,0.42));
+    }
+    .memory-gif-5.is-ready {
+      animation: gif-frame-in-center 0.9s ease var(--delay, 0s) forwards;
+    }
+    .memory-gif-5.is-active {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: clamp(220px, 28vw, 360px);
+      z-index: 11;
+      transform: translate(-50%, -50%) rotate(0deg) scale(1);
+      box-shadow: none;
+      transition: transform 0.95s cubic-bezier(0.16,1,0.3,1), width 0.95s cubic-bezier(0.16,1,0.3,1);
+    }
+    .memory-gif-5.is-active img {
+      filter:
+        drop-shadow(0 0 18px rgba(253,230,138,0.70))
+        drop-shadow(0 0 42px rgba(236,72,153,0.48));
+      animation: sticker-center-float 2s ease-in-out infinite;
+    }
+    @keyframes gif-frame-in {
+      from {
+        opacity: 0;
+        transform: translateY(14px) rotate(var(--rot, 0deg)) scale(0.92);
+      }
+      to {
+        opacity: 0.88;
+        transform: translateY(0) rotate(var(--rot, 0deg)) scale(1);
+      }
+    }
+    @keyframes gif-frame-in-center {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(14px) rotate(var(--rot, 0deg)) scale(0.92);
+      }
+      to {
+        opacity: 0.88;
+        transform: translateX(-50%) translateY(0) rotate(var(--rot, 0deg)) scale(1);
+      }
+    }
+    @keyframes gif-soft-float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-9px); }
+    }
+    @keyframes gif-highlight-float {
+      0%, 100% { transform: translateY(-2px) scale(1); }
+      50%      { transform: translateY(-12px) scale(1.025); }
+    }
+    @keyframes sticker-center-float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-10px) scale(1.04); }
+    }
+
     /* ===== CAKE ===== */
     .cake {
       display: flex; flex-direction: column; align-items: center;
       animation: cake-float 4.8s ease-in-out infinite;
-      filter: drop-shadow(0 14px 32px rgba(70,10,140,0.55));
+      filter: drop-shadow(0 14px 32px rgba(140,10,70,0.55));
+      cursor: pointer;
+      pointer-events: auto;
     }
     @keyframes cake-float {
       0%, 100% { transform: translateY(0); }
@@ -238,7 +434,7 @@
       transform: translateX(-50%);
       width: 5px; height: 28px;
       opacity: 0;
-      background: linear-gradient(to top, rgba(200,180,220,0.6), transparent);
+      background: linear-gradient(to top, rgba(220,180,200,0.6), transparent);
       border-radius: 50%;
       pointer-events: none;
     }
@@ -255,7 +451,7 @@
       top: -2px; left: 50%;
       width: 4px; height: 22px;
       opacity: 0;
-      background: linear-gradient(to top, rgba(200,180,220,0.5), transparent);
+      background: linear-gradient(to top, rgba(220,180,200,0.5), transparent);
       border-radius: 50%;
       pointer-events: none;
       animation: smoke-drift 2.1s ease-out forwards;
@@ -314,9 +510,9 @@
       position: absolute;
       top: -8px; left: -2px; right: -2px;
       height: 16px;
-      background: var(--top-bg, radial-gradient(ellipse at 50% 50%, #5a14a0 0%, #36005c 75%));
+      background: var(--top-bg, radial-gradient(ellipse at 50% 50%, #a51860 0%, #5c0030 75%));
       border-radius: 50%;
-      border: 1px solid var(--top-border, rgba(220,170,255,0.45));
+      border: 1px solid var(--top-border, rgba(255,170,220,0.48));
       box-shadow:
         inset 0 -3px 6px rgba(0,0,0,0.42),
         inset 0 2px 4px rgba(255,255,255,0.18),
@@ -329,20 +525,20 @@
       height: clamp(34px, 5.5vw, 52px);
       background:
         linear-gradient(90deg, rgba(0,0,0,0.30) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.30) 100%),
-        linear-gradient(175deg, #4a0080 0%, #2e0054 55%, #1e0038 100%);
-      border-left: 1px solid rgba(80,10,150,0.55);
-      border-right: 1px solid rgba(80,10,150,0.55);
+        linear-gradient(175deg, #8a1450 0%, #54002a 55%, #380018 100%);
+      border-left: 1px solid rgba(180,10,90,0.58);
+      border-right: 1px solid rgba(180,10,90,0.58);
       box-shadow:
         inset 0 -4px 8px rgba(0,0,0,0.32),
-        0 6px 24px rgba(80,10,160,0.4);
-      --top-bg: radial-gradient(ellipse at 50% 50%, #6a18b8 0%, #44007e 70%, #2a0050 100%);
-      --top-border: rgba(220,170,255,0.55);
+        0 6px 24px rgba(180,10,90,0.45);
+      --top-bg: radial-gradient(ellipse at 50% 50%, #b8186a 0%, #7e0040 70%, #500028 100%);
+      --top-border: rgba(255,170,220,0.58);
     }
     .layer-top > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(220,175,255,0.32);
+      color: rgba(255,180,210,0.34);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
@@ -354,23 +550,23 @@
       height: clamp(42px, 7vw, 64px);
       background:
         linear-gradient(90deg, rgba(0,0,0,0.32) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.32) 100%),
-        linear-gradient(180deg, #38005e 0%, #240048 50%, #160030 100%);
-      border-left: 1px solid rgba(60,5,120,0.55);
-      border-right: 1px solid rgba(60,5,120,0.55);
+        linear-gradient(180deg, #5e0030 0%, #480024 50%, #300018 100%);
+      border-left: 1px solid rgba(120,5,60,0.58);
+      border-right: 1px solid rgba(120,5,60,0.58);
       box-shadow:
         inset 0 -4px 8px rgba(0,0,0,0.4),
-        0 0 20px rgba(100,20,180,0.3);
+        0 0 20px rgba(200,20,90,0.32);
       margin-top: -3px;
-      --top-bg: radial-gradient(ellipse at 50% 50%, #4f1190 0%, #2c005a 70%, #1a003a 100%);
-      --top-border: rgba(190,120,240,0.45);
+      --top-bg: radial-gradient(ellipse at 50% 50%, #90114a 0%, #5a002c 70%, #3a001a 100%);
+      --top-border: rgba(255,140,200,0.5);
     }
-    /* "22" — warm gold, pulses with candle rhythm */
+    /* "17" — warm gold, pulses with candle rhythm */
     .layer-mid > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      font-family: 'Dancing Script', cursive;
-      font-size: clamp(20px, 3.2vw, 28px);
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(26px, 4vw, 36px);
       color: rgba(253,230,138,0.55);
       letter-spacing: 4px;
       animation: num-pulse 2.2s ease-in-out infinite;
@@ -386,22 +582,22 @@
       height: clamp(50px, 8.5vw, 78px);
       background:
         linear-gradient(90deg, rgba(0,0,0,0.34) 0%, transparent 14%, transparent 86%, rgba(0,0,0,0.34) 100%),
-        linear-gradient(180deg, #2c0048 0%, #1a0034 55%, #0e001e 100%);
-      border-left: 1px solid rgba(50,5,100,0.55);
-      border-right: 1px solid rgba(50,5,100,0.55);
+        linear-gradient(180deg, #480024 0%, #34001a 55%, #1e000e 100%);
+      border-left: 1px solid rgba(100,5,50,0.58);
+      border-right: 1px solid rgba(100,5,50,0.58);
       box-shadow:
         inset 0 -4px 10px rgba(0,0,0,0.45),
-        0 0 30px rgba(90,10,170,0.32),
+        0 0 30px rgba(180,10,90,0.36),
         0 8px 20px rgba(0,0,0,0.45);
       margin-top: -3px;
-      --top-bg: radial-gradient(ellipse at 50% 50%, #420a78 0%, #200042 70%, #100024 100%);
-      --top-border: rgba(165,90,225,0.40);
+      --top-bg: radial-gradient(ellipse at 50% 50%, #780a3a 0%, #420020 70%, #240010 100%);
+      --top-border: rgba(255,120,180,0.45);
     }
     .layer-bot > .label {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: rgba(200,140,255,0.28);
+      color: rgba(236,72,153,0.32);
       font-size: 11px;
       letter-spacing: 7px;
       white-space: nowrap;
@@ -508,12 +704,12 @@
       100% { opacity: 0; }
     }
     #wish-msg span {
-      font-family: 'Dancing Script', cursive;
+      font-family: 'Great Vibes', cursive;
       font-weight: 700;
-      font-size: clamp(28px, 5.8vw, 54px);
+      font-size: clamp(34px, 7vw, 64px);
       letter-spacing: 0.6px;
       background: linear-gradient(110deg,
-        #fff7d6 0%, #fde68a 25%, #ffb4d8 50%, #c4b5fd 75%, #fff7d6 100%);
+        #fff7d6 0%, #fde68a 25%, #ffb4d8 50%, #ec4899 75%, #fff7d6 100%);
       background-size: 220% 100%;
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -555,10 +751,10 @@
       padding: 8px 18px; border-radius: 22px;
       background: linear-gradient(120deg,
         rgba(255,255,255,0.10) 0%,
-        rgba(200,140,255,0.14) 50%,
+        rgba(236,72,153,0.16) 50%,
         rgba(255,180,220,0.10) 100%);
-      border: 1px solid rgba(216,180,254,0.30);
-      color: rgba(245,235,255,0.88); font-size: 13px; font-weight: 500;
+      border: 1px solid rgba(251,207,232,0.32);
+      color: rgba(255,238,248,0.90); font-size: 13px; font-weight: 500;
       cursor: pointer; backdrop-filter: blur(12px);
       box-shadow: 0 4px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
       transition: background 0.2s, border-color 0.2s, transform 0.18s, box-shadow 0.18s;
@@ -567,30 +763,11 @@
     #mute-btn:hover {
       background: linear-gradient(120deg,
         rgba(255,255,255,0.18) 0%,
-        rgba(200,140,255,0.24) 50%,
+        rgba(236,72,153,0.28) 50%,
         rgba(255,180,220,0.18) 100%);
-      border-color: rgba(216,180,254,0.55);
+      border-color: rgba(251,207,232,0.58);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(192,132,252,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
-    }
-
-    /* ===== STICKER ===== */
-    #sticker-wrap {
-      position: fixed; inset: 0; z-index: 15;
-      display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
-    }
-    .sticker-img {
-      max-width: min(60vw, 420px); max-height: min(60vh, 420px);
-      filter: drop-shadow(0 0 30px rgba(180,120,255,0.5));
-      animation: sticker-show 4.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
-    @keyframes sticker-show {
-      0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
-      12%  { opacity: 1; transform: scale(1.15) rotate(4deg); }
-      22%  { opacity: 1; transform: scale(1)    rotate(0deg); }
-      75%  { opacity: 1; transform: scale(1)    rotate(0deg); }
-      100% { opacity: 0; transform: scale(1.2)  rotate(2deg); }
+      box-shadow: 0 6px 20px rgba(236,72,153,0.32), inset 0 1px 0 rgba(255,255,255,0.18);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -627,9 +804,6 @@
       pointer-events: none;
     }
 
-    /* Sticker clickable hint */
-    #sticker-wrap { cursor: pointer; }
-
     /* ===== MOBILE / SAFE AREA ===== */
     @supports (padding: env(safe-area-inset-top)) {
       #mute-btn {
@@ -638,6 +812,68 @@
       }
       #play-btn {
         bottom: max(20px, calc(env(safe-area-inset-bottom) + 14px));
+      }
+    }
+    @media (max-width: 700px) {
+      .memory-gif {
+        width: clamp(56px, 18vw, 82px);
+        padding: 3px;
+      }
+      .memory-gif-1 {
+        left: 12px;
+        top: max(82px, 13dvh);
+      }
+      .memory-gif-2 {
+        right: 12px;
+        top: max(104px, 16dvh);
+        width: clamp(58px, 18vw, 84px);
+      }
+      .memory-gif-3 {
+        left: 14px;
+        bottom: max(18px, calc(env(safe-area-inset-bottom) + 14px));
+      }
+      .memory-gif-4 {
+        right: 14px;
+        bottom: max(28px, calc(env(safe-area-inset-bottom) + 24px));
+        width: clamp(54px, 17vw, 76px);
+      }
+      .memory-gif-5 {
+        top: 14px;
+        width: clamp(52px, 16vw, 76px);
+      }
+      .memory-gif-5.is-active {
+        top: 50%;
+        width: min(58vw, 240px);
+      }
+      @keyframes gif-frame-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px) rotate(var(--rot, 0deg)) scale(0.92);
+        }
+        to {
+          opacity: 0.76;
+          transform: translateY(0) rotate(var(--rot, 0deg)) scale(1);
+        }
+      }
+    }
+    @media (max-height: 560px) {
+      .memory-gif {
+        width: clamp(54px, 9vw, 100px);
+      }
+      .memory-gif-1,
+      .memory-gif-2 {
+        top: 58px;
+      }
+      .memory-gif-3,
+      .memory-gif-4 {
+        bottom: 14px;
+      }
+      .memory-gif-5 {
+        top: 10px;
+      }
+      .memory-gif-5.is-active {
+        top: 50%;
+        width: min(34vw, 220px);
       }
     }
     /* Cake shrinks on very small screens */
@@ -649,21 +885,225 @@
       .plate      { width: clamp(220px, 60vw, 280px); }
       #hint { font-size: clamp(17px, 4vw, 22px); }
     }
+
+    /* ===== DESIGN POLISH OVERRIDES ===== */
+    :root {
+      --ui-gold: #fde68a;
+      --ui-pink: #f472b6;
+      --ui-rose: #ec4899;
+      --ui-ink: #0d0008;
+      --ui-glass: rgba(255, 245, 250, 0.10);
+      --ui-line: rgba(253, 230, 138, 0.42);
+      --ui-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+      --ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0);
+      white-space: nowrap; border: 0;
+    }
+    .ui-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .ui-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #mute-btn .sound-off { display: none; }
+    #mute-btn.is-muted .sound-on { display: none; }
+    #mute-btn.is-muted .sound-off { display: inline-grid; }
+
+    body {
+      background:
+        linear-gradient(180deg, #10000a 0%, #210815 44%, #070004 100%);
+      color-scheme: dark;
+    }
+    #aurora {
+      opacity: 0.9;
+      filter: blur(64px) saturate(1.18);
+    }
+    #cake-glow {
+      bottom: 23%;
+      width: clamp(340px, 58vw, 660px);
+      height: 160px;
+      background:
+        radial-gradient(ellipse at center, rgba(255,230,150,0.52) 0%, rgba(255,170,60,0.28) 31%, rgba(236,72,153,0.14) 58%, transparent 84%);
+      filter: blur(2px);
+    }
+    #scene {
+      isolation: isolate;
+    }
+    #scene::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 51%;
+      width: min(78vw, 820px);
+      height: min(56vh, 430px);
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, rgba(80, 10, 44, 0.54), rgba(38, 3, 22, 0.20) 54%, transparent 76%);
+    }
+    #hint {
+      max-width: min(92vw, 760px);
+      text-align: center;
+      text-wrap: balance;
+      font-family: 'Caveat', 'Great Vibes', cursive;
+      font-size: clamp(28px, 5.4vw, 48px);
+      letter-spacing: 0;
+      filter:
+        drop-shadow(0 0 16px rgba(253,230,138,0.32))
+        drop-shadow(0 14px 34px rgba(0,0,0,0.52));
+    }
+    .cake {
+      filter:
+        drop-shadow(0 18px 40px rgba(0,0,0,0.46))
+        drop-shadow(0 0 30px rgba(236,72,153,0.24));
+      transition: filter 0.28s var(--ui-ease);
+    }
+    .cake:hover {
+      filter:
+        drop-shadow(0 24px 50px rgba(0,0,0,0.50))
+        drop-shadow(0 0 42px rgba(253,230,138,0.28));
+    }
+    .layer {
+      border-radius: 6px;
+      overflow: visible;
+    }
+    .layer-top,
+    .layer-mid,
+    .layer-bot {
+      box-shadow:
+        inset 0 -5px 12px rgba(0,0,0,0.34),
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 12px 34px rgba(120, 0, 52, 0.34);
+    }
+    .layer-mid > .label {
+      text-shadow: 0 0 14px rgba(253,230,138,0.62), 0 4px 18px rgba(0,0,0,0.45);
+    }
+    .candle-body {
+      border: 1px solid rgba(255,210,230,0.22);
+      box-shadow:
+        inset -2px 0 4px rgba(0,0,0,0.22),
+        inset 2px 0 5px rgba(255,220,236,0.24),
+        0 0 12px rgba(236,72,153,0.16);
+    }
+    .flame {
+      filter:
+        drop-shadow(0 0 8px rgba(255,180,0,0.98))
+        drop-shadow(0 0 20px rgba(245,158,11,0.42));
+    }
+    .plate {
+      filter: drop-shadow(0 16px 24px rgba(0,0,0,0.30));
+    }
+    .memory-gif {
+      border-color: rgba(253,230,138,0.38);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.22), rgba(236,72,153,0.12)),
+        rgba(24,0,14,0.52);
+      backdrop-filter: blur(8px) saturate(1.12);
+      box-shadow:
+        0 20px 52px rgba(0,0,0,0.40),
+        0 0 30px rgba(236,72,153,0.16),
+        inset 0 1px 0 rgba(255,255,255,0.24);
+    }
+    .memory-gif.is-active {
+      box-shadow:
+        0 28px 68px rgba(0,0,0,0.54),
+        0 0 0 1px rgba(255,255,255,0.18),
+        0 0 40px rgba(253,230,138,0.68),
+        0 0 88px rgba(236,72,153,0.48),
+        inset 0 1px 0 rgba(255,255,255,0.34);
+    }
+    #wish-msg span {
+      text-wrap: balance;
+      text-shadow: 0 0 28px rgba(253,230,138,0.45), 0 14px 38px rgba(0,0,0,0.58);
+    }
+    #mute-btn,
+    #play-btn {
+      min-height: 40px;
+      border-radius: 999px;
+      font-family: 'Quicksand', system-ui, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.16), rgba(244,114,182,0.16)),
+        rgba(45, 4, 25, 0.62);
+      border-color: var(--ui-line);
+      color: #fff7df;
+      box-shadow: var(--ui-shadow), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    #mute-btn { display: inline-flex; }
+    #mute-btn:hover,
+    #play-btn:hover {
+      border-color: rgba(253,230,138,0.64);
+      box-shadow: 0 28px 76px rgba(0,0,0,0.50), 0 0 28px rgba(244,114,182,0.26), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    #mute-btn:focus-visible,
+    #play-btn:focus-visible,
+    .cake:focus-visible {
+      outline: 3px solid rgba(253,230,138,0.82);
+      outline-offset: 4px;
+    }
+    @media (max-width: 700px) {
+      #scene {
+        gap: clamp(12px, 2.6vh, 20px);
+      }
+      #scene::before {
+        width: calc(100vw - 22px);
+        height: min(58vh, 430px);
+      }
+      #hint {
+        max-width: calc(100vw - 28px);
+        font-size: clamp(22px, 7.2vw, 34px);
+      }
+      .memory-gif {
+        opacity: 0.72;
+      }
+      .memory-gif.is-active {
+        opacity: 1;
+      }
+      #mute-btn {
+        padding: 8px 14px;
+        right: 10px;
+        top: max(10px, calc(env(safe-area-inset-top) + 8px));
+      }
+    }
   </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="aurora"></div>
 <div id="cake-glow"></div>
+<div id="gif-gallery" aria-hidden="true">
+  <div class="memory-gif memory-gif-1"><img data-gif-src="data/1.gif" alt="" draggable="false" decoding="async"></div>
+  <div class="memory-gif memory-gif-2"><img data-gif-src="data/2.gif" alt="" draggable="false" decoding="async"></div>
+  <div class="memory-gif memory-gif-3"><img data-gif-src="data/3.gif" alt="" draggable="false" decoding="async"></div>
+  <div class="memory-gif memory-gif-4"><img data-gif-src="data/4.gif" alt="" draggable="false" decoding="async"></div>
+  <div class="memory-gif memory-gif-5"><img data-gif-src="data/sticker.gif" alt="" draggable="false" decoding="async"></div>
+</div>
 
 <div id="scene">
-  <div id="hint">✦ Ước một điều thật to rồi chạm để thổi nến nha ✦</div>
+  <div id="hint">✦ Ước một điều rồi chạm bánh kem nha ✦</div>
   <div class="cake" id="cake">
     <div class="candles-row" id="candles-row"></div>
     <div class="drips" id="drips"></div>
     <div class="layer layer-top"><span class="label">· · · · ·</span></div>
     <div class="tier-cream" id="cream-mid"></div>
-    <div class="layer layer-mid"><span class="label">22</span></div>
+    <div class="layer layer-mid"><span class="label">17</span></div>
     <div class="tier-cream" id="cream-bot"></div>
     <div class="layer layer-bot"><span class="label">· · · · ·</span></div>
     <div class="plate"></div>
@@ -672,14 +1112,47 @@
 
 <div id="wish-msg">
   <div class="wish-rays"></div>
-  <span>✨ Hép pi bớt đâyyyy!</span>
+  <span>Hép pi bớt đâyyyy!</span>
 </div>
-<div id="sticker-wrap"></div>
-<button id="mute-btn" aria-label="Tắt/bật nhạc">🔊</button>
+<button id="mute-btn" type="button" aria-label="Tắt nhạc" aria-pressed="false">
+  <span class="ui-icon sound-on" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M4 9.25v5.5h3.2L12 18.6V5.4L7.2 9.25H4Z" fill="currentColor"/>
+      <path d="M15.2 8.2a5.2 5.2 0 0 1 0 7.6M17.8 5.8a8.8 8.8 0 0 1 0 12.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="ui-icon sound-off" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M4 9.25v5.5h3.2L12 18.6V5.4L7.2 9.25H4Z" fill="currentColor"/>
+      <path d="M16 9l5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="sr-only">Nhạc</span>
+</button>
 <div id="nav-overlay"></div>
-<button id="play-btn" aria-label="Bật nhạc">▶ Bật nhạc</button>
+<button id="play-btn" type="button" aria-label="Bật nhạc">
+  <span class="ui-icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M8 5.5v13L18.5 12 8 5.5Z" fill="currentColor"/>
+    </svg>
+  </span>
+  <span>Bật nhạc</span>
+</button>
 
 <script>
+  // Load large memory GIFs after the main candle scene is ready.
+  function loadMemoryGifs() {
+    document.querySelectorAll('#gif-gallery img[data-gif-src]').forEach((img, i) => {
+      setTimeout(() => {
+        const frame = img.closest('.memory-gif');
+        frame?.classList.add('is-ready');
+        img.src = img.dataset.gifSrc;
+      }, 140 * i);
+    });
+  }
+  if (document.readyState === 'complete') loadMemoryGifs();
+  else window.addEventListener('load', loadMemoryGifs, { once: true });
+
   // ── Stars background ─────────────────────────────────────
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d');
@@ -695,9 +1168,9 @@
       canvas.width*.5, canvas.height*.3, 0,
       canvas.width*.5, canvas.height*.5, canvas.height
     );
-    gradient.addColorStop(0,   '#0d0a2e');
-    gradient.addColorStop(0.4, '#070518');
-    gradient.addColorStop(1,   '#000008');
+    gradient.addColorStop(0,   '#280816');
+    gradient.addColorStop(0.4, '#1a0510');
+    gradient.addColorStop(1,   '#080004');
   }
 
   let stars = [];
@@ -754,7 +1227,7 @@
   drawFrame();
 
   // ── Music ────────────────────────────────────────────────
-  const music = new Audio('data/music_2.mp3');
+  const music = new Audio('data/music.mp3');
   music.loop = true;
   music.currentTime = parseFloat(sessionStorage.getItem('musicTime') || '0');
   const playBtn = document.getElementById('play-btn');
@@ -798,7 +1271,9 @@
     e.stopPropagation();
     muted = !muted;
     music.muted = muted;
-    muteBtn.textContent = muted ? '🔇' : '🔊';
+    muteBtn.classList.toggle('is-muted', muted);
+    muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+    muteBtn.setAttribute('aria-label', muted ? 'Bật nhạc' : 'Tắt nhạc');
   });
 
   // ── Build cake ───────────────────────────────────────────
@@ -839,7 +1314,7 @@
 
   // ── Sprinkles on cake layers ─────────────────────────────
   (function spawnSprinkles() {
-    const SPRINKLE_COLORS = ['#fde68a','#f9a8d4','#a5f3fc','#86efac','#fdba74','#f0abfc','#c084fc','#fef08a','#fca5a5'];
+    const SPRINKLE_COLORS = ['#fde68a','#f9a8d4','#fbcfe8','#fda4af','#fdba74','#f472b6','#ec4899','#fef08a','#fca5a5'];
     const tiers = [
       { sel: '.layer-top', count: 8 },
       { sel: '.layer-mid', count: 14 },
@@ -931,7 +1406,7 @@
 
   // ── Confetti ─────────────────────────────────────────────
   function spawnConfetti() {
-    const colors = ['#f9a8d4','#fde68a','#c084fc','#a5f3fc','#86efac','#fdba74','#f0abfc','#fef08a'];
+    const colors = ['#f9a8d4','#fde68a','#ec4899','#fbcfe8','#fda4af','#fdba74','#f472b6','#fef08a'];
     for (let i = 0; i < 28; i++) {
       const p = document.createElement('div');
       p.className = 'confetti-piece';
@@ -959,10 +1434,26 @@
   const wishMsg = document.getElementById('wish-msg');
   const cakeEl  = document.getElementById('cake');
   const glowEl  = document.getElementById('cake-glow');
+  const gifGallery = document.getElementById('gif-gallery');
+  const memoryFrames = [...document.querySelectorAll('.memory-gif')];
+  const FIRST_BLOW_DELAY_MS = 800;
+  const BLOW_STEP_MS = 1600;
+  const LAST_BLOW_MS = FIRST_BLOW_DELAY_MS + BLOW_STEP_MS * (N_CANDLES - 1);
+  const WISH_DELAY_MS = LAST_BLOW_MS + 1700;
+  const NAV_DELAY_MS = 12000;
+
+  function highlightMemory(i) {
+    gifGallery.classList.toggle('sticker-centered', i === N_CANDLES - 1);
+    memoryFrames.forEach((frame, idx) => {
+      frame.classList.toggle('is-active', idx === i);
+      if (idx <= i && idx < N_CANDLES - 1) frame.classList.add('is-highlighted');
+    });
+  }
 
   function blowCandle(i) {
     flames[i].classList.add('out');
     smokes[i].classList.add('puff');
+    highlightMemory(i);
 
     // 2 extra drift puffs
     [-1, 1].forEach((dir, j) => {
@@ -977,14 +1468,14 @@
 
   // ── Blow: pointerdown + movement threshold (avoid firing on scroll) ──
   let pointerStartX = 0, pointerStartY = 0, pointerMoved = false;
-  document.body.addEventListener('pointerdown', (e) => {
+  cakeEl.addEventListener('pointerdown', (e) => {
     pointerStartX = e.clientX; pointerStartY = e.clientY; pointerMoved = false;
   });
-  document.body.addEventListener('pointermove', (e) => {
+  cakeEl.addEventListener('pointermove', (e) => {
     if (Math.abs(e.clientX - pointerStartX) > 8 || Math.abs(e.clientY - pointerStartY) > 8)
       pointerMoved = true;
   });
-  document.body.addEventListener('pointerup', doBlow);
+  cakeEl.addEventListener('pointerup', doBlow);
   function doBlow() {
     if (pointerMoved || blown) return;
     blown = true;
@@ -999,47 +1490,27 @@
     cakeEl.classList.add('shake');
     setTimeout(() => cakeEl.classList.remove('shake'), 320);
 
-    // Blow candles
+    // Blow candles slowly: each candle highlights one matching GIF.
     for (let i = 0; i < N_CANDLES; i++) {
-      setTimeout(() => blowCandle(i), i * 360);
+      setTimeout(() => blowCandle(i), FIRST_BLOW_DELAY_MS + i * BLOW_STEP_MS);
     }
 
     // Hint fades
-    setTimeout(() => { hintEl.style.opacity = '0'; }, 280);
+    setTimeout(() => { hintEl.style.opacity = '0'; }, 900);
 
     // Glow fades → "tắt đèn" effect
-    setTimeout(() => { glowEl.classList.add('out'); }, N_CANDLES * 360 + 100);
+    setTimeout(() => { glowEl.classList.add('out'); }, WISH_DELAY_MS - 600);
 
-    // Wish + confetti, then sticker, then navigate
+    // Wish + confetti, then navigate. Total flow is about 12 seconds.
     setTimeout(() => {
       wishMsg.classList.add('show');
       spawnConfetti();
+    }, WISH_DELAY_MS);
 
-      // Show sticker.gif after wish text peaks (≈2 s overlap while wish fades)
-      setTimeout(() => {
-        const wrap = document.getElementById('sticker-wrap');
-        const img  = document.createElement('img');
-        img.src   = 'data/sticker.gif';
-        img.className = 'sticker-img';
-        wrap.appendChild(img);
-        wrap.style.pointerEvents = 'auto';
-
-        // Click sticker → navigate immediately
-        let stickerClicked = false;
-        wrap.addEventListener('click', () => {
-          if (stickerClicked) return;
-          stickerClicked = true;
-          sessionStorage.setItem('seenSticker', '1');
-          navigateTo('stars.html');
-        });
-      }, 2000);
-
-      // Navigate after sticker animation finishes (~4.5 s after it appears)
-      setTimeout(() => {
-        sessionStorage.setItem('seenSticker', '1');
-        navigateTo('stars.html');
-      }, 6400);
-    }, N_CANDLES * 360 + 320);
+    setTimeout(() => {
+      sessionStorage.setItem('seenSticker', '1');
+      navigateTo('stars.html');
+    }, NAV_DELAY_MS);
   }
 </script>
 </body>
